@@ -18,7 +18,7 @@ Inductive expr : Set :=  (*r expressions *)
  | e_abs (A:expr) (e:expr) (*r abstraction *)
  | e_pi (A:expr) (B:expr) (*r dependent product *)
  | e_all (A:expr) (B:expr) (*r forall type *)
- | e_bind (e:expr) (*r name binding *).
+ | e_bind (A:expr) (e:expr) (*r name binding *).
 
 Definition context : Set := (list (exprvar * expr)).
 
@@ -40,7 +40,7 @@ Fixpoint open_expr_wrt_expr_rec (k:nat) (e_5:expr) (e__6:expr) {struct e__6}: ex
   | (e_abs A e) => e_abs (open_expr_wrt_expr_rec k e_5 A) (open_expr_wrt_expr_rec (S k) e_5 e)
   | (e_pi A B) => e_pi (open_expr_wrt_expr_rec k e_5 A) (open_expr_wrt_expr_rec (S k) e_5 B)
   | (e_all A B) => e_all (open_expr_wrt_expr_rec k e_5 A) (open_expr_wrt_expr_rec (S k) e_5 B)
-  | (e_bind e) => e_bind (open_expr_wrt_expr_rec (S k) e_5 e)
+  | (e_bind A e) => e_bind (open_expr_wrt_expr_rec k e_5 A) (open_expr_wrt_expr_rec (S k) e_5 e)
 end.
 
 Definition open_expr_wrt_expr e_5 e__6 := open_expr_wrt_expr_rec 0 e__6 e_5.
@@ -78,9 +78,10 @@ Inductive lc_expr : expr -> Prop :=    (* defn lc_expr *)
      (lc_expr A) ->
       ( forall x , x \notin  L  -> lc_expr  ( open_expr_wrt_expr B (e_var_f x) )  )  ->
      (lc_expr (e_all A B))
- | lc_e_bind : forall (L:vars) (e:expr),
+ | lc_e_bind : forall (L:vars) (A e:expr),
+     (lc_expr A) ->
       ( forall x , x \notin  L  -> lc_expr  ( open_expr_wrt_expr e (e_var_f x) )  )  ->
-     (lc_expr (e_bind e)).
+     (lc_expr (e_bind A e)).
 (** free variables *)
 Fixpoint fv_expr (e_5:expr) : vars :=
   match e_5 with
@@ -94,7 +95,7 @@ Fixpoint fv_expr (e_5:expr) : vars :=
   | (e_abs A e) => (fv_expr A) \u (fv_expr e)
   | (e_pi A B) => (fv_expr A) \u (fv_expr B)
   | (e_all A B) => (fv_expr A) \u (fv_expr B)
-  | (e_bind e) => (fv_expr e)
+  | (e_bind A e) => (fv_expr A) \u (fv_expr e)
 end.
 
 (** substitutions *)
@@ -110,7 +111,7 @@ Fixpoint subst_expr (e_5:expr) (x5:exprvar) (e__6:expr) {struct e__6} : expr :=
   | (e_abs A e) => e_abs (subst_expr e_5 x5 A) (subst_expr e_5 x5 e)
   | (e_pi A B) => e_pi (subst_expr e_5 x5 A) (subst_expr e_5 x5 B)
   | (e_all A B) => e_all (subst_expr e_5 x5 A) (subst_expr e_5 x5 B)
-  | (e_bind e) => e_bind (subst_expr e_5 x5 e)
+  | (e_bind A e) => e_bind (subst_expr e_5 x5 A) (subst_expr e_5 x5 e)
 end.
 
 
@@ -169,11 +170,11 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
       (usub  G   e   e   A )  ->
      usub G e1 e2 (e_pi A B) ->
      usub G (e_app e1 e) (e_app e2 e)  (open_expr_wrt_expr  B   e ) 
- | s_forall : forall (L:vars) (G:context) (e1 e2 A B:expr),
+ | s_forall : forall (L:vars) (G:context) (A e1 e2 B:expr),
       (fv_expr  A  = empty)  ->
       (usub  G   A   A   e_star )  ->
       ( forall x , x \notin  L  -> usub  (( x ,  A ) ::  G )   ( open_expr_wrt_expr e1 (e_var_f x) )   ( open_expr_wrt_expr e2 (e_var_f x) )   ( open_expr_wrt_expr B (e_var_f x) )  )  ->
-     usub G (e_bind e1) (e_bind e2) (e_all A B)
+     usub G (e_bind A e1) (e_bind A e2) (e_all A B)
  | s_forall_l : forall (L:vars) (G:context) (A B C e:expr),
      mono_type e ->
       (fv_expr  A  = empty)  ->
@@ -185,9 +186,14 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
  | s_forall_r : forall (L:vars) (G:context) (A B C:expr),
       (fv_expr  B  = empty)  ->
       (usub  G   B   B   e_star )  ->
+      (usub  G   A   A   e_star )  ->
       ( forall x , x \notin  L  -> usub  (( x ,  B ) ::  G )  A  ( open_expr_wrt_expr C (e_var_f x) )  e_star )  ->
-      (forall x , x `notin` L -> x `notin` fv_expr  A  )  ->
      usub G A (e_all B C) e_star
+ | s_forall_2 : forall (L:vars) (G:context) (A B C:expr),
+      (fv_expr  A  = empty)  ->
+      (usub  G   A   A   e_star )  ->
+      ( forall x , x \notin  L  -> usub  (( x ,  A ) ::  G )   ( open_expr_wrt_expr B (e_var_f x) )   ( open_expr_wrt_expr C (e_var_f x) )  e_star )  ->
+     usub G (e_all A B) (e_all A C) e_star
  | s_sub : forall (G:context) (e1 e2 B A:expr),
      usub G e1 e2 A ->
      usub G A B e_star ->

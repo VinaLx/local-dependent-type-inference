@@ -43,6 +43,59 @@ Notation "e <^> x" := (open_expr_wrt_expr e (e_var_f x))
 Definition subst_context (x : exprvar) (e : expr) : context -> context :=
   map (subst_expr e x).
 
+Open Scope ctx_scope.
+
+Lemma binds__in_dom : forall t Γ x (A : t),
+    x : A ∈ Γ -> x `in` dom Γ.
+Proof.
+  intros. induction Γ.
+  - inversion H.
+  - destruct a. destruct H.
+    + inversion H. subst. simpl. auto.
+    + simpl. auto.
+Qed.
+
+Lemma in_dom_insert : forall x Γ1 Γ2 (A : expr),
+    x `in` dom (Γ1 , x : A ,, Γ2).
+Proof.
+  induction Γ2; intros.
+  - simpl. auto.
+  - destruct a. simpl. auto.
+Qed.
+
+Lemma binds_type_equal : forall Γ1 x A B Γ2,
+    x : A ∈ Γ1 , x : B ,, Γ2 ->
+    ⊢ Γ1 , x : B ,, Γ2 ->
+    A = B.
+Proof.
+  unfold binds. intros. induction Γ2.
+  - destruct H.
+    + now inversion H.
+    + inversion H0. subst.
+      now apply binds__in_dom in H.
+  - destruct a. destruct H.
+    + inversion H. inversion H0. subst.
+      now assert (x `in` dom (Γ1 , x : B ,, Γ2))
+        by apply in_dom_insert.
+    + inversion H0; auto.
+Qed.
+
+Lemma binds_type_not_equal : forall Γ1 x x' (A : expr) B C Γ2,
+    x : A ∈ Γ1 , x' : B ,, Γ2 ->
+    x' <> x ->
+    x : A ∈ Γ1 , x' : C ,, Γ2.
+Proof.
+  intros.
+  induction Γ2.
+  - destruct H.
+    + now inversion H.
+    + auto.
+  - destruct a. destruct H.
+    + inversion H. subst. auto.
+    + right. apply IHΓ2. assumption.
+Qed.
+
+
 Theorem sub_ctx_wf : forall Γ e1 e2 A,
   Γ ⊢ e1 <: e2 : A -> ⊢ Γ.
 Proof.
@@ -58,8 +111,16 @@ Ltac ctx_wf_auto :=
 
 Hint Extern 2 (⊢ _) => ctx_wf_auto.
 
+Lemma prefix_wf : forall Γ1 Γ2, ⊢ Γ1 ,, Γ2 -> ⊢ Γ1.
+Proof.
+  intros. induction Γ2.
+  - assumption.
+  - inversion H. auto.
+Qed.
+
+Hint Resolve prefix_wf : core.
+
 Open Scope expr_scope.
-Open Scope ctx_scope.
 
 Theorem wf_ctx_type_correct : forall Γ1 Γ2 x A,
   ⊢ Γ1 , x : A ,, Γ2 -> Γ1 ⊢ A : *.
@@ -136,3 +197,5 @@ Ltac distribute_ctx :=
       (g1 ,, (g2 , x : A)) by auto
   end
 .
+
+Hint Extern 1 (_ ,, _ , _ : _ ⊢ _ <: _ : _) => distribute_ctx : core.

@@ -2,7 +2,7 @@ Require Import Declarative.LanguageUtil.
 Require Import Program.Equality.
 Import ListNotations.
 
-Theorem ctx_weakening : forall Γ1 Γ2 Γ3 e1 e2 A,
+Theorem weakening : forall Γ1 Γ2 Γ3 e1 e2 A,
     Γ1 ,, Γ3 ⊢ e1 <: e2 : A ->
     ⊢ Γ1 ,, Γ2 ,, Γ3 ->
     Γ1 ,, Γ2 ,, Γ3 ⊢ e1 <: e2 : A.
@@ -70,6 +70,17 @@ Proof.
         ** now apply IHHsub1.
   - apply s_forall_r with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)).
     + assumption.
+    + now apply IHHsub1.
+    + now apply IHHsub2.
+    + intros. distribute_ctx. apply H1.
+      * auto.
+      * reflexivity.
+      * apply wf_cons.
+        ** assumption.
+        ** auto.
+        ** now apply IHHsub1.
+  - apply s_forall_2 with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)).
+    + assumption.
     + now apply IHHsub.
     + intros. distribute_ctx. apply H1.
       * auto.
@@ -78,20 +89,31 @@ Proof.
         ** assumption.
         ** auto.
         ** now apply IHHsub.
-    + intros. apply H2. auto.
   - apply s_sub with A.
     + now apply IHHsub1.
     + now apply IHHsub2.
 Qed.
 
-Corollary ctx_weakening_cons : forall Γ x X e1 e2 A,
+Corollary weakening_cons : forall Γ x X e1 e2 A,
     Γ ⊢ e1 <: e2 : A ->
     ⊢ Γ , x : X ->
     Γ , x : X ⊢ e1 <: e2 : A.
 Proof.
   intros.
-  replace (Γ , x : X) with (Γ ,, (x ~ X) ,, []) in * by reflexivity.
-  now apply ctx_weakening.
+  replace (Γ , x : X) with (Γ ,, (x ~ X) ,, [])  by reflexivity.
+  now apply weakening.
+Qed.
+
+Hint Resolve weakening_cons : core.
+
+Corollary weakening_app : forall Γ Γ' e1 e2 A,
+    Γ ⊢ e1 <: e2 : A ->
+    ⊢ Γ ,, Γ' ->
+    Γ ,, Γ' ⊢ e1 <: e2 : A.
+Proof.
+  intros.
+  replace (Γ ,, Γ') with (Γ ,, Γ' ,, []) by reflexivity.
+  now apply weakening.
 Qed.
 
 Theorem reflexivity_r : forall Γ e1 e2 A, Γ ⊢ e1 <: e2 : A -> Γ ⊢ e2 : A.
@@ -122,32 +144,34 @@ Proof.
   - apply s_forall_r with (L `union` dom G `union` (fv_expr (e_all B C))).
     + assumption.
     + assumption.
+    + apply s_forall_2 with L.
+      * assumption.
+      * assumption.
+      * apply H3.
     + intros.
       apply s_forall_l with (add x (L `union` dom G)) (e_var_f x).
       * auto.
       * assumption.
-      * apply ctx_weakening_cons; auto.
+      * apply weakening_cons; auto.
       * auto.
       * auto.
       * intros.
         replace (G , x : B , x0 : B) with (G ,, x ~ B ,, x0 ~ B) by reflexivity.
-        apply ctx_weakening.
-        ** apply H2. auto.
+        apply weakening.
+        ** apply H3. auto.
         ** apply wf_cons.
           ++ apply wf_cons; auto.
           ++ auto.
-          ++ apply ctx_weakening_cons; auto.
-    + auto.
+          ++ apply weakening_cons; auto.
+  - apply s_forall_2 with L.
+    + assumption.
+    + assumption.
+    + apply H2.
   - apply s_sub with A.
     + assumption.
     + assumption.
 Qed.
-
-Theorem transitivity : forall Γ x y z A,
-    Γ ⊢ x <: y : A -> Γ ⊢ y <: z : A -> Γ ⊢ x <: z : A.
-Proof.
-Admitted.
-
+(*
 Theorem wf_strengthening : forall Γ1 Γ2 x A,
     ⊢ Γ1 , x : A ,, Γ2 ->
     context_fresh x Γ2 ->
@@ -186,7 +210,7 @@ Proof.
   apply sub_mut with
       (P := fun (Γ : context) (e1 e2 B : expr) (Hsub : Γ ⊢ e1 <: e2 : B) =>
               forall Γ1 x A Γ2, Γ = Γ1 , x : A ,, Γ2 -> context_fresh x Γ2 ->
-                 x # e1 -> x # e2 -> x # B -> Γ1 ,, Γ2 ⊢ e1 <: e2 : B)
+w                 x # e1 -> x # e2 -> x # B -> Γ1 ,, Γ2 ⊢ e1 <: e2 : B)
       (P0 := fun (Γ : context) (Hwf : ⊢ Γ) =>
                forall Γ1 Γ2 x A, Γ = Γ1 , x : A ,, Γ2 -> context_fresh x Γ2 ->
                  ⊢ Γ1 ,, Γ2).
@@ -234,7 +258,7 @@ Proof.
       * eapply H0; eauto.
   - assumption.
 Admitted.
-
+*)
 Theorem reflexivity_l : forall Γ e1 e2 A, Γ ⊢ e1 <: e2 : A -> Γ ⊢ e1 : A.
 Proof.
   intros. induction H.
@@ -250,35 +274,103 @@ Proof.
   - eapply s_pi; auto.
   - now apply s_app with A.
   - now apply s_forall with L.
-  - apply s_forall_r with (L `union` dom G `union` fv_expr (e_all A B)).
+  - apply s_forall_2 with L.
     + assumption.
     + assumption.
-    + intros. apply s_forall_l with (add x (dom G `union` L)) (e_var_f x).
-      * auto.
-      * assumption.
-      * apply ctx_weakening_cons; auto.
-      * auto.
-      * apply H4. auto.
-      * intros.
-        replace (G , x : A , x0 : A) with (G ,, x ~ A ,, x0 ~ A) by reflexivity.
-        apply ctx_weakening.
-        ** simpl. apply H4. auto.
-        ** apply wf_cons. apply wf_cons; auto.
-           simpl. auto.
-           apply ctx_weakening_cons; auto.
-    + intros. auto.
-  - admit. (* MOST TRICKY CASE *)
+    + apply H4.
+  - assumption.
+  - apply s_forall_2 with L; assumption.
   - eauto.
+Qed.
+
+Hint Resolve reflexivity_l : core.
+
+Lemma wf_narrowing : forall Γ1 Γ2 x A B,
+    ⊢ Γ1 , x : B ,, Γ2 ->
+    Γ1 ⊢ A <: B : * ->
+    ⊢ Γ1 , x : A ,, Γ2.
+Proof.
 Admitted.
 
 
 Theorem ctx_narrowing : forall Γ1 Γ2 x A B C e1 e2,
   Γ1 , x : B ,, Γ2 ⊢ e1 <: e2 : C ->
   Γ1 ⊢ A <: B : * ->
-  ⊢ Γ1 , x : A ,, Γ2 ->
   Γ1 , x : A ,, Γ2 ⊢ e1 <: e2 : C.
 Proof.
+  intros.
+  remember (Γ1 , x : B ,, Γ2) as Γ.
+  generalize HeqΓ. clear HeqΓ.
+  generalize Γ2. clear Γ2.
+  Check sub_mut.
+  apply sub_mut with
+    (P := fun Γ e1 e2 C (_ : Γ ⊢ e1 <: e2 : C) =>
+        forall Γ2, Γ = Γ1 , x : B ,, Γ2 -> Γ1 , x : A ,, Γ2 ⊢ e1 <: e2 : C)
+    (P0 := fun Γ (_ : ⊢ Γ) =>
+        forall Γ2, Γ = Γ1 , x : B ,, Γ2 -> ⊢ Γ1 , x : A ,, Γ2); intros; subst.
+  - assert ({x = x0} + {x <> x0}) as [E | NE] by apply eq_dec.
+    + subst. apply weakening_app; auto.
+      assert (A0 = B) by now apply binds_type_equal with Γ1 x0 Γ2. subst.
+      apply s_sub with A.
+      * apply s_var; eauto.
+      * apply weakening_cons; eauto.
+    + apply s_var.
+      * auto.
+      * now apply binds_type_not_equal with B.
+  - auto.
+  - auto.
+  - auto.
+  - eauto.
+  - apply s_pi with (add x L); auto.
+  - eauto.
+  - eauto.
+  - apply s_forall_l with L e; auto.
+  - apply s_forall_r with (add x L); auto.
+  - eauto.
+  - eauto.
+
+  (* ⊢ Γ1 , x : B ,, Γ2 → Γ1 ⊢ A <: B : * → ⊢ Γ1 , x : A ,, Γ2 *)
+  - destruct Γ2; inversion H1.
+  - destruct Γ2; try destruct p; inversion H3; subst.
+    + apply wf_cons; eauto.
+    + apply wf_cons; auto.
+
+  - assumption.
+Qed.
+
+Theorem transitivity : forall Γ e1 e2 e3 A,
+  Γ ⊢ e1 <: e2 : A -> Γ ⊢ e2 <: e3 : A -> Γ ⊢ e1 <: e3 : A.
+Proof.
 Admitted.
+
+Lemma binds_var_consistent : forall Γ x A B,
+    Γ ⊢ e_var_f x <: e_var_f x : A -> x : B ∈ Γ -> Γ ⊢ B <: A : *.
+Proof.
+  intros.
+  dependent induction H.
+  - induction G.
+    + inversion H0.
+    + destruct a. unfold binds in *. simpl in *.
+      destruct H0.
+      * inversion H0. subst. destruct H1; inversion H; subst.
+        ** inversion H1. subst.
+           now apply weakening_cons.
+        ** now apply binds__in_dom in H1.
+      * destruct H1; inversion H; subst.
+        ** inversion H1. subst.
+           now apply binds__in_dom in H0.
+        ** apply weakening_cons; auto.
+  - admit. (* need transitivity *)
+Admitted.
+
+Theorem num_of_type_int : forall Γ n A,
+    Γ ⊢ e_num n <: e_num n : A -> int_like A.
+Proof.
+  intros.
+  dependent induction H.
+  - constructor.
+  - assert (int_like A) by now apply IHusub1 with n.
+    induction H1. admit.
 
 Theorem type_consistency : forall Γ e1 e2 A B,
   Γ ⊢ e1 : A -> Γ ⊢ e1 <: e2 : B -> Γ ⊢ e1 <: e2 : A.
@@ -313,24 +405,26 @@ Proof.
       * apply IHHsub0_1; auto.
       * assumption.
   - dependent induction Hsub1.
-    + apply s_forall with L0.
+    + apply s_forall with (L0 `union` L).
       * assumption.
       * assumption.
-      * admit. (* problem here *)
+      * intros. apply H1; auto.
     + apply s_sub with A0; auto.
   - dependent induction Hsub0.
-    + admit.
-    + admit.
+    + apply s_forall_l with L e; assumption.
+    + apply s_forall_l with L e; assumption.
+    + apply s_forall_l with L e; assumption.
     + apply s_sub with A0.
       * apply IHHsub0_1; auto.
       * assumption.
-  - admit.
+  - dependent induction Hsub0; eauto 3.
+    + admit.
+    + admit.
+    + admit.
+    + admit.
+    + admit.
+  - dependent induction Hsub1; eauto 3.
   - auto.
-Admitted.
-
-Theorem transitivity : forall Γ e1 e2 e3 A,
-  Γ ⊢ e1 <: e2 : A -> Γ ⊢ e2 <: e3 : A -> Γ ⊢ e1 <: e3 : A.
-Proof.
 Admitted.
 
 Theorem type_correct : forall Γ A B C, Γ ⊢ A <: B : C -> Γ ⊢ C : *.

@@ -13,7 +13,7 @@ expr, e, A, B, C :: 'e_' ::= {{ com expressions }}
   | lambda x : A . e :: :: abs  (+ bind x in e +) {{ com abstraction }}
   | pi     x : A . B :: :: pi   (+ bind x in B +) {{ com dependent product }}
   | forall x : A . B :: :: all  (+ bind x in B +) {{ com forall type  }}
-  | bind   x     . e :: :: bind (+ bind x in e +) {{ com name binding }}
+  | bind   x : A . e :: :: bind (+ bind x in e +) {{ com name binding }}
   | ( e )         :: S :: paren {{ coq ([[e]]) }}
   | [ e1 / x ] e2 :: M :: subst {{ coq (open_expr_wrt_expr [[x e2]] [[e1]]) }}
 
@@ -115,8 +115,8 @@ G |- e1 e <: e2 e : [e/x]B
 close A
 G |- A : *
 G , x : A |- e1 <: e2 : B
------------------------------------------------ :: forall
-G |- bind x. e1 <: bind x. e2 : forall x : A. B
+------------------------------------------------------- :: forall
+G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
 monotype e
 close A
@@ -129,10 +129,16 @@ G |- forall x : A. B <: C : *
 
 close B
 G |- B : *
+G |- A : *
 G , x : B |- A <: C : *
-x # A
 ------------------------------- :: forall_r
 G |- A <: forall x : B. C : *
+
+close A
+G |- A : *
+G , x : A |- B <: C : *
+------------------------------------------- :: forall_2
+G |- forall x : A. B <: forall x : A. C : *
 
 G |- e1 <: e2 : A
 G |- A  <: B  : *
