@@ -1,4 +1,6 @@
 -R . DependentInference
 Declarative/Language.v
+Declarative/BasicProperties.v
 Declarative/LanguageUtil.v
 Declarative/Properties.v
+Declarative/KindReasoning.v

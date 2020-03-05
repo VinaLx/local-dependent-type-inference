@@ -3,13 +3,17 @@ metavar number, n ::= {{ com numbers }} {{ coq nat }}
 
 grammar
 
+kind, k :: 'k_' ::= {{ com kind }}
+  | *   :: :: star {{ com type of type }}
+  | box :: :: box  {{ com type of type of type }}
+
 expr, e, A, B, C :: 'e_' ::= {{ com expressions }}
   | x       :: :: var  {{ com variable }}
-  | *       :: :: star {{ com type of type }}
-  | e1 e2   :: :: app  {{ com application }}
+  | k       :: :: kind {{ com type of type }}
   | n       :: :: num  {{ com integer value }}
-  | e1 + e2 :: :: plus {{ com plus }}
+% | e1 + e2 :: :: plus {{ com plus }}
   | int     :: :: int  {{ com integer type }}
+  | e1 e2   :: :: app  {{ com application }}
   | lambda x : A . e :: :: abs  (+ bind x in e +) {{ com abstraction }}
   | pi     x : A . B :: :: pi   (+ bind x in B +) {{ com dependent product }}
   | forall x : A . B :: :: all  (+ bind x in B +) {{ com forall type  }}
@@ -17,7 +21,8 @@ expr, e, A, B, C :: 'e_' ::= {{ com expressions }}
   | ( e )         :: S :: paren {{ coq ([[e]]) }}
   | [ e1 / x ] e2 :: M :: subst {{ coq (open_expr_wrt_expr [[x e2]] [[e1]]) }}
 
-context, Gamma, G :: 'ctx_' ::= {{ com contexts }} {{ coq (list (exprvar * expr)) }}
+context, G {{ tex \Gamma }} :: 'ctx_' ::=
+  {{ com contexts }} {{ coq (list (exprvar * expr)) }}
   | nil       :: :: nil  {{ com empty context }}   {{ coq nil }}
   | G , x : A :: :: cons {{ com context binding }} {{ coq (([[x]], [[A]]) :: [[G]]) }}
 
@@ -28,7 +33,19 @@ formula :: formula_ ::=
   | x # G      :: M :: ctx_fresh {{ coq ([[x]] `notin` dom [[G]]) }}
   | x # e      :: M :: exp_fresh
     {{ coq (forall x , x `notin` L -> x `notin` fv_expr [[e]] ) }}
-  | close e    :: M :: exp_close {{ coq (fv_expr [[e]] = empty)}}
+% | close e    :: M :: exp_close {{ coq (fv_expr [[e]] = empty)}}
+
+terminals :: 'terminal_' ::=
+  | lambda :: :: lambda {{ tex \lambda }}
+  | forall :: :: forall {{ tex \forall }}
+  | bind   :: :: bind   {{ tex \Lambda }}
+  | pi :: :: pi    {{ tex \Pi }}
+  | in :: :: in    {{ tex \in }}
+  | |- :: :: vdash {{ tex \vdash }}
+  | .  :: :: dot   {{ tex .~ }}
+  | <: :: :: sub   {{ tex \leq }}
+  | #  :: :: fresh {{ tex ~\#~ }}
+  | *  :: :: star  {{ tex \star }}
 
 substitutions
   single e x :: subst
@@ -70,7 +87,7 @@ defn
 
 |- G
 x # G
-G |- A : *
+G |- A : k
 ------------ :: cons
 |- G , x : A
 
@@ -88,7 +105,7 @@ G |- n <: n : int
 
 |- G
 ------------------- :: star
-G |- * <: * : *
+G |- * <: * : box
 
 |- G
 ------------------- :: int
@@ -99,48 +116,44 @@ G , x : A |- e1 <: e2 : B
 ------------------------------------------------------- :: abs
 G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B
 
-G |- A1 : *
-G |- A2 : *
-G |- A2 <: A1 : *
-G , x : A1 |- B1 <: B1 : *
-G , x : A2 |- B1 <: B2 : *
---------------------------------------- :: pi
-G |- pi x : A1. B1 <: pi x : A2. B2 : *
+G |- A1 : k1
+G |- A2 : k1
+G |- A2 <: A1 : k1
+G , x : A1 |- B1 <: B1 : k2
+G , x : A2 |- B1 <: B2 : k2
+---------------------------------------- :: pi
+G |- pi x : A1. B1 <: pi x : A2. B2 : k2
 
 G |- e : A
 G |- e1 <: e2 : pi x : A. B
 ------------------------------- :: app
 G |- e1 e <: e2 e : [e/x]B
 
-close A
-G |- A : *
+G |- A : k
 G , x : A |- e1 <: e2 : B
 ------------------------------------------------------- :: forall
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
 monotype e
-close A
-G |- A : *
+G |- A : k
 G |- e : A
 G |- [e/x] B <: C : *
 G , x : A |- B : *
 ------------------------------- :: forall_l
 G |- forall x : A. B <: C : *
 
-close B
-G |- B : *
+G |- B : k
 G |- A : *
 G , x : B |- A <: C : *
 ------------------------------- :: forall_r
 G |- A <: forall x : B. C : *
 
-close A
-G |- A : *
+G |- A : k
 G , x : A |- B <: C : *
-------------------------------------------- :: forall_2
+-------------------------------------------- :: forall_2
 G |- forall x : A. B <: forall x : A. C : *
 
 G |- e1 <: e2 : A
-G |- A  <: B  : *
+G |- A  <: B  : k
 ------------------ :: sub
 G |- e1 <: e2 : B

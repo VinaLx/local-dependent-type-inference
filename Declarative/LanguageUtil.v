@@ -1,7 +1,8 @@
 Require Export Declarative.Language.
 Require Export List.
-Require Import Program.Equality.
-Import ListNotations.
+Require Export Program.Equality.
+
+Export ListNotations.
 
 Require Export Metalib.Metatheory.
 
@@ -18,7 +19,8 @@ Declare Scope expr_scope.
 Delimit Scope expr_scope with exp.
 Bind Scope expr_scope with expr.
 
-Notation "*" := (e_star) : expr_scope.
+Notation "*"  := (e_kind k_star) : expr_scope.
+Notation "'BOX'" := (e_kind k_box) : expr_scope.
 
 Notation "G , x : A" := ((x, A) :: G)
     (left associativity, at level 62, x at level 0) : ctx_scope.
@@ -95,6 +97,17 @@ Proof.
     + right. apply IHΓ2. assumption.
 Qed.
 
+Lemma binds_inversion : forall Γ x (A : expr),
+    x : A ∈ Γ -> exists Γ1 Γ2, Γ = Γ1 , x : A ,, Γ2.
+Proof.
+  intros. induction Γ.
+  - inversion H.
+  - unfold binds in *. destruct a. destruct H.
+    + inversion H. subst. exists Γ. exists []. reflexivity.
+    + destruct IHΓ. assumption.
+      destruct H0. subst.
+      exists x0. exists (x1 , a : e). reflexivity.
+Qed.
 
 Theorem sub_ctx_wf : forall Γ e1 e2 A,
   Γ ⊢ e1 <: e2 : A -> ⊢ Γ.
@@ -109,7 +122,7 @@ Ltac ctx_wf_auto :=
   end
 .
 
-Hint Extern 2 (⊢ _) => ctx_wf_auto.
+Hint Extern 2 (⊢ _) => ctx_wf_auto : core.
 
 Lemma prefix_wf : forall Γ1 Γ2, ⊢ Γ1 ,, Γ2 -> ⊢ Γ1.
 Proof.
@@ -120,13 +133,21 @@ Qed.
 
 Hint Resolve prefix_wf : core.
 
+Lemma binds_consistent : forall Γ x A B,
+    ⊢ Γ -> x : A ∈ Γ -> x : B ∈ Γ -> A = B.
+Proof.
+  intros.
+  apply binds_inversion in H1 as [Γ1 [Γ2 E]]. subst.
+  eapply binds_type_equal; eauto.
+Qed.
+
 Open Scope expr_scope.
 
 Theorem wf_ctx_type_correct : forall Γ1 Γ2 x A,
-  ⊢ Γ1 , x : A ,, Γ2 -> Γ1 ⊢ A : *.
+  ⊢ Γ1 , x : A ,, Γ2 -> exists k, Γ1 ⊢ A : e_kind k.
 Proof.
   induction Γ2; intros.
-  - inversion H. assumption.
+  - inversion H. now exists k.
   - inversion H. subst. now apply IHΓ2 with x.
 Qed.
 
