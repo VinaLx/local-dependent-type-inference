@@ -3,4 +3,6 @@ Declarative/Language.v
 Declarative/BasicProperties.v
 Declarative/LanguageUtil.v
 Declarative/Properties.v
+Declarative/Transitivity.v
 Declarative/KindReasoning.v
+Declarative/OccurenceReasoning.v

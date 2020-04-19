@@ -16,7 +16,7 @@ Proof.
   - now apply s_lit.
   - now apply s_star.
   - now apply s_int.
-  - apply s_abs with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)).
+  - apply s_abs with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k.
     + now apply IHHsub.
     + intros. distribute_ctx. apply H0.
       * auto.
@@ -97,7 +97,7 @@ Corollary weakening_cons : forall Γ x X e1 e2 A,
     Γ , x : X ⊢ e1 <: e2 : A.
 Proof.
   intros.
-  replace (Γ , x : X) with (Γ ,, (x ~ X) ,, [])  by reflexivity.
+  replace (Γ , x : X) with (Γ ,, (x ~ X) ,, nil)  by reflexivity.
   now apply weakening.
 Qed.
 
@@ -109,7 +109,7 @@ Corollary weakening_app : forall Γ Γ' e1 e2 A,
     Γ ,, Γ' ⊢ e1 <: e2 : A.
 Proof.
   intros.
-  replace (Γ ,, Γ') with (Γ ,, Γ' ,, []) by reflexivity.
+  replace (Γ ,, Γ') with (Γ ,, Γ' ,, nil) by reflexivity.
   now apply weakening.
 Qed.
 
@@ -121,7 +121,7 @@ Proof.
   - auto.
   - auto.
   - auto.
-  - apply s_abs with L.
+  - apply s_abs with L k.
     + assumption.
     + intros. now apply H1.
   - apply s_pi with L k1.
@@ -137,25 +137,9 @@ Proof.
     + assumption.
     + auto.
   - assumption.
-  - apply s_forall_r with (L `union` dom G `union` (fv_expr (e_all B C))) k.
+  - apply s_forall_2 with L k.
     + assumption.
-    + apply s_forall_2 with L k.
-      * assumption.
-      * apply H2.
-    + intros.
-      apply s_forall_l with (add x (L `union` dom G)) (e_var_f x) k.
-      * auto.
-      * eapply weakening_cons; eauto.
-      * eauto.
-      * auto.
-      * intros.
-        replace (G , x : B , x0 : B) with (G ,, x ~ B ,, x0 ~ B) by reflexivity.
-        apply weakening.
-        ** apply H2. auto.
-        ** eapply wf_cons.
-          ++ eapply wf_cons; eauto.
-          ++ eauto.
-          ++ apply weakening_cons; eauto.
+    + assumption.
   - apply s_forall_2 with L k.
     + assumption.
     + apply H1.
@@ -172,7 +156,7 @@ Proof.
   - now apply s_star.
   - now apply s_int.
   - eapply s_abs.
-    + assumption.
+    + eassumption.
     + intros x Hxl.
       apply H1.
       eassumption.
@@ -187,14 +171,9 @@ Proof.
   - eauto.
 Qed.
 
+Hint Resolve reflexivity_r : core.
 Hint Resolve reflexivity_l : core.
 
-Lemma wf_narrowing : forall Γ1 Γ2 x A B,
-    ⊢ Γ1 , x : B ,, Γ2 ->
-    Γ1 ⊢ A <: B : * ->
-    ⊢ Γ1 , x : A ,, Γ2.
-Proof.
-Admitted.
 
 
 Theorem ctx_narrowing : forall Γ1 Γ2 x A B C e1 e2 k,
@@ -206,7 +185,6 @@ Proof.
   remember (Γ1 , x : B ,, Γ2) as Γ.
   generalize HeqΓ. clear HeqΓ.
   generalize Γ2. clear Γ2.
-  Check sub_mut.
   apply sub_mut with
     (P := fun Γ e1 e2 C (_ : Γ ⊢ e1 <: e2 : C) =>
         forall Γ2, Γ = Γ1 , x : B ,, Γ2 -> Γ1 , x : A ,, Γ2 ⊢ e1 <: e2 : C)
@@ -248,6 +226,6 @@ Corollary ctx_narrowing_cons : forall Γ1 x A B C e1 e2 k,
     Γ1, x : B ⊢ e1 <: e2 : C.
 Proof.
   intros.
-  replace (Γ1 , x : B) with (Γ1 ,, x ~ B ,, []) by reflexivity.
+  replace (Γ1 , x : B) with (Γ1 ,, x ~ B ,, nil) by reflexivity.
   apply ctx_narrowing with A k; auto.
 Qed.

@@ -59,22 +59,37 @@ MonoType :: '' ::=
 defn
 monotype A :: :: mono_type :: 'mono_' by
 
------------ :: star
-monotype *
+----------- :: kind
+monotype k
 
 ----------- :: var
 monotype x
 
------------ :: int
+------------- :: int
 monotype int
 
 ----------- :: lit
 monotype n
 
+monotype e1
+monotype e2
+----------------- :: app
+monotype (e1 e2)
+
 monotype A
 monotype B
--------------------- :: pi
+---------------------- :: pi
 monotype pi x : A . B
+
+monotype A
+monotype B
+-------------------------- :: lambda
+monotype lambda x : A . B
+
+monotype A
+monotype B
+------------------------ :: bind
+monotype bind x : A . B
 
 defns
 UnifiedSubtyping :: '' ::=
@@ -111,7 +126,7 @@ G |- * <: * : box
 ------------------- :: int
 G |- int <: int : *
 
-G |- A : *
+G |- A : k
 G , x : A |- e1 <: e2 : B
 ------------------------------------------------------- :: abs
 G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B

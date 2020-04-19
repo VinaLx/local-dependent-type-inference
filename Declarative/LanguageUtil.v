@@ -22,6 +22,9 @@ Bind Scope expr_scope with expr.
 Notation "*"  := (e_kind k_star) : expr_scope.
 Notation "'BOX'" := (e_kind k_box) : expr_scope.
 
+Notation "` x" := (e_var_f x)
+    (at level 0, x at level 0, no associativity): expr_scope.
+
 Notation "G , x : A" := ((x, A) :: G)
     (left associativity, at level 62, x at level 0) : ctx_scope.
 
@@ -37,13 +40,23 @@ Notation "x : A ∈ G" := (binds x A G)
 Notation "x # e" := (x `notin` fv_expr e)
     (no associativity, at level 65) : type_scope.
 
-Notation "e <^^> x" := (open_expr_wrt_expr e x)
-    (at level 40) : expr_scope.
+Notation "e < ^^ n > e' " := (open_expr_wrt_expr_rec n e' e)
+    (at level 40, n at level 0, left associativity) : expr_scope.
+
+Notation "e <^^> e'" :=
+  (open_expr_wrt_expr e e')
+    (at level 40, no associativity) : expr_scope.
+
 Notation "e <^> x" := (open_expr_wrt_expr e (e_var_f x))
     (at level 40) : expr_scope.
 
-Definition subst_context (x : exprvar) (e : expr) : context -> context :=
+Definition subst_ctx (e : expr) (x : exprvar) : context -> context :=
   map (subst_expr e x).
+
+Notation "[ e1 / x ] e2" := (subst_expr e1 x e2)
+    (at level 60, e1 at level 0,  x at level 0, right associativity) : expr_scope.
+Notation "[ e // x ] ctx" := (subst_ctx e x ctx)
+    (at level 60, e at level 0, x at level 0, right associativity) : ctx_scope.
 
 Open Scope ctx_scope.
 
@@ -63,6 +76,14 @@ Proof.
   induction Γ2; intros.
   - simpl. auto.
   - destruct a. simpl. auto.
+Qed.
+
+Lemma binds_insert : forall Γ1 x (A : expr) Γ2,
+   x : A ∈ Γ1 , x : A ,, Γ2.
+Proof.
+  induction Γ2; simpl.
+  - auto.
+  - destruct a. unfold binds. simpl. now right.
 Qed.
 
 Lemma binds_type_equal : forall Γ1 x A B Γ2,
@@ -204,7 +225,7 @@ Scheme sub_mut := Induction for usub       Sort Prop
 
 Fixpoint context_fresh (x : atom) (ctx : context) : Prop :=
   match ctx with
-  | [] => True
+  | nil => True
   | ((pair y t) :: ctx') => x # t /\ context_fresh x ctx'
   end
 .
@@ -220,3 +241,179 @@ Ltac distribute_ctx :=
 .
 
 Hint Extern 1 (_ ,, _ , _ : _ ⊢ _ <: _ : _) => distribute_ctx : core.
+
+Lemma open_rec_eq_cancel : forall e e1 e2 m n,
+    m <> n -> e <^^m> e1 <^^n> e2 = e <^^m> e1 ->
+    e <^^n> e2 = e.
+Proof.
+  induction e; simpl; intros; auto;
+    try solve
+      [inversion H0; apply IHe1 in H2; auto; apply IHe2 in H3; auto; congruence].
+  - destruct (m == n).
+    + destruct (n0 == n); congruence.
+    + simpl in H0. destruct (n0 == n); easy.
+Qed.
+
+Hint Resolve open_rec_eq_cancel : ln.
+
+Lemma lc_open_eq : forall e,
+    lc_expr e -> forall n e', e <^^n> e' = e.
+Proof.
+  intros e LC. induction LC; simpl; intros; auto;
+    try solve
+        [ pick fresh x; rewrite IHLC;
+          erewrite open_rec_eq_cancel with (m := 0); eauto].
+  - now (rewrite IHLC1; rewrite IHLC2).
+Qed.
+
+Lemma subst_open_rec_distr : forall e x v e' n,
+    lc_expr v ->
+    [v / x] e <^^n> e' = ([v / x] e) <^^n> ([v / x] e').
+Proof.
+  induction e; simpl; intros; auto;
+    try solve [rewrite IHe1; auto; rewrite IHe2; auto].
+  - destruct (n0 == n); auto.
+  - destruct (x == x0). rewrite lc_open_eq; auto. auto.
+Qed.
+
+Lemma subst_open_distr : forall e x v e',
+    lc_expr v ->
+    [v / x] e <^^> e' = ([v / x] e) <^^> ([v / x] e').
+Proof.
+  intros. unfold open_expr_wrt_expr. now rewrite subst_open_rec_distr.
+Qed.
+
+Lemma subst_open_var_assoc : forall e x v y,
+    y <> x -> lc_expr v ->
+    ([v / x] e) <^> y = [v / x] e <^> y.
+Proof.
+  intros.
+  assert ([v / x] e <^> y = ([v / x] e) <^^> ([v / x] `y))
+    by now apply subst_open_distr.
+  assert ([v / x] `y = `y) by (simpl; destruct (y == x); easy).
+  now rewrite H2 in H1.
+Qed.
+
+Lemma fresh_subst_eq : forall e x e', x # e -> [e' / x] e = e.
+Proof.
+  induction e; simpl; intros;
+    try solve [auto | rewrite IHe1; auto; rewrite IHe2; auto].
+  - destruct (x == x0).
+    + apply notin_singleton_1 in H. contradiction.
+    + auto.
+Qed.
+
+Lemma open_subst_eq : forall e x v,
+    x # e -> lc_expr v ->
+    e <^^> v = [v / x] e <^> x.
+Proof.
+  intros.
+  rewrite subst_open_distr. simpl.
+  rewrite eq_dec_refl.
+  rewrite fresh_subst_eq.
+  all: easy.
+Qed.
+
+
+Lemma lc_subst : forall e v x,
+    lc_expr e -> lc_expr v -> lc_expr ([v / x] e).
+Proof.
+  intros. induction H; simpl; auto.
+  - destruct (x0 == x); auto.
+
+  Ltac solve_inductive_case_with C :=
+    let L := gather_atoms in
+    apply C with L; auto; intros; rewrite subst_open_var_assoc; auto.
+
+  - solve_inductive_case_with lc_e_abs.
+  - solve_inductive_case_with lc_e_pi.
+  - solve_inductive_case_with lc_e_all.
+  - solve_inductive_case_with lc_e_bind.
+Qed.
+
+Lemma lc_open_preserve : forall e e',
+    (exists L, forall x, x `notin` L -> lc_expr (e <^> x)) ->
+    lc_expr e' -> lc_expr (e <^^> e').
+Proof.
+  intros e e' [L H] H'.
+  pick fresh x for (fv_expr e `union` L).
+  assert (x # e) by auto.
+  rewrite (open_subst_eq _ _ _ H0 H').
+  apply lc_subst; auto.
+Qed.
+
+
+Fixpoint lc_ctx (c : context) : Prop :=
+  match c with
+  | nil => True
+  | c', x : A => lc_expr A /\ lc_ctx c'
+  end
+.
+
+Import Program.Tactics.
+
+Ltac destruct_all_with x :=
+  match goal with
+  | H : forall x', x' `notin` ?L -> ?A /\ ?B |- _ =>
+    let H1 := fresh in
+    let H2 := fresh in
+    destruct H with x' as [H1 H2]; try assumption; clear H; destruct_all_with x
+  | _ => destruct_pairs
+  end
+.
+
+Lemma usub_lc : forall Γ e1 e2 A,
+    Γ ⊢ e1 <: e2 : A -> lc_expr e1 /\ lc_expr e2 /\ lc_expr A.
+Proof.
+  intros.
+  apply sub_mut with
+      (P := fun c e1 e2 A (_ : c ⊢ e1 <: e2 : A) =>
+        lc_expr e1 /\ lc_expr e2 /\ lc_expr A)
+      (P0 := fun c (_ : ⊢ c) => lc_ctx c) (c := Γ); simpl; intros;
+    destruct_pairs; repeat split; auto;
+      try solve [econstructor; auto; intros; destruct_all_with x; auto].
+  - induction G. inversion b.
+    destruct a. destruct H0. inversion w. subst. destruct b.
+    + inversion H2. now subst.
+    + now apply IHG.
+  - inversion H3; subst.
+    apply lc_open_preserve; eauto.
+Qed.
+
+Lemma mono_lc : forall e,
+    mono_type e -> lc_expr e.
+Proof.
+  intros. induction H; eauto.
+Qed.
+
+Ltac solve_lc :=
+  match goal with
+  | H : _ ⊢ ?e <: _ : _ |- lc_expr ?e => apply usub_lc in H
+  | H : _ ⊢ _ <: ?e : _ |- lc_expr ?e => apply usub_lc in H
+  | H : _ ⊢ _ <: _ : ?e |- lc_expr ?e => apply usub_lc in H
+  | H : mono_type ?e |- lc_expr ?e => now apply mono_lc
+  end; destruct_pairs; assumption
+.
+
+Hint Extern 1 (lc_expr _) => solve_lc : core.
+
+Lemma subst_mono : forall e x e',
+    mono_type e -> mono_type e' -> mono_type ([e' / x] e).
+Proof.
+  intros.
+  induction H; simpl; auto.
+  (* var *)
+  - destruct (x0 == x); auto.
+  - apply mono_pi with (add x L).
+    + assumption.
+    + intros. rewrite subst_open_var_assoc.
+      apply H2. all: auto.
+  - apply mono_lambda with (add x L).
+    + assumption.
+    + intros. rewrite subst_open_var_assoc.
+      apply H2. all: auto.
+  - apply mono_bind with (add x L).
+    + assumption.
+    + intros. rewrite subst_open_var_assoc.
+      apply H2. all: auto.
+Qed.

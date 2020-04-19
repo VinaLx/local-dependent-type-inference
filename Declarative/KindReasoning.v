@@ -113,35 +113,42 @@ Proof.
     apply reflexivity_l in H0. now apply box_never_welltype in H0.
 Qed.
 
-Inductive head_kind : expr -> kind -> Prop :=
-| h_kind   : forall k, head_kind (e_kind k) k
-| h_pi     : forall A B k,
-    head_kind B k -> head_kind (e_pi A B) k
-| h_forall : forall A B k,
-    head_kind B k -> head_kind (e_all A B) k
+Inductive head_kind : expr -> kind -> nat -> Prop :=
+| h_kind   : forall k n, head_kind (e_kind k) k n
+| h_pi     : forall A B k n,
+    head_kind B k n -> head_kind (e_pi A B) k (S n)
+| h_forall : forall A B k n,
+    head_kind B k n -> head_kind (e_all A B) k (S n)
 .
 
 Hint Constructors head_kind : core.
 
-Lemma head_kind_invert_subst_rec : forall A e k n,
-    head_kind (open_expr_wrt_expr_rec n e A) k -> head_kind e k \/ head_kind A k.
+Lemma head_kind_S : forall e k n, head_kind e k n -> head_kind e k (S n).
 Proof.
-  induction A; simpl; intros e k' n' K; try solve [inversion K].
-  - destruct (n' == n); auto.
-  - auto.
-  - inversion K; subst. destruct IHA2 with e k' (S n'); auto.
-  - inversion K; subst. destruct IHA2 with e k' (S n'); auto.
+  intros. induction H; auto.
 Qed.
 
-Lemma head_kind_invert_subst : forall A e k,
-    head_kind (A <^^> e) k -> head_kind e k \/ head_kind A k.
+Hint Resolve head_kind_S : core.
+
+Lemma head_kind_invert_subst_rec : forall A e k m n,
+    head_kind (open_expr_wrt_expr_rec n e A) k m -> head_kind e k m \/ head_kind A k m.
+Proof.
+  induction A; simpl; intros e k' m' n' K; try solve [inversion K].
+  - destruct (n' == n); auto.
+  - auto.
+  - inversion K; subst. destruct IHA2 with e k' n (S n'); auto.
+  - inversion K; subst. destruct IHA2 with e k' n (S n'); auto.
+Qed.
+
+Lemma head_kind_invert_subst : forall A e k n,
+    head_kind (A <^^> e) k n -> head_kind e k n \/ head_kind A k n.
 Proof.
   unfold open_expr_wrt_expr.
   intros. now apply head_kind_invert_subst_rec with 0.
 Qed.
 
-Lemma head_kind_invert_subst_var : forall A x k,
-    head_kind (A <^> x) k -> head_kind A k.
+Lemma head_kind_invert_subst_var : forall A x k n,
+    head_kind (A <^> x) k n -> head_kind A k n.
 Proof.
   intros.
   apply head_kind_invert_subst in H as [|].
@@ -149,20 +156,20 @@ Proof.
   + assumption.
 Qed.
 
-Lemma head_kind_subst_rec : forall A e k n,
-    head_kind A k -> head_kind (open_expr_wrt_expr_rec n e A) k.
+Lemma head_kind_subst_rec : forall A e k m n,
+    head_kind A k m -> head_kind (open_expr_wrt_expr_rec n e A) k m.
 Proof.
-  induction A; simpl; intros e k' n' K; inversion K; eauto.
+  induction A; simpl; intros e k' m' n' K; inversion K; eauto.
 Qed.
 
-Lemma head_kind_subst : forall A e k,
-    head_kind A k -> head_kind (A <^^> e) k.
+Lemma head_kind_subst : forall A e k n,
+    head_kind A k n -> head_kind (A <^^> e) k n.
 Proof.
   intros. now apply head_kind_subst_rec.
 Qed.
 
-Lemma head_kind_subst_var : forall A x k,
-    head_kind A k -> head_kind (A <^> x) k.
+Lemma head_kind_subst_var : forall A x k n,
+    head_kind A k n -> head_kind (A <^> x) k n.
 Proof.
   intros. now apply head_kind_subst_rec.
 Qed.
@@ -171,8 +178,8 @@ Hint Resolve head_kind_invert_subst_var : core.
 Hint Resolve head_kind_subst : core.
 Hint Resolve head_kind_invert_subst_var : core.
 
-Lemma head_kind_not_star : forall Γ e k,
-    Γ ⊢ e : * -> head_kind e k -> False.
+Lemma head_kind_not_star : forall Γ e k n,
+    Γ ⊢ e : * -> head_kind e k n -> False.
 Proof.
   intros. generalize dependent k.
   dependent induction H; intros k' K; inversion K; subst.
@@ -190,10 +197,10 @@ Proof.
 Qed.
 
 Lemma head_kind_sub_r : forall Γ e1 e2 A,
-    Γ ⊢ e1 <: e2 : A -> forall k, head_kind e1 k -> head_kind e2 k.
+    Γ ⊢ e1 <: e2 : A -> forall k n, head_kind e1 k n -> head_kind e2 k n.
 Proof.
   intros Γ e1 e2 k Hsub.
-  dependent induction Hsub; intros k' K; try solve [inversion K].
+  dependent induction Hsub; intros k' n' K; try solve [inversion K].
   - assumption.
   - pick fresh x. inversion K. eauto.
   - inversion K. subst. assert False.
@@ -214,10 +221,10 @@ Proof.
 Qed.
 
 Lemma head_kind_sub_l : forall Γ e1 e2 A,
-    Γ ⊢ e1 <: e2 : A -> forall k, head_kind e2 k -> head_kind e1 k.
+    Γ ⊢ e1 <: e2 : A -> forall k n, head_kind e2 k n -> head_kind e1 k n.
 Proof.
   intros Γ e1 e2 A Hsub.
-  induction Hsub; intros k' K; try solve [inversion K].
+  induction Hsub; intros k' n' K; try solve [inversion K].
   - assumption.
   - pick fresh x. inversion K; eauto.
   - assert False.
@@ -234,10 +241,10 @@ Proof.
   - eauto.
 Qed.
 
-Lemma head_kind_var_consistent : forall Γ x A B k,
-    Γ ⊢ e_var_f x : A -> x : B ∈ Γ -> head_kind B k -> head_kind A k.
+Lemma head_kind_var_consistent : forall Γ x A B k n,
+    Γ ⊢ e_var_f x : A -> x : B ∈ Γ -> head_kind B k n -> head_kind A k n.
 Proof.
-  intros until k. intro Hsub.
+  intros until n. intro Hsub.
   dependent induction Hsub; intros.
   - assert (A = B) by (eapply binds_consistent; eauto).
     now rewrite H3.
@@ -245,8 +252,8 @@ Proof.
     now eapply IHHsub1.
 Qed.
 
-Lemma head_kind_unique : forall e k1 k2,
-    head_kind e k1 -> head_kind e k2 -> k1 = k2.
+Lemma head_kind_unique : forall e k1 k2 n,
+    head_kind e k1 n -> head_kind e k2 n -> k1 = k2.
 Proof.
   intros.
   generalize dependent k2.
@@ -254,10 +261,10 @@ Proof.
     pick fresh x; eauto.
 Qed.
 
-Lemma head_kind_star_of_box : forall Γ e A,
-    Γ ⊢ e : A -> head_kind e k_star -> A = BOX.
+Lemma head_kind_star_of_box : forall Γ e A n,
+    Γ ⊢ e : A -> head_kind e k_star n -> A = BOX.
 Proof.
-  intros Γ e A Hsub Hk. dependent induction Hsub; try solve [inversion Hk].
+  intros Γ e A n Hsub Hk. dependent induction Hsub; try solve [inversion Hk].
   - auto.
   - inversion Hk; subst.
     pick fresh x. apply H2 with x; auto.
@@ -268,10 +275,10 @@ Proof.
     apply reflexivity_l in Hsub2. now apply box_never_welltype in Hsub2.
 Qed.
 
-Lemma head_kind_box_never_welltype : forall Γ e A,
-    Γ ⊢ e : A -> head_kind e k_box -> False.
+Lemma head_kind_box_never_welltype : forall Γ e A n,
+    Γ ⊢ e : A -> head_kind e k_box n -> False.
 Proof.
-  intros Γ e A Hsub Hk.
+  intros Γ e A n Hsub Hk.
   dependent induction Hsub; inversion Hk; subst;
     solve [auto | pick_fresh x; eauto ].
 Qed.
@@ -373,83 +380,60 @@ Proof.
   apply tail_box_impossible in H; auto.
 Qed.
 
-Ltac argument_cannot_be_star :=
-  match goal with
-  | H1 : _ ⊢ ?e <: ?e : ?A  |- _ => match goal with
-  | H2 : _ ⊢ _ <: _ : e_pi ?A _ |- _ => match goal with
-  | Hk : head_kind ?e k_star |- _ =>
-    apply head_kind_star_of_box in H1; auto;
-    subst; now apply pi_box_impossible in H2
-  end end end
-.
-
-Ltac argument_cannot_be_kind :=
-  match goal with
-  | H : _ ⊢ ?e <: ?e : ?A  |- _ => match goal with
-  | _ : _ ⊢ _ <: _ : e_pi ?A _ |- _ => match goal with
-  | _ : head_kind ?e ?k |- _ =>
-    destruct k;
-    [> argument_cannot_be_star
-    |  now apply head_kind_box_never_welltype in H
-    ]
-  end end end
-.
-
-Lemma head_kind_consistency : forall Γ e A k1,
-    Γ ⊢ e : A -> head_kind A k1 -> forall B k2, Γ ⊢ e : B -> head_kind B k2 -> k1 = k2.
+Theorem gen_head_kind_uniqueness : forall Γ e A k,
+    Γ ⊢ e : A -> forall n B, head_kind A k n -> Γ ⊢ e : B -> head_kind B k n.
 Proof.
-  intros until k1. intros Hsub Hk.
-  dependent induction Hsub; intros B' k2' Hsubr Hkr.
-  - dependent induction Hsubr.
-    + assert (A0 = A).
-      * eapply binds_consistent; eauto.
-      * rewrite H3 in Hkr. eapply head_kind_unique; eauto.
-    + assert (head_kind A0 k2').
-      * eapply head_kind_sub_l; eauto.
-      * eauto.
+  intros Γ e A k Hsub.
+  dependent induction Hsub; intros n' B' Hk Hsubr.
+  - eapply head_kind_var_consistent; eauto.
   - inversion Hk.
-  - inversion Hk. apply star_type_inversion in Hsubr. subst.
-    now inversion Hkr.
-  - apply int_of_star in Hsubr.
-    inversion Hk. subst. now inversion Hkr.
+  - apply star_type_inversion in Hsubr. subst. assumption.
+  - apply int_of_star in Hsubr. subst. assumption.
   - dependent induction Hsubr.
-    + inversion Hk. inversion Hkr. subst. pick fresh x.
-      apply H0 with x (B0 <^> x); eauto 3.
-    + eauto 3 using head_kind_sub_l.
+    + inversion Hk. subst. constructor. pick fresh x.
+      eapply head_kind_invert_subst_var;
+        eapply H0 with x; eauto.
+    + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr.
-    + inversion Hk. inversion Hkr. clear H4 H6 IHHsubr1 IHHsubr2 IHHsubr3.
-      subst. pick fresh x.
-      apply H0 with x (e_kind k2'); eauto.
-    + eauto 3 using head_kind_sub_l.
+    + pick fresh x. apply H2 with x; auto 2.
+    + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr.
-    + apply head_kind_invert_subst in Hk as [|];
-      apply head_kind_invert_subst in Hkr as [|];
-        try argument_cannot_be_kind.
-      apply IHHsub2 with (e_pi A0 B0); auto.
-    + eauto 3 using head_kind_sub_l.
+    + apply head_kind_invert_subst in Hk as [|].
+      * destruct k.
+        ++ eapply head_kind_star_of_box in Hsubr1; eauto 2. subst.
+           now apply pi_box_impossible in Hsubr2.
+        ++ now apply head_kind_box_never_welltype with (n := n') in Hsubr1.
+      * assert (head_kind (e_pi A0 B0) k (S n')) by eauto 3.
+        inversion H0. subst.
+        now apply head_kind_subst.
+    + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr.
-    + inversion Hk. inversion Hkr. subst.
-      pick fresh x. apply H0 with x (B0 <^> x); eauto.
-    + eauto 3 using head_kind_sub_l.
+    + inversion Hk; constructor; subst. pick fresh x.
+      eapply head_kind_invert_subst_var.
+      eapply H0 with x; eauto.
+    + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr;
-      [> pick_fresh x; apply H1 with x *; eauto 2 ..
-      |  eauto 3 using head_kind_sub_l
-      ].
-  - eauto.
+      [> assumption .. | eauto 3 using head_kind_sub_r ].
   - dependent induction Hsubr;
-      [> pick_fresh x; apply H0 with x *; eauto 2 ..
-      | eauto 3 using head_kind_sub_l
-      ].
+      [> assumption .. | eauto 3 using head_kind_sub_r ].
+  - dependent induction Hsubr;
+      [> assumption .. | eauto 3 using head_kind_sub_r ].
   - eauto 3 using head_kind_sub_l.
 Qed.
 
-Lemma kind_consistency : forall Γ e k1 k2,
+Corollary gen_kind_uniqueness : forall Γ e A k,
+    Γ ⊢ e : (e_kind k) -> Γ ⊢ e : A -> A = e_kind k.
+Proof.
+  intros.  assert (head_kind A k 0).
+  apply gen_head_kind_uniqueness with Γ e (e_kind k); eauto.
+  now inversion H1.
+Qed.
+
+Corollary kind_uniqueness : forall Γ e k1 k2,
     Γ ⊢ e : e_kind k1 -> Γ ⊢ e : e_kind k2 -> k1 = k2.
 Proof.
   intros.
-  eapply head_kind_consistency.
-  + exact H.
-  + auto.
-  + exact H0.
-  + auto.
+  assert (e_kind k1 = e_kind k2) by
+    (eapply gen_kind_uniqueness; eauto).
+  now inversion H1.
 Qed.

@@ -115,18 +115,30 @@ end.
 
 (* defns MonoType *)
 Inductive mono_type : expr -> Prop :=    (* defn mono_type *)
- | mono_star : 
-     mono_type (e_kind k_star)
+ | mono_kind : forall (k:kind),
+     mono_type (e_kind k)
  | mono_var : forall (x:exprvar),
      mono_type (e_var_f x)
  | mono_int : 
      mono_type e_int
  | mono_lit : forall (n:number),
      mono_type (e_num n)
+ | mono_app : forall (e1 e2:expr),
+     mono_type e1 ->
+     mono_type e2 ->
+     mono_type  ( (e_app e1 e2) ) 
  | mono_pi : forall (L:vars) (A B:expr),
      mono_type A ->
       ( forall x , x \notin  L  -> mono_type  ( open_expr_wrt_expr B (e_var_f x) )  )  ->
-     mono_type (e_pi A B).
+     mono_type (e_pi A B)
+ | mono_lambda : forall (L:vars) (A B:expr),
+     mono_type A ->
+      ( forall x , x \notin  L  -> mono_type  ( open_expr_wrt_expr B (e_var_f x) )  )  ->
+     mono_type (e_abs A B)
+ | mono_bind : forall (L:vars) (A B:expr),
+     mono_type A ->
+      ( forall x , x \notin  L  -> mono_type  ( open_expr_wrt_expr B (e_var_f x) )  )  ->
+     mono_type (e_bind A B).
 
 (* defns UnifiedSubtyping *)
 Inductive wf_context : context -> Prop :=    (* defn wf_context *)
@@ -151,8 +163,8 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
  | s_int : forall (G:context),
      wf_context G ->
      usub G e_int e_int (e_kind k_star)
- | s_abs : forall (L:vars) (G:context) (A e1 e2 B:expr),
-      (usub  G   A   A   (e_kind k_star) )  ->
+ | s_abs : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind),
+      (usub  G   A   A   (e_kind k) )  ->
       ( forall x , x \notin  L  -> usub  (( x ,  A ) ::  G )   ( open_expr_wrt_expr e1 (e_var_f x) )   ( open_expr_wrt_expr e2 (e_var_f x) )   ( open_expr_wrt_expr B (e_var_f x) )  )  ->
      usub G (e_abs A e1) (e_abs A e2) (e_pi A B)
  | s_pi : forall (L:vars) (G:context) (A1 B1 A2 B2:expr) (k2 k1:kind),
