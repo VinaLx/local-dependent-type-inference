@@ -33,11 +33,11 @@ Proof.
       * inversion H0. subst. simpl in H1. auto.
       * apply IHG; auto.
   - pick fresh x0. apply notin_union_3. auto.
-    eapply notin_fv_open_var. apply H1; auto.
+    eapply notin_fv_open_var. apply H3; auto.
   - pick fresh x0. apply notin_union_3. auto.
     eapply notin_fv_open_var. apply H3; auto.
   - pick fresh x0. apply notin_union_3; auto.
-    eapply notin_fv_open_var. apply H1; auto.
+    eapply notin_fv_open_var. apply H3; auto.
   - pick fresh x0. apply notin_union_3; auto.
     eapply notin_fv_open_var. apply H4; auto.
   - pick fresh x0. apply notin_union_3; auto.
@@ -70,7 +70,7 @@ Proof.
       * eapply IHG; eauto.
   - pick fresh x'. apply notin_union_3; eauto using fresh_ctx_fresh_expr.
   - apply fresh_open; eauto 3 using fresh_ctx_fresh_expr.
-    specialize (IHSub2 H). auto.
+    specialize (IHSub2 H0). auto.
   - pick fresh x'. apply notin_union_3; eauto using fresh_ctx_fresh_expr.
 Qed.
 

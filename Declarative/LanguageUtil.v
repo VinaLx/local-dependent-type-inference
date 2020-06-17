@@ -11,6 +11,9 @@ Notation "G ⊢ e : A" := (usub G e e A)
 Notation "G ⊢ e1 <: e2 : A" := (usub G e1 e2 A)
     (at level 65, e1 at next level, e2 at next level, no associativity) : type_scope.
 
+Notation "e1 ⟶ e2"  := (reduce  e1 e2) (at level 60, no associativity) : type_scope.
+Notation "e1 ⋆⟶ e2" := (ereduce e1 e2) (at level 60, no associativity) : type_scope.
+
 Declare Scope ctx_scope.
 Delimit Scope ctx_scope with ctx.
 Bind Scope ctx_scope with context.
@@ -18,6 +21,10 @@ Bind Scope ctx_scope with context.
 Declare Scope expr_scope.
 Delimit Scope expr_scope with exp.
 Bind Scope expr_scope with expr.
+
+Declare Scope eexpr_scope.
+Delimit Scope eexpr_scope with eexp.
+Bind Scope eexpr_scope with eexpr.
 
 Notation "*"  := (e_kind k_star) : expr_scope.
 Notation "'BOX'" := (e_kind k_box) : expr_scope.
@@ -58,6 +65,15 @@ Notation "[ e1 / x ] e2" := (subst_expr e1 x e2)
 Notation "[ e // x ] ctx" := (subst_ctx e x ctx)
     (at level 60, e at level 0, x at level 0, right associativity) : ctx_scope.
 
+
+Notation "e ⋆^^ e'" := (open_eexpr_wrt_eexpr e e') (at level 40, no associativity) : eexpr_scope.
+Notation "e ⋆^ x" := (open_eexpr_wrt_eexpr e (ee_var_f x)) (at level 40) : eexpr_scope.
+Notation "[ e1 ⋆/ x ] e2" := (subst_eexpr e1 x e2)
+    (at level 60, e1 at level 0, x at level 0, right associativity) : eexpr_scope.
+Notation "e ⋆ n ^^ e'" := (open_eexpr_wrt_eexpr_rec n e' e)
+    (at level 40, n at level 0, no associativity) : eexpr_scope.
+
+Open Scope eexpr_scope.
 Open Scope ctx_scope.
 
 Lemma binds__in_dom : forall t Γ x (A : t),
@@ -386,7 +402,7 @@ Proof.
   intros. induction H; eauto.
 Qed.
 
-Ltac solve_lc :=
+Ltac solve_basic_lc :=
   match goal with
   | H : _ ⊢ ?e <: _ : _ |- lc_expr ?e => apply usub_lc in H
   | H : _ ⊢ _ <: ?e : _ |- lc_expr ?e => apply usub_lc in H
@@ -395,7 +411,42 @@ Ltac solve_lc :=
   end; destruct_pairs; assumption
 .
 
-Hint Extern 1 (lc_expr _) => solve_lc : core.
+Hint Extern 1 (lc_expr _) => solve_basic_lc : core.
+
+Lemma lc_abs_param_l : forall Γ A b1 e T,
+    Γ ⊢ e_abs A b1 <: e : T -> lc_expr A.
+Proof.
+  intros. dependent induction H; eauto.
+Qed.
+
+Lemma lc_bind_param_l : forall Γ A b1 e T,
+    Γ ⊢ e_bind A b1 <: e : T -> lc_expr A.
+Proof.
+  intros. dependent induction H; eauto.
+Qed.
+
+Lemma lc_abs_param_r : forall Γ A b2 e T,
+    Γ ⊢ e <: e_abs A b2 : T -> lc_expr A.
+Proof.
+  intros. dependent induction H; eauto.
+Qed.
+
+Lemma lc_bind_param_r : forall Γ A b2 e T,
+    Γ ⊢ e <: e_bind A b2 : T -> lc_expr A.
+Proof.
+  intros. dependent induction H; eauto.
+Qed.
+
+Ltac solve_more_lc :=
+  match goal with
+  | H : _ ⊢ e_abs ?A _ <: _ : _ |- lc_expr ?A => apply lc_abs_param_l in H
+  | H : _ ⊢ _ <: e_abs ?A _ : _ |- lc_expr ?A => apply lc_abs_param_r in H
+  | H : _ ⊢ e_bind ?A _ <: _ : _ |- lc_expr ?A => apply lc_bind_param_l in H
+  | H : _ ⊢ _ <: e_bind ?A _ : _ |- lc_expr ?A => apply lc_bind_param_r in H
+  end; assumption
+.
+
+Hint Extern 1 (lc_expr _) => solve_more_lc : core.
 
 Lemma subst_mono : forall e x e',
     mono_type e -> mono_type e' -> mono_type ([e' / x] e).
@@ -417,3 +468,16 @@ Proof.
     + intros. rewrite subst_open_var_assoc.
       apply H2. all: auto.
 Qed.
+
+Ltac instantiate_colimits :=
+  match goal with
+  | Fr : ?x `notin` ?L1 |- _ => repeat
+    match goal with
+    | H : forall x, x `notin` ?L2 -> _ |- _ =>
+      let H2 := fresh "H" in
+      assert (H2 : x `notin` L2) by eauto;
+      specialize (H x H2);
+      clear H2
+    end
+  end
+.

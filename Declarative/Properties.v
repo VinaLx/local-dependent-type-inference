@@ -1,6 +1,8 @@
 Require Import Declarative.BasicProperties.
 Require Import Declarative.KindReasoning.
 Require Import Declarative.OccurenceReasoning.
+Require Import Declarative.FSetReasoning.
+Require Import Extraction.
 
 Require Import Program.Tactics.
 
@@ -25,6 +27,19 @@ Proof.
   intros. reflexivity.
 Qed.
 
+Locate ",".
+
+Lemma ctx_app_cons_assoc : forall (Γ1 Γ2 : context) x A,
+    Γ1 ,, Γ2 , x : A = Γ1 ,, (Γ2 , x : A).
+Proof.
+  reflexivity.
+Qed.
+
+Hint Rewrite ctx_app_cons_assoc : reassoc.
+Hint Rewrite subst_ctx_distr_cons : reassoc.
+Hint Rewrite subst_open_var_assoc : reassoc.
+Hint Rewrite subst_extract : reassoc.
+
 Lemma dom_subst_equal : forall Γ x v,
     dom ([v // x] Γ) = dom Γ.
 Proof.
@@ -33,21 +48,12 @@ Proof.
   + destruct a. simpl. now rewrite (IHΓ x v).
 Qed.
 
-Import AtomSetProperties.
-
-Lemma dom_insert_subset : forall Γ2 Γ1 a (A : expr),
-    union (dom Γ2) (dom Γ1) [<=] dom (Γ1 , a : A ,, Γ2).
-Proof.
-  induction Γ2; simpl; intros.
-  - apply subset_add_2. intro. intros.
-    now apply empty_union_1 in H.
-  - destruct a. intro. intros.
-    apply union_add in H.
-    assert (add a (union (dom Γ2) (dom Γ1)) [<=] add a (dom (Γ1 , a0 : A ,, Γ2))).
-    + apply subset_add_3. auto.
-      apply subset_add_2. apply IHΓ2.
-    + now apply H0.
-Qed.
+Local Ltac solve_substitution :=
+  try solve
+      [ auto
+      | intros; autorewrite with reassoc;
+        (auto 2 || eauto using fv_subst_inclusion)
+      ].
 
 Theorem substitution : forall Γ1 Γ2 x A B e1 e2 e3,
   Γ1 , x : B ,, Γ2 ⊢ e1 <: e2 : A ->
@@ -75,40 +81,18 @@ Proof.
   - auto.
   - auto.
   - auto.
-  - apply s_abs with (add x L) k.
-    + auto.
-    + intros. distribute_ctx. rewrite subst_ctx_distr_cons.
-      repeat rewrite subst_open_var_assoc; auto 2.
-  - apply s_pi with (add x L) k1.
-    + auto.
-    + auto.
-    + auto.
-    + intros. distribute_ctx. rewrite subst_ctx_distr_cons.
-      repeat rewrite subst_open_var_assoc; auto 2.
-    + intros. distribute_ctx. rewrite subst_ctx_distr_cons.
-      repeat rewrite subst_open_var_assoc; auto 2.
+  - pick fresh x' and apply s_abs; solve_substitution.
+  - pick fresh x' and apply s_pi ; solve_substitution.
   - rewrite subst_open_distr; auto.
-    apply s_app with ([e3 / x] A0); auto.
-  - apply s_forall with (add x L) k.
-    + auto.
-    + intros. distribute_ctx. rewrite subst_ctx_distr_cons.
-      repeat rewrite subst_open_var_assoc; auto 2.
-  - apply s_forall_l with (add x L) ([e3 / x] e) k.
+    apply s_app with ([e3 / x] A0); auto using subst_mono.
+  - apply s_forall with (add x L `union` fv_eexpr (extract e3)) k;
+      solve_substitution.
+  - apply s_forall_l with (add x L) ([e3 / x] e) k;
+      solve_substitution.
     + now apply subst_mono; auto.
-    + auto.
-    + auto.
     + rewrite <- subst_open_distr; auto.
-    + intros. distribute_ctx. rewrite subst_ctx_distr_cons.
-      repeat rewrite subst_open_var_assoc; auto 2.
-  - apply s_forall_r with (add x L) k.
-    + auto.
-    + auto.
-    + intros. distribute_ctx. rewrite subst_ctx_distr_cons.
-      repeat rewrite subst_open_var_assoc; auto 2.
-  - apply s_forall_2 with (add x L) k.
-    + auto.
-    + intros. distribute_ctx. rewrite subst_ctx_distr_cons.
-      repeat rewrite subst_open_var_assoc; auto 2.
+  - pick fresh x' and apply s_forall_r; solve_substitution.
+  - pick fresh x' and apply s_forall_2; solve_substitution.
   - eauto.
 
   - destruct Γ2; inversion H.
@@ -116,22 +100,55 @@ Proof.
     + auto.
     + apply wf_cons with k; auto.
       rewrite dom_app. rewrite dom_subst_equal.
-      intro. apply in_subset with (s2 := dom (Γ1 , x0 : B ,, Γ2)) in H2.
-      contradiction.
-      apply dom_insert_subset.
+      eauto using dom_insert_subset.
   - assumption.
 Qed.
 
-Theorem transitivity : forall e2 Γ e1 e3 A B,
-  Γ ⊢ e1 <: e2 : A -> Γ ⊢ e2 <: e3 : B -> Γ ⊢ e1 <: e3 : A.
+Corollary substitution_cons : forall Γ x A B e1 e2 e3,
+    Γ, x : B ⊢ e1 <: e2 : A ->
+    Γ ⊢ e3 : B -> mono_type e3 ->
+    Γ ⊢ [e3 / x] e1 <: [e3 / x] e2 : [e3 / x] A.
 Proof.
-Admitted.
+  intros *.
+  replace (Γ , x : B) with (Γ ,, one (pair x B) ,, nil) by reflexivity.
+  intros.
+  replace Γ with (Γ ,, [e3 // x] nil) by reflexivity.
+  eapply substitution; simpl in *; eauto.
+Qed.
 
-Theorem type_consistency : forall Γ e1 e2 A B,
-  Γ ⊢ e1 : A -> Γ ⊢ e1 <: e2 : B -> Γ ⊢ e1 <: e2 : A.
+Lemma ctx_type_correct : forall Γ x A,
+    ⊢ Γ -> x : A ∈ Γ -> exists k, Γ ⊢ A : e_kind k.
 Proof.
-Admitted.
+  intros * Wf.
+  induction Wf; simpl; intros.
+  - inversion H.
+  - destruct H1.
+    + inversion H1. subst.
+      eauto.
+    + destruct (IHWf H1) as [k0 IH].
+      eauto.
+Qed.
 
-Theorem type_correct : forall Γ A B C, Γ ⊢ A <: B : C -> Γ ⊢ C : *.
+Theorem type_correctness : forall Γ e1 e2 A,
+    Γ ⊢ e1 <: e2 : A -> A = BOX \/ exists k, Γ ⊢ A : e_kind k.
 Proof.
-Admitted.
+  intros * Sub.
+  induction Sub; eauto 4.
+  - eauto 3 using ctx_type_correct.
+  - pick fresh x.
+    destruct (H2 x Fr) as [H' | [k H']].
+    + auto.
+    + apply kind_sub_inversion_l in H' as (E1 & E2 & E3). subst. eauto.
+  - destruct IHSub2 as [H0 | [k H0]]. inversion H0.
+    dependent induction H0.
+    + clear IHusub1 IHusub2 IHusub3 H0 H2.
+      pick fresh x for (L `union` fv_expr B).
+      assert (Fr2 : x `notin` L) by auto.
+      specialize (H1 x Fr2).
+      right. exists k.
+      rewrite open_subst_eq with (x := x); auto.
+      replace (e_kind k) with ([e / x] e_kind k) by reflexivity.
+      eapply substitution_cons; eauto.
+    + apply IHusub1 with A k; auto.
+      apply kind_sub_inversion_l in H0_0 as (E1 & E2 & E3). now subst.
+Qed.

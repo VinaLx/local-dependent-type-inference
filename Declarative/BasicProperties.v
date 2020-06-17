@@ -16,15 +16,10 @@ Proof.
   - now apply s_lit.
   - now apply s_star.
   - now apply s_int.
-  - apply s_abs with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k.
+  - apply s_abs with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k1 k2.
     + now apply IHHsub.
-    + intros. distribute_ctx. apply H0.
-      * auto.
-      * reflexivity.
-      * eapply wf_cons.
-        ** exact Hwf.
-        ** auto.
-        ** now apply IHHsub.
+    + intros. distribute_ctx. apply H0; simpl; eauto 3.
+    + intros. distribute_ctx. apply H2; simpl; eauto 3.
   - apply s_pi with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k1.
     + now apply IHHsub1.
     + now apply IHHsub2.
@@ -46,15 +41,10 @@ Proof.
   - apply s_app with A.
     + now apply IHHsub1.
     + now apply IHHsub2.
-  - apply s_forall with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k.
-    + now apply IHHsub.
-    + intros. distribute_ctx. apply H0.
-      * auto.
-      * reflexivity.
-      * eapply wf_cons.
-        ** assumption.
-        ** auto.
-        ** now apply IHHsub.
+    + assumption.
+  - apply s_forall with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k; auto 2.
+    + intros. distribute_ctx. apply H0; simpl; eauto 4.
+    + intros. distribute_ctx. apply H2; simpl; eauto 4.
   - apply s_forall_l with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) e k.
     + assumption.
     + now apply IHHsub1.
@@ -121,31 +111,14 @@ Proof.
   - auto.
   - auto.
   - auto.
-  - apply s_abs with L k.
-    + assumption.
-    + intros. now apply H1.
-  - apply s_pi with L k1.
-    + assumption.
-    + assumption.
-    + assumption.
-    + auto.
-    + auto.
-  - apply s_app with A.
-    + assumption.
-    + assumption.
-  - apply s_forall with L k.
-    + assumption.
-    + auto.
+  - apply s_abs with L k1 k2; eauto 3.
+  - apply s_pi with L k1; eauto 3.
+  - apply s_app with A; eauto 3.
+  - apply s_forall with L k; eauto.
   - assumption.
-  - apply s_forall_2 with L k.
-    + assumption.
-    + assumption.
-  - apply s_forall_2 with L k.
-    + assumption.
-    + apply H1.
-  - apply s_sub with A k.
-    + assumption.
-    + assumption.
+  - apply s_forall_2 with L k; eauto.
+  - apply s_forall_2 with L k; eauto.
+  - apply s_sub with A k; eauto.
 Qed.
 
 Theorem reflexivity_l : forall Γ e1 e2 A, Γ ⊢ e1 <: e2 : A -> Γ ⊢ e1 : A.
@@ -155,11 +128,7 @@ Proof.
   - now apply s_lit.
   - now apply s_star.
   - now apply s_int.
-  - eapply s_abs.
-    + eassumption.
-    + intros x Hxl.
-      apply H1.
-      eassumption.
+  - eapply s_abs; eauto.
   - eapply s_pi; eauto.
   - now apply s_app with A.
   - now apply s_forall with L k.
@@ -173,8 +142,6 @@ Qed.
 
 Hint Resolve reflexivity_r : core.
 Hint Resolve reflexivity_l : core.
-
-
 
 Theorem ctx_narrowing : forall Γ1 Γ2 x A B C e1 e2 k,
   Γ1 , x : B ,, Γ2 ⊢ e1 <: e2 : C ->
@@ -202,10 +169,10 @@ Proof.
   - auto.
   - auto.
   - auto.
+  - pick fresh x' and apply s_abs; eauto 3.
+  - pick fresh x' and apply s_pi; eauto 3.
   - eauto.
-  - apply s_pi with (add x L) k1; auto.
-  - eauto.
-  - eauto.
+  - pick fresh x' and apply s_forall; eauto 3.
   - apply s_forall_l with L e k0; eauto 3.
   - apply s_forall_r with (add x L) k0; auto.
   - eauto.

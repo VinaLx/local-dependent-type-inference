@@ -16,24 +16,37 @@ expr, e, A, B, C :: 'e_' ::= {{ com expressions }}
   | e1 e2   :: :: app  {{ com application }}
   | lambda x : A . e :: :: abs  (+ bind x in e +) {{ com abstraction }}
   | pi     x : A . B :: :: pi   (+ bind x in B +) {{ com dependent product }}
-  | forall x : A . B :: :: all  (+ bind x in B +) {{ com forall type  }}
-  | bind   x : A . e :: :: bind (+ bind x in e +) {{ com name binding }}
+  | forall x : A . B :: :: all  (+ bind x in B +) {{ com implicit function type }}
+  | bind   x : A . e :: :: bind (+ bind x in e +) {{ com implicit lambda }}
   | ( e )         :: S :: paren {{ coq ([[e]]) }}
   | [ e1 / x ] e2 :: M :: subst {{ coq (open_expr_wrt_expr [[x e2]] [[e1]]) }}
 
 context, G {{ tex \Gamma }} :: 'ctx_' ::=
   {{ com contexts }} {{ coq (list (exprvar * expr)) }}
   | nil       :: :: nil  {{ com empty context }}   {{ coq nil }}
-  | G , x : A :: :: cons {{ com context binding }} {{ coq (([[x]], [[A]]) :: [[G]]) }}
+  | G , x : A :: :: cons
+    {{ com context binding }} {{ coq (([[x]], [[A]]) :: [[G]]) }}
+
+eexpr, ee, eA, eB, eC :: 'ee_' ::= {{ com extracted expression }}
+  | x   :: :: var
+  | k   :: :: kind
+  | n   :: :: num
+  | int :: :: int
+  | ee1 ee2 :: :: app
+  | elambda x . ee :: :: abs  (+ bind x in ee +)
+  | ebind   x . ee :: :: bind (+ bind x in ee +)
+  | epi     x : eA . eB :: :: pi  (+ bind x in eB +)
+  | eforall x : eA . eB :: :: all (+ bind x in eB +)
+  | ( ee )          :: S :: paren {{ coq ([[ee]]) }}
+  | [ ee1 / x ] ee2 :: M :: subst {{ coq (open_eexpr_wrt_eexpr [[x ee2]] [[ee1]]) }}
 
 formula :: formula_ ::=
   | judgement  ::   :: judgement
   | x : A in G :: M :: binding   {{ coq (binds [[x]] [[A]] [[G]]) }}
   | G |- e : A :: M :: typing    {{ coq (usub [[G]] [[e]] [[e]] [[A]]) }}
   | x # G      :: M :: ctx_fresh {{ coq ([[x]] `notin` dom [[G]]) }}
-  | x # e      :: M :: exp_fresh
-    {{ coq (forall x , x `notin` L -> x `notin` fv_expr [[e]] ) }}
-% | close e    :: M :: exp_close {{ coq (fv_expr [[e]] = empty)}}
+  | x # e *    :: M :: exp_fresh
+    {{ coq ([[x]] `notin` fv_eexpr (extract [[e]])) }}
 
 terminals :: 'terminal_' ::=
   | lambda :: :: lambda {{ tex \lambda }}
@@ -46,12 +59,33 @@ terminals :: 'terminal_' ::=
   | <: :: :: sub   {{ tex \leq }}
   | #  :: :: fresh {{ tex ~\#~ }}
   | *  :: :: star  {{ tex \star }}
+  | box :: :: box  {{ tex \square }}
+  | ,  :: :: comma {{ tex ,~ }}
 
 substitutions
-  single e x :: subst
+  single e  x :: subst
+  single ee x :: subst
 
 freevars
-  expr x :: fv
+  expr  x :: fv
+  eexpr x :: fv
+
+embed {{ coq
+Fixpoint extract (e : expr) : eexpr :=
+  match e with
+  | e_var_b n => ee_var_b n
+  | e_var_f x => ee_var_f x
+  | e_kind k  => ee_kind k
+  | e_num n   => ee_num n
+  | e_int     => ee_int
+  | e_app  f a => ee_app  (extract f) (extract a)
+  | e_abs  A b => ee_abs  (extract b)
+  | e_bind A b => ee_bind (extract b)
+  | e_pi   A B => ee_pi   (extract A) (extract B)
+  | e_all  A B => ee_all  (extract A) (extract B)
+  end
+.
+}} % embed coq
 
 defns
 MonoType :: '' ::=
@@ -126,7 +160,8 @@ G |- * <: * : box
 ------------------- :: int
 G |- int <: int : *
 
-G |- A : k
+G |- A : k1
+G , x : A |- B : k2
 G , x : A |- e1 <: e2 : B
 ------------------------------------------------------- :: abs
 G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B
@@ -141,11 +176,15 @@ G |- pi x : A1. B1 <: pi x : A2. B2 : k2
 
 G |- e : A
 G |- e1 <: e2 : pi x : A. B
+monotype e
 ------------------------------- :: app
 G |- e1 e <: e2 e : [e/x]B
 
 G |- A : k
+G , x : A |- B : *
 G , x : A |- e1 <: e2 : B
+x # e1*
+x # e2*
 ------------------------------------------------------- :: forall
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
@@ -172,3 +211,90 @@ G |- e1 <: e2 : A
 G |- A  <: B  : k
 ------------------ :: sub
 G |- e1 <: e2 : B
+
+defns
+Value :: '' ::=
+
+defn
+value e :: :: value :: 'v_' by
+
+--------- :: kind
+value k
+
+--------- :: num
+value n
+
+--------- :: int
+value int
+
+---------------------- :: abs
+value lambda x : A. e
+
+---------------------- :: bind
+value bind   x : A. e
+
+---------------------- :: pi
+value pi     x : A. B
+
+---------------------- :: all
+value forall x : A. B
+
+defns
+ExtractedValue :: '' ::=
+
+defn
+evalue ee :: :: evalue :: 'ev_' by
+
+---------- :: kind
+evalue k
+
+---------- :: num
+evalue n
+
+---------- :: int
+evalue int
+
+--------------------- :: abs
+evalue elambda x. ee
+
+--------------------- :: bind
+evalue ebind   x. ee
+
+------------------------ :: pi
+evalue epi     x : eA. eB
+
+------------------------ :: all
+evalue eforall x : eA. eB
+
+defns
+Reduce :: '' ::=
+
+defn
+e1 --> e2 :: :: reduce :: 'r_' by
+
+e1 --> e2
+---------------- :: app
+e1 e3 --> e2 e3
+
+-------------------------------------- :: beta
+(lambda x : A. e1) e2 --> [e2 / x] e1
+
+monotype e
+--------------------------------------- :: inst
+(bind x : A. e1) e2 --> ([e / x] e1) e2
+
+defns
+ExtractedReduce :: '' ::=
+
+defn
+ee1 *--> ee2 :: :: ereduce :: 'er_' by
+
+ee1 *--> ee2
+--------------------- :: app
+ee1 ee3 *--> ee2 ee3
+
+----------------------------------- :: beta
+(elambda x. ee1) ee2 *--> [ee2 / x] ee1
+
+----------------------------------- :: elim
+(ebind   x. ee1) ee2 *--> ee1 ee2

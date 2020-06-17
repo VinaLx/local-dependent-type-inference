@@ -131,7 +131,8 @@ Qed.
 Hint Resolve head_kind_S : core.
 
 Lemma head_kind_invert_subst_rec : forall A e k m n,
-    head_kind (open_expr_wrt_expr_rec n e A) k m -> head_kind e k m \/ head_kind A k m.
+    head_kind (open_expr_wrt_expr_rec n e A) k m ->
+    head_kind e k m \/ head_kind A k m.
 Proof.
   induction A; simpl; intros e k' m' n' K; try solve [inversion K].
   - destruct (n' == n); auto.
@@ -354,7 +355,6 @@ Proof.
     + edestruct IHA2 as [H|[H|H]]; eauto.
 Qed.
 
-
 Lemma tail_box_impossible : forall Γ e A,
     Γ ⊢ e : A -> tail_kind A k_box -> False.
 Proof.
@@ -391,8 +391,8 @@ Proof.
   - apply int_of_star in Hsubr. subst. assumption.
   - dependent induction Hsubr.
     + inversion Hk. subst. constructor. pick fresh x.
-      eapply head_kind_invert_subst_var;
-        eapply H0 with x; eauto.
+      eapply head_kind_invert_subst_var.
+        eapply H2 with x; eauto.
     + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr.
     + pick fresh x. apply H2 with x; auto 2.
@@ -404,13 +404,13 @@ Proof.
            now apply pi_box_impossible in Hsubr2.
         ++ now apply head_kind_box_never_welltype with (n := n') in Hsubr1.
       * assert (head_kind (e_pi A0 B0) k (S n')) by eauto 3.
-        inversion H0. subst.
+        inversion H2. subst.
         now apply head_kind_subst.
     + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr.
     + inversion Hk; constructor; subst. pick fresh x.
       eapply head_kind_invert_subst_var.
-      eapply H0 with x; eauto.
+      eapply H2 with x; eauto.
     + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr;
       [> assumption .. | eauto 3 using head_kind_sub_r ].

@@ -3,6 +3,9 @@ Require Import BasicProperties.
 Require Import KindReasoning.
 Require Import Properties.
 Require Import OccurenceReasoning.
+Require Import FSetReasoning.
+Require Import Extraction.
+
 Require Import Program.Tactics.
 Require Import Omega.
 
@@ -23,10 +26,11 @@ Inductive sized_usub : context -> expr -> expr -> expr -> nat -> Prop :=    (* d
  | ss_int : forall (G:context),
      ⊢ G ->
      G ⊢ e_int <: e_int : * | 0
- | ss_abs : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind) n1 n2,
-     G ⊢ A <: A : e_kind k | n1  ->
-     (forall x , x \notin  L  -> G , x : A ⊢ e1 <^> x <: e2 <^> x : B <^> x | n2) ->
-     G ⊢ e_abs A e1 <: e_abs A e2 : e_pi A B | S (n1 + n2)
+ | ss_abs : forall (L:vars) (G:context) (A e1 e2 B:expr) (k1 k2:kind) n1 n2 n3,
+     G ⊢ A <: A : e_kind k1 | n1 ->
+     (forall x , x \notin L -> G , x : A ⊢ B <^> x <: B <^> x : e_kind k2 | n2) ->
+     (forall x , x \notin L -> G , x : A ⊢ e1 <^> x <: e2 <^> x : B <^> x | n3) ->
+     G ⊢ e_abs A e1 <: e_abs A e2 : e_pi A B | S (n1 + n2 + n3)
  | ss_pi : forall (L:vars) (G:context) (A1 B1 A2 B2:expr) (k2 k1:kind) n1 n2 n3 n4 n5,
       G ⊢ A1 <: A1 : e_kind k1 | n1 ->
       G ⊢ A2 <: A2 : e_kind k1 | n2 ->
@@ -37,11 +41,15 @@ Inductive sized_usub : context -> expr -> expr -> expr -> nat -> Prop :=    (* d
  | ss_app : forall (G:context) (e1 e e2 B A:expr) n1 n2,
      G ⊢ e  <: e  : A        | n1 ->
      G ⊢ e1 <: e2 : e_pi A B | n2 ->
+     mono_type e ->
      G ⊢ e_app e1 e <: e_app e2 e : B <^^> e | S (n1 + n2)
- | ss_forall : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind) n1 n2,
-      G ⊢ A <: A : e_kind k | n1 ->
-      (forall x , x \notin L -> G , x : A ⊢ e1 <^> x <: e2 <^> x : B <^> x | n2) ->
-      G ⊢ e_bind A e1 <: e_bind A e2 : e_all A B | S (n1 + n2)
+ | ss_forall : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind) n1 n2 n3,
+     G ⊢ A <: A : e_kind k | n1 ->
+     (forall x , x \notin L -> G , x : A ⊢ B  <^> x <: B  <^> x : * | n2) ->
+     (forall x , x \notin L -> G , x : A ⊢ e1 <^> x <: e2 <^> x : B <^> x | n3) ->
+     (forall x , x \notin L -> x `notin` fv_eexpr (extract (e1 <^> x))) ->
+     (forall x , x \notin L -> x `notin` fv_eexpr (extract (e2 <^> x))) ->
+     G ⊢ e_bind A e1 <: e_bind A e2 : e_all A B | S (n1 + n2 + n3)
  | ss_forall_l : forall (L:vars) (G:context) (A B C e:expr) (k:kind) n1 n2 n3 n4,
      mono_type e ->
      G ⊢ A <: A : e_kind k | n1 ->
@@ -74,7 +82,6 @@ Qed.
 
 Hint Resolve sized_unsized : core.
 
-
 Ltac distribute_sized_ctx :=
   match goal with
   | |- (?g1 ,, ?g2 , ?x : ?A) ⊢ _ <: _ : _ | _ =>
@@ -104,12 +111,14 @@ Proof.
   dependent induction Sub; intros; auto; capture_wf_dom.
   - pick fresh x and apply ss_abs; eauto.
     solve_weakening_with H0.
+    solve_weakening_with H2.
   - pick fresh x and apply ss_pi; eauto.
     solve_weakening_with H0.
     solve_weakening_with H2.
   - eauto.
   - pick fresh x and apply ss_forall; eauto.
     solve_weakening_with H0.
+    solve_weakening_with H2.
   - pick fresh x and apply ss_forall_l; eauto.
     solve_weakening_with H1.
   - pick fresh x and apply ss_forall_r; eauto.
@@ -129,13 +138,6 @@ Proof.
   now apply sized_weakening.
 Qed.
 
-
-Lemma wf_renaming : forall Γ1 x A x' Γ2,
-    ⊢ Γ1 , x  : A ,, Γ2 ->
-    x' `notin` dom Γ1 -> x' `notin` dom Γ2 -> context_fresh x' Γ2 ->
-    ⊢ Γ1 , x' : A ,, [`x' // x]Γ2.
-Proof.
-Admitted.
 
 Ltac find_open_inequality_impl e :=
   match e with
@@ -169,7 +171,6 @@ Ltac redistribute_subst :=
   end
 .
 
-
 Ltac distribute_sized_ctx_for_subst :=
   match goal with
   | |- _ ,, [?e // ?x] ?Γ , ?x0 : [?e / ?x] ?A ⊢ _ <: _ : _ | _ =>
@@ -180,9 +181,9 @@ Ltac distribute_sized_ctx_for_subst :=
 .
 
 Ltac assoc_goal :=
-  find_open_inequality;
-  redistribute_subst;
-  distribute_sized_ctx_for_subst
+  try find_open_inequality;
+  try redistribute_subst;
+  try distribute_sized_ctx_for_subst
 .
 
 Ltac assoc_goal_and_apply IH :=
@@ -207,7 +208,6 @@ Proof.
     + apply IHWf; eauto.
 Qed.
 
-
 Lemma sized_renaming : forall Γ1 x A Γ2 x' e1 e2 B n,
     Γ1, x : A,, Γ2 ⊢ e1 <: e2 : B | n ->
     ⊢ Γ1 , x' : A ,, [`x' // x] Γ2 ->
@@ -231,12 +231,18 @@ Proof.
            apply sized_weakening_cons; eauto.
   - pick_fresh_with_dom_and_apply ss_abs; eauto.
     + assoc_goal_and_apply H0. eapply wf_cons; eauto.
+    + assoc_goal_and_apply H2. eapply wf_cons; eauto.
   - pick_fresh_with_dom_and_apply ss_pi; eauto.
     + assoc_goal_and_apply H0. eapply wf_cons; eauto.
     + assoc_goal_and_apply H2. eapply wf_cons; eauto.
-  - rewrite subst_open_distr; eauto.
+  - rewrite subst_open_distr; eauto using subst_mono.
   - pick_fresh_with_dom_and_apply ss_forall; eauto.
     + assoc_goal_and_apply H0. eapply wf_cons; eauto.
+    + assoc_goal_and_apply H2. eapply wf_cons; eauto.
+    + rewrite subst_open_var_assoc, subst_extract; auto 2.
+      eauto 4 using fv_subst_inclusion.
+    + rewrite subst_open_var_assoc, subst_extract; auto 2.
+      eauto 4 using fv_subst_inclusion.
   - apply ss_forall_l with
       (add x (add x' L) `union` dom (Γ1 , x' : A ,, [`x' // x] Γ2)) ([`x' / x] e) k; eauto.
     + apply subst_mono; auto.
@@ -355,11 +361,11 @@ Proof.
   intros.
   induction H; destruct_exists; eauto 3;
     reconstruct_sub; instantiate_LN_IH_with_fresh.
-  - exists (S (IHusub + IH)).
+  - exists (S (IHusub + IH0 + IH)).
     solve_unsized_sized_with ss_abs.
   - exists (S (IHusub1 + IHusub2 + IHusub3 + IH0 + IH)).
     solve_unsized_sized_with ss_pi.
-  - exists (S (IHusub + IH)).
+  - exists (S (IHusub + IH0 + IH)).
     solve_unsized_sized_with ss_forall.
   - exists (S (IHusub1 + IHusub2 + IHusub3 + IH)).
     solve_unsized_sized_with ss_forall_l.
