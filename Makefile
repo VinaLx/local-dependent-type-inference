@@ -22,7 +22,7 @@ ${OTT_COQ_OUTS} : ${OTT_SOURCES}
 	@ott -o $@ $^
 
 ${COQ_MAKEFILE} : ${COQ_PROJECT} ${COQ_SOURCES} ${OTT_COQ_OUTS}
-	@echo Make: Generating ${COQ_MAKEFILE}
+	@echo MAKE: Generating ${COQ_MAKEFILE}
 	@${COQ_MAKE} -f ${COQ_PROJECT} -o $@
 
 .PHONY: ott coq clean
