@@ -7,6 +7,12 @@ COQ_MAKEFILE := CoqMakefile
 OTT_SOURCES  := Declarative/Language.ott
 OTT_COQ_OUTS := Declarative/Language.v
 
+OTT_TEX_FLAGS := -tex_show_meta false
+TEX_DIR := tex
+TEX_OUT := ${TEX_DIR}/Language.tex
+
+all: coq tex
+
 COQ_SOURCES := $(shell \
 	find . -name *.v   \
 		$(foreach o,$(notdir ${OTT_COQ_OUTS}),-not -name ${o}))
@@ -25,13 +31,22 @@ ${COQ_MAKEFILE} : ${COQ_PROJECT} ${COQ_SOURCES} ${OTT_COQ_OUTS}
 	@echo MAKE: Generating ${COQ_MAKEFILE}
 	@${COQ_MAKE} -f ${COQ_PROJECT} -o $@
 
-.PHONY: ott coq clean
+.PHONY: all ott coq clean
 
 ott: ${OTT_COQ_OUTS}
 
 coq: ott ${COQ_MAKEFILE}
 	@echo "MAKE: Compiling coq sources"
 	@${MAKE} -f ${COQ_MAKEFILE}
+
+tex: ott
+	@echo "MAKE: Generating latex files"
+	@mkdir -p ${TEX_DIR}
+	@ott -i ${OTT_SOURCES} ${OTT_TEX_FLAGS} -o ${TEX_OUT}
+	@echo "MAKE: Generating pdf file"
+	@. scripts/tex-transform.sh ${TEX_OUT}
+	@latexmk -pdf -outdir=tex ${TEX_OUT}
+
 
 clean:
 	@echo "MAKE: Cleaning all generated files"

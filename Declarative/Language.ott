@@ -42,11 +42,15 @@ eexpr, ee, eA, eB, eC :: 'ee_' ::= {{ com extracted expression }}
 
 formula :: formula_ ::=
   | judgement  ::   :: judgement
+  % a trick to combine with sed script for tex generation
+  % to put several premises on the same line
+  | formula ,, :: M :: cont     {{ coq [[formula]] }}
   | x : A in G :: M :: binding   {{ coq (binds [[x]] [[A]] [[G]]) }}
   | G |- e : A :: M :: typing    {{ coq (usub [[G]] [[e]] [[e]] [[A]]) }}
   | x # G      :: M :: ctx_fresh {{ coq ([[x]] `notin` dom [[G]]) }}
   | x # e *    :: M :: exp_fresh
     {{ coq ([[x]] `notin` fv_eexpr (extract [[e]])) }}
+    {{ tex [[x]] ~ \# ~ \lvert [[e]] \rvert }}
 
 terminals :: 'terminal_' ::=
   | lambda :: :: lambda {{ tex \lambda }}
@@ -61,6 +65,15 @@ terminals :: 'terminal_' ::=
   | *  :: :: star  {{ tex \star }}
   | box :: :: box  {{ tex \square }}
   | ,  :: :: comma {{ tex ,~ }}
+  | elambda :: :: elambda {{ tex \lambda }}
+  | epi     :: :: epi     {{ tex \Pi }}
+  | eforall :: :: eforall {{ tex \forall }}
+  | ebind   :: :: ebind   {{ tex \Lambda }}
+  | -->  :: :: reduce  {{ tex \longrightarrow }}
+  | *--> :: :: ereduce {{ tex \prescript{\ast}{}\longrightarrow ~ }}
+  | nil  :: :: nil {{ tex \varnothing }}
+  | int  :: :: int {{ tex \mathbb{N} }}
+  | ,,   :: :: cont {{ tex \qquad }}
 
 substitutions
   single e  x :: subst
@@ -91,7 +104,10 @@ defns
 MonoType :: '' ::=
 
 defn
-monotype A :: :: mono_type :: 'mono_' by
+monotype A :: :: mono_type :: 'mono_'
+  {{ tex [[A]] ~ \mathbf{mono} }}
+  {{ com mono-types (mono-values) }}
+by
 
 ----------- :: kind
 monotype k
@@ -105,22 +121,22 @@ monotype int
 ----------- :: lit
 monotype n
 
-monotype e1
+monotype e1 ,,
 monotype e2
 ----------------- :: app
 monotype (e1 e2)
 
-monotype A
+monotype A ,,
 monotype B
 ---------------------- :: pi
 monotype pi x : A . B
 
-monotype A
+monotype A ,,
 monotype B
 -------------------------- :: lambda
 monotype lambda x : A . B
 
-monotype A
+monotype A ,,
 monotype B
 ------------------------ :: bind
 monotype bind x : A . B
@@ -129,19 +145,21 @@ defns
 UnifiedSubtyping :: '' ::=
 
 defn
-|- G :: :: wf_context :: 'wf_' by
+|- G :: :: wf_context :: 'wf_' {{ com Context Wellformedness }}
+by
 
 ------ :: nil
 |- nil
 
-|- G
-x # G
+|- G  ,,
+x # G ,,
 G |- A : k
 ------------ :: cons
 |- G , x : A
 
 defn
-G |- e1 <: e2 : A :: :: usub :: 's_' by
+G |- e1 <: e2 : A :: :: usub :: 's_' {{ com Unified Subtyping }}
+by
 
 |- G
 x : A in G
@@ -160,54 +178,54 @@ G |- * <: * : box
 ------------------- :: int
 G |- int <: int : *
 
-G |- A : k1
+G |- A : k1 ,,
 G , x : A |- B : k2
 G , x : A |- e1 <: e2 : B
 ------------------------------------------------------- :: abs
 G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B
 
-G |- A1 : k1
-G |- A2 : k1
+G |- A1 : k1 ,,
+G |- A2 : k1 ,,
 G |- A2 <: A1 : k1
-G , x : A1 |- B1 <: B1 : k2
+G , x : A1 |- B1 <: B1 : k2 ,,
 G , x : A2 |- B1 <: B2 : k2
 ---------------------------------------- :: pi
 G |- pi x : A1. B1 <: pi x : A2. B2 : k2
 
+monotype e ,,
 G |- e : A
 G |- e1 <: e2 : pi x : A. B
-monotype e
 ------------------------------- :: app
 G |- e1 e <: e2 e : [e/x]B
 
-G |- A : k
+G |- A : k ,,
 G , x : A |- B : *
 G , x : A |- e1 <: e2 : B
-x # e1*
+x # e1* ,,
 x # e2*
 ------------------------------------------------------- :: forall
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
 monotype e
-G |- A : k
+G |- A : k ,,
 G |- e : A
-G |- [e/x] B <: C : *
+G |- [e/x] B <: C : * ,,
 G , x : A |- B : *
 ------------------------------- :: forall_l
 G |- forall x : A. B <: C : *
 
-G |- B : k
+G |- B : k ,,
 G |- A : *
 G , x : B |- A <: C : *
 ------------------------------- :: forall_r
 G |- A <: forall x : B. C : *
 
-G |- A : k
+G |- A : k ,,
 G , x : A |- B <: C : *
 -------------------------------------------- :: forall_2
 G |- forall x : A. B <: forall x : A. C : *
 
-G |- e1 <: e2 : A
+G |- e1 <: e2 : A ,,
 G |- A  <: B  : k
 ------------------ :: sub
 G |- e1 <: e2 : B
@@ -216,7 +234,10 @@ defns
 Value :: '' ::=
 
 defn
-value e :: :: value :: 'v_' by
+value e :: :: value :: 'v_'
+  {{ tex [[e]] ~ \mathbf{value} }}
+  {{ com values in source language }}
+by
 
 --------- :: kind
 value k
@@ -243,7 +264,10 @@ defns
 ExtractedValue :: '' ::=
 
 defn
-evalue ee :: :: evalue :: 'ev_' by
+evalue ee :: :: evalue :: 'ev_'
+  {{ tex [[ee]] ~ \mathbf{value} }}
+  {{ com values in extracted language }}
+by
 
 ---------- :: kind
 evalue k
@@ -270,7 +294,8 @@ defns
 Reduce :: '' ::=
 
 defn
-e1 --> e2 :: :: reduce :: 'r_' by
+e1 --> e2 :: :: reduce :: 'r_' {{ com reduction in source language }}
+by
 
 e1 --> e2
 ---------------- :: app
@@ -287,7 +312,8 @@ defns
 ExtractedReduce :: '' ::=
 
 defn
-ee1 *--> ee2 :: :: ereduce :: 'er_' by
+ee1 *--> ee2 :: :: ereduce :: 'er_' {{ com reduction in target language}}
+by
 
 ee1 *--> ee2
 --------------------- :: app
