@@ -20,3 +20,16 @@
 
 # centering adjustment of array instead of left
 /\\newcommand{\\ottdrule}/s/{array}{l}/{array}{c}/g
+
+/\\newenvironment{ottdefnblock}/c \
+\\newenvironment{ottdefnblock}[3][] \
+{ \\framebox{\\mbox{#2}} \\quad #3 \\\\[2ex] \
+  \\begin{equation*} \\setlength{\\jot}{3ex} \\begin{gathered}} \
+{\\end{gathered}\\end{equation*}\\\\[5ex]}
+
+/\\newcommand{\\ottdefn[A-Za-z]*}\[1\]/,/\\end{ottdefnblock}/ {
+  /^\\ottusedrule/ {
+    s/\\ottusedrule{//
+    s/}$/ \\\\/
+  }
+}

@@ -1,1 +1,1 @@
-sed -i .bak -f scripts/tex-transform.sed $1
+sed -f scripts/tex-transform.sed $1 > $2
