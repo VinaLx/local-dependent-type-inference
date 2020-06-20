@@ -132,7 +132,7 @@ Proof.
   (* var is not value *)
   - inversion H0.
   (* app *)
-  - conclude_refls H0. split; right;
+  - conclude_refls H1. split; right;
     destruct_progressive_for_app;
     eauto 3; (* solves r_app cases *)
     invert_operator_to_nf.
@@ -166,7 +166,7 @@ Proof.
   (* app *)
   - instantiate_trivial_equals.
     destruct IHusub2 with (extract e1) (extract e2); auto.
-    conclude_refls H0;
+    conclude_refls H1;
     split; right; destruct_progressive_for_app; eauto; (* solve r_app cases *)
       apply evalue_value in V; auto;
         invert_operator_to_nf; simpl.

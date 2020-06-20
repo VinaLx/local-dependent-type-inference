@@ -39,9 +39,9 @@ Proof.
         ** auto.
         ** now apply IHHsub2.
   - apply s_app with A.
+    + assumption.
     + now apply IHHsub1.
     + now apply IHHsub2.
-    + assumption.
   - apply s_forall with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k; auto 2.
     + intros. distribute_ctx. apply H0; simpl; eauto 4.
     + intros. distribute_ctx. apply H2; simpl; eauto 4.
