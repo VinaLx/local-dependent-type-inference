@@ -4,6 +4,7 @@ Require Import Properties.
 Require Import Transitivity.
 Require Import Extraction.
 Require Import KindReasoning.
+Require Import OccurenceReasoning.
 
 Require Import Program.Tactics.
 
@@ -13,14 +14,7 @@ Definition EProgressive (e : eexpr) := evalue e \/ exists e', e ⋆⟶ e'.
 Hint Unfold Progressive : core.
 Hint Unfold EProgressive : core.
 
-Ltac instantiate_trivial_equals := repeat
-  match goal with
-  | H : ?a ~= ?a -> _ |- _ => specialize (H JMeq_refl)
-  | H : ?a  = ?a -> _ |- _ => specialize (H eq_refl)
-  end
-.
-
-Hint Extern 1 (lc_expr _) => instantiate_colimits : inst.
+Hint Rewrite extract_open_distr : reassoc.
 
 Ltac cleanup_hyps := instantiate_trivial_equals; destruct_pairs; clear_dups.
 Ltac solve_progress_value := auto || left; eauto with inst.
@@ -235,22 +229,6 @@ Ltac invert_extraction :=
 
 Ltac invert_extractions := repeat invert_extraction.
 
-Lemma abs_not_star : forall Γ A b,
-    not ( Γ ⊢ e_abs A b : * ).
-Proof.
-  intros. intro.
-  dependent induction H.
-  - eapply IHusub1; eauto using star_sub_inversion_l.
-Qed.
-
-Lemma bind_not_star : forall Γ A b,
-    not ( Γ ⊢ e_bind A b : * ).
-Proof.
-  intros. intro.
-  dependent induction H.
-  - eapply IHusub1; eauto using star_sub_inversion_l.
-Qed.
-
 Lemma abs_sub_r : forall Γ A b e T,
     Γ ⊢ e_abs A b <: e : T ->
     exists c, e = e_abs A c.
@@ -258,7 +236,7 @@ Proof.
   intros.
   dependent induction H.
   - eauto.
-  - now apply abs_not_star in H0.
+  - now apply abs_not_of_star in H0.
   - now eapply IHusub1.
 Qed.
 
@@ -270,7 +248,7 @@ Proof.
   dependent induction H.
   - eauto.
   - apply reflexivity_r in H2.
-    now apply abs_not_star in H2.
+    now apply abs_not_of_star in H2.
   - now eapply IHusub1.
 Qed.
 
@@ -281,7 +259,7 @@ Proof.
   intros.
   dependent induction H.
   - eauto.
-  - now apply bind_not_star in H0.
+  - now apply bind_not_of_star in H0.
   - now eapply IHusub1.
 Qed.
 
@@ -291,7 +269,7 @@ Lemma bind_sub_l : forall Γ A b e T,
 Proof.
   intros. dependent induction H.
   - eauto.
-  - apply reflexivity_r in H2. now apply bind_not_star in H2.
+  - apply reflexivity_r in H2. now apply bind_not_of_star in H2.
   - now eapply IHusub1.
 Qed.
 
@@ -398,28 +376,6 @@ Proof.
   + eapply IHSub1; eauto.
     apply kind_sub_inversion_l in Sub2. destruct_pairs. congruence.
 Qed.
-
-Lemma notin_open_var_notin_open_rec : forall e x n,
-    x `notin` fv_eexpr (e ⋆n^^ (ee_var_f x)) ->
-    forall v, e ⋆n^^ v = e.
-Proof.
-  intros e x.
-  induction e; unfold open_eexpr_wrt_eexpr in *; simpl; intros; auto;
-    try solve [rewrite IHe; auto | rewrite IHe1; auto; rewrite IHe2; auto].
-  - destruct (n0 == n).
-    + contradict H. simpl. auto.
-    + easy.
-Qed.
-
-Lemma notin_open_var_notin_open : forall e x v,
-    x `notin` fv_eexpr (e ⋆^ x) ->
-    e ⋆^^ v = e.
-Proof.
-  intros.
-  eapply notin_open_var_notin_open_rec; auto.
-Qed.
-
-Hint Rewrite extract_open_distr : reassoc.
 
 Ltac split_all := repeat split.
 

@@ -1,5 +1,6 @@
 Require Import LanguageUtil.
 Require Import BasicProperties.
+Require Import Extraction.
 
 Lemma notin_fv_open_rec : forall x e1 e2 n,
     x # open_expr_wrt_expr_rec n e2 e1 -> x # e1.
@@ -105,4 +106,24 @@ Proof.
     + inversion H0. subst. destruct (eq_dec x' x);
         eauto using fresh_ctx_fresh_expr.
     + apply IHΓ with x; auto.
+Qed.
+
+Lemma notin_open_var_notin_open_rec : forall e x n,
+    x `notin` fv_eexpr (e ⋆n^^ (ee_var_f x)) ->
+    forall v, e ⋆n^^ v = e.
+Proof.
+  intros e x.
+  induction e; unfold open_eexpr_wrt_eexpr in *; simpl; intros; auto;
+    try solve [rewrite IHe; auto | rewrite IHe1; auto; rewrite IHe2; auto].
+  - destruct (n0 == n).
+    + contradict H. simpl. auto.
+    + easy.
+Qed.
+
+Lemma notin_open_var_notin_open : forall e x v,
+    x `notin` fv_eexpr (e ⋆^ x) ->
+    e ⋆^^ v = e.
+Proof.
+  intros.
+  eapply notin_open_var_notin_open_rec; auto.
 Qed.

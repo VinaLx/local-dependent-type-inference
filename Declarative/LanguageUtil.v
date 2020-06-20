@@ -481,3 +481,12 @@ Ltac instantiate_colimits :=
     end
   end
 .
+
+Ltac instantiate_trivial_equals := repeat
+  match goal with
+  | H : ?a ~= ?a -> _ |- _ => specialize (H JMeq_refl)
+  | H : ?a  = ?a -> _ |- _ => specialize (H eq_refl)
+  end
+.
+
+Hint Extern 1 (lc_expr _) => instantiate_colimits : inst.

@@ -27,8 +27,6 @@ Proof.
   intros. reflexivity.
 Qed.
 
-Locate ",".
-
 Lemma ctx_app_cons_assoc : forall (Γ1 Γ2 : context) x A,
     Γ1 ,, Γ2 , x : A = Γ1 ,, (Γ2 , x : A).
 Proof.
