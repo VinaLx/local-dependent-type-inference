@@ -83,14 +83,14 @@ Proof.
   - pick fresh x' and apply s_pi ; solve_substitution.
   - rewrite subst_open_distr; auto.
     apply s_app with ([e3 / x] A0); auto using subst_mono.
-  - apply s_forall with (add x L `union` fv_eexpr (extract e3)) k;
+  - apply s_bind with (add x L `union` fv_eexpr (extract e3)) k;
       solve_substitution.
   - apply s_forall_l with (add x L) ([e3 / x] e) k;
       solve_substitution.
     + now apply subst_mono; auto.
     + rewrite <- subst_open_distr; auto.
   - pick fresh x' and apply s_forall_r; solve_substitution.
-  - pick fresh x' and apply s_forall_2; solve_substitution.
+  - pick fresh x' and apply s_forall; solve_substitution.
   - eauto.
 
   - destruct Γ2; inversion H.

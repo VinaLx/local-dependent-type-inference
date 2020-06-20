@@ -43,7 +43,7 @@ Inductive sized_usub : context -> expr -> expr -> expr -> nat -> Prop :=    (* d
      G ⊢ e1 <: e2 : e_pi A B | n2 ->
      mono_type e ->
      G ⊢ e_app e1 e <: e_app e2 e : B <^^> e | S (n1 + n2)
- | ss_forall : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind) n1 n2 n3,
+ | ss_bind : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind) n1 n2 n3,
      G ⊢ A <: A : e_kind k | n1 ->
      (forall x , x \notin L -> G , x : A ⊢ B  <^> x <: B  <^> x : * | n2) ->
      (forall x , x \notin L -> G , x : A ⊢ e1 <^> x <: e2 <^> x : B <^> x | n3) ->
@@ -62,7 +62,7 @@ Inductive sized_usub : context -> expr -> expr -> expr -> nat -> Prop :=    (* d
      G ⊢ A <: A : * | n2 ->
      (forall x, x \notin L -> G , x : B ⊢ A <: C <^> x : * | n3) ->
      G ⊢ A <: e_all B C : * | S (n1 + n2 + n3)
- | ss_forall_2 : forall (L:vars) (G:context) (A B C:expr) (k:kind) n1 n2,
+ | ss_forall : forall (L:vars) (G:context) (A B C:expr) (k:kind) n1 n2,
      G ⊢ A <: A : e_kind k | n1 ->
      (forall x, x \notin L -> G , x : A ⊢ B <^> x <: C <^> x : * | n2)  ->
      G ⊢ e_all A B <: e_all A C : * | S (n1 + n2)
@@ -116,14 +116,14 @@ Proof.
     solve_weakening_with H0.
     solve_weakening_with H2.
   - eauto.
-  - pick fresh x and apply ss_forall; eauto.
+  - pick fresh x and apply ss_bind; eauto.
     solve_weakening_with H0.
     solve_weakening_with H2.
   - pick fresh x and apply ss_forall_l; eauto.
     solve_weakening_with H1.
   - pick fresh x and apply ss_forall_r; eauto.
     solve_weakening_with H0.
-  - pick fresh x and apply ss_forall_2; eauto.
+  - pick fresh x and apply ss_forall; eauto.
     solve_weakening_with H0.
   - eauto.
 Qed.
@@ -236,7 +236,7 @@ Proof.
     + assoc_goal_and_apply H0. eapply wf_cons; eauto.
     + assoc_goal_and_apply H2. eapply wf_cons; eauto.
   - rewrite subst_open_distr; eauto using subst_mono.
-  - pick_fresh_with_dom_and_apply ss_forall; eauto.
+  - pick_fresh_with_dom_and_apply ss_bind; eauto.
     + assoc_goal_and_apply H0. eapply wf_cons; eauto.
     + assoc_goal_and_apply H2. eapply wf_cons; eauto.
     + rewrite subst_open_var_assoc, subst_extract; auto 2.
@@ -250,7 +250,7 @@ Proof.
     + intros. assoc_goal_and_apply H1. eapply wf_cons; eauto.
   - pick_fresh_with_dom_and_apply ss_forall_r; eauto.
     + assoc_goal_and_apply H0. eapply wf_cons; eauto.
-  - pick_fresh_with_dom_and_apply ss_forall_2; eauto.
+  - pick_fresh_with_dom_and_apply ss_forall; eauto.
     + assoc_goal_and_apply H0. eapply wf_cons; eauto.
   - eauto.
 Qed.
@@ -366,13 +366,13 @@ Proof.
   - exists (S (IHusub1 + IHusub2 + IHusub3 + IH0 + IH)).
     solve_unsized_sized_with ss_pi.
   - exists (S (IHusub + IH0 + IH)).
-    solve_unsized_sized_with ss_forall.
+    solve_unsized_sized_with ss_bind.
   - exists (S (IHusub1 + IHusub2 + IHusub3 + IH)).
     solve_unsized_sized_with ss_forall_l.
   - exists (S (IHusub1 + IHusub2 + IH)).
     solve_unsized_sized_with ss_forall_r.
   - exists (S (IHusub + IH)).
-    solve_unsized_sized_with ss_forall_2.
+    solve_unsized_sized_with ss_forall.
 Qed.
 
 Fixpoint forall_order (e : expr) : nat :=
@@ -671,7 +671,7 @@ Ltac solve_with_IHorder2 :=
    end
 .
 
-Ltac solve_l_forall_r_r_forall_2 :=
+Ltac solve_l_forall_r_r_forall :=
   pick fresh x and apply s_forall_r; eauto;
   solve_with_IHorder2.
 
@@ -698,14 +698,14 @@ Ltac prepare_left_judgement_2 :=
   end
 .
 
-Ltac solve_l_forall_2_r_forall_l :=
+Ltac solve_l_forall_r_forall_l :=
   prepare_left_judgement_2;
   pick fresh x and apply s_forall_l; eauto; solve_with_IHorder2.
 
-Ltac solve_l_forall_2_r_forall_2 :=
+Ltac solve_l_forall_r_forall :=
   match goal with
   | |- _ ⊢ e_all _ _ <: e_all _ _ : _ =>
-    pick fresh x and apply s_forall_2; eauto; solve_with_IHorder2
+    pick fresh x and apply s_forall; eauto; solve_with_IHorder2
   end
 .
 
@@ -742,7 +742,7 @@ Ltac solve_app :=
 Ltac solve_bind :=
   match goal with
   | |- _ ⊢ e_bind _ _ <: e_bind _ _ : _ =>
-    pick fresh x and apply s_forall; eauto; solve_with_IHtsz
+    pick fresh x and apply s_bind; eauto; solve_with_IHtsz
   end
 .
 
@@ -809,9 +809,9 @@ Ltac easy_solves_r :=
       | solve_app
       | solve_bind
       | solve_l_forall_r_r_forall_l
-      | solve_l_forall_r_r_forall_2
-      | solve_l_forall_2_r_forall_l
-      | solve_l_forall_2_r_forall_2
+      | solve_l_forall_r_r_forall
+      | solve_l_forall_r_forall_l
+      | solve_l_forall_r_forall
       ].
 
 Ltac solve_by_case_analysis :=

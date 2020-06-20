@@ -23,6 +23,8 @@ Inductive expr : Set :=  (*r expressions *)
  | e_all (A:expr) (B:expr) (*r implicit function type *)
  | e_bind (A:expr) (e:expr) (*r implicit lambda *).
 
+Definition context : Set := (list (exprvar * expr)).
+
 Inductive eexpr : Set :=  (*r extracted expression *)
  | ee_var_b (_:nat)
  | ee_var_f (x:exprvar)
@@ -34,8 +36,6 @@ Inductive eexpr : Set :=  (*r extracted expression *)
  | ee_bind (ee:eexpr)
  | ee_pi (eA:eexpr) (eB:eexpr)
  | ee_all (eA:eexpr) (eB:eexpr).
-
-Definition context : Set := (list (exprvar * expr)).
 
 (* EXPERIMENTAL *)
 (** auxiliary functions on the new list types *)
@@ -240,6 +240,39 @@ Inductive mono_type : expr -> Prop :=    (* defn mono_type *)
       ( forall x , x \notin  L  -> mono_type  ( open_expr_wrt_expr B (e_var_f x) )  )  ->
      mono_type (e_bind A B).
 
+(* defns Reduce *)
+Inductive reduce : expr -> expr -> Prop :=    (* defn reduce *)
+ | r_app : forall (e1 e3 e2:expr),
+     lc_expr e3 ->
+     reduce e1 e2 ->
+     reduce (e_app e1 e3) (e_app e2 e3)
+ | r_beta : forall (A e1 e2:expr),
+     lc_expr A ->
+     lc_expr (e_abs A e1) ->
+     lc_expr e2 ->
+     reduce (e_app  ( (e_abs A e1) )  e2)  (open_expr_wrt_expr  e1   e2 ) 
+ | r_inst : forall (A e1 e2 e:expr),
+     lc_expr A ->
+     lc_expr (e_bind A e1) ->
+     lc_expr e2 ->
+     mono_type e ->
+     reduce (e_app  ( (e_bind A e1) )  e2) (e_app  (  (open_expr_wrt_expr  e1   e )  )  e2).
+
+(* defns ExtractedReduce *)
+Inductive ereduce : eexpr -> eexpr -> Prop :=    (* defn ereduce *)
+ | er_app : forall (ee1 ee3 ee2:eexpr),
+     lc_eexpr ee3 ->
+     ereduce ee1 ee2 ->
+     ereduce (ee_app ee1 ee3) (ee_app ee2 ee3)
+ | er_beta : forall (ee1 ee2:eexpr),
+     lc_eexpr (ee_abs ee1) ->
+     lc_eexpr ee2 ->
+     ereduce (ee_app  ( (ee_abs ee1) )  ee2)  (open_eexpr_wrt_eexpr  ee1   ee2 ) 
+ | er_elim : forall (L:vars) (ee1 ee2:eexpr),
+     lc_eexpr (ee_bind ee1) ->
+     lc_eexpr ee2 ->
+      ( forall x , x \notin  L  -> ereduce (ee_app  ( (ee_bind ee1) )  ee2) (ee_app  ( open_eexpr_wrt_eexpr ee1 (ee_var_f x) )  ee2) ) .
+
 (* defns UnifiedSubtyping *)
 Inductive wf_context : context -> Prop :=    (* defn wf_context *)
  | wf_nil : 
@@ -280,7 +313,7 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
       (usub  G   e   e   A )  ->
      usub G e1 e2 (e_pi A B) ->
      usub G (e_app e1 e) (e_app e2 e)  (open_expr_wrt_expr  B   e ) 
- | s_forall : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind),
+ | s_bind : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind),
        (usub  G   A   A   (e_kind k) )   ->
       ( forall x , x \notin  L  ->  (usub   (( x ,  A ) ::  G )     ( open_expr_wrt_expr B (e_var_f x) )     ( open_expr_wrt_expr B (e_var_f x) )    (e_kind k_star) )  )  ->
       ( forall x , x \notin  L  -> usub  (( x ,  A ) ::  G )   ( open_expr_wrt_expr e1 (e_var_f x) )   ( open_expr_wrt_expr e2 (e_var_f x) )   ( open_expr_wrt_expr B (e_var_f x) )  )  ->
@@ -299,7 +332,7 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
       (usub  G   A   A   (e_kind k_star) )  ->
       ( forall x , x \notin  L  -> usub  (( x ,  B ) ::  G )  A  ( open_expr_wrt_expr C (e_var_f x) )  (e_kind k_star) )  ->
      usub G A (e_all B C) (e_kind k_star)
- | s_forall_2 : forall (L:vars) (G:context) (A B C:expr) (k:kind),
+ | s_forall : forall (L:vars) (G:context) (A B C:expr) (k:kind),
        (usub  G   A   A   (e_kind k) )   ->
       ( forall x , x \notin  L  -> usub  (( x ,  A ) ::  G )   ( open_expr_wrt_expr B (e_var_f x) )   ( open_expr_wrt_expr C (e_var_f x) )  (e_kind k_star) )  ->
      usub G (e_all A B) (e_all A C) (e_kind k_star)
@@ -356,41 +389,8 @@ Inductive evalue : eexpr -> Prop :=    (* defn evalue *)
      lc_eexpr (ee_all eA eB) ->
      evalue (ee_all eA eB).
 
-(* defns Reduce *)
-Inductive reduce : expr -> expr -> Prop :=    (* defn reduce *)
- | r_app : forall (e1 e3 e2:expr),
-     lc_expr e3 ->
-     reduce e1 e2 ->
-     reduce (e_app e1 e3) (e_app e2 e3)
- | r_beta : forall (A e1 e2:expr),
-     lc_expr A ->
-     lc_expr (e_abs A e1) ->
-     lc_expr e2 ->
-     reduce (e_app  ( (e_abs A e1) )  e2)  (open_expr_wrt_expr  e1   e2 ) 
- | r_inst : forall (A e1 e2 e:expr),
-     lc_expr A ->
-     lc_expr (e_bind A e1) ->
-     lc_expr e2 ->
-     mono_type e ->
-     reduce (e_app  ( (e_bind A e1) )  e2) (e_app  (  (open_expr_wrt_expr  e1   e )  )  e2).
-
-(* defns ExtractedReduce *)
-Inductive ereduce : eexpr -> eexpr -> Prop :=    (* defn ereduce *)
- | er_app : forall (ee1 ee3 ee2:eexpr),
-     lc_eexpr ee3 ->
-     ereduce ee1 ee2 ->
-     ereduce (ee_app ee1 ee3) (ee_app ee2 ee3)
- | er_beta : forall (ee1 ee2:eexpr),
-     lc_eexpr (ee_abs ee1) ->
-     lc_eexpr ee2 ->
-     ereduce (ee_app  ( (ee_abs ee1) )  ee2)  (open_eexpr_wrt_eexpr  ee1   ee2 ) 
- | er_elim : forall (L:vars) (ee1 ee2:eexpr),
-     lc_eexpr (ee_bind ee1) ->
-     lc_eexpr ee2 ->
-      ( forall x , x \notin  L  -> ereduce (ee_app  ( (ee_bind ee1) )  ee2) (ee_app  ( open_eexpr_wrt_eexpr ee1 (ee_var_f x) )  ee2) ) .
-
 
 (** infrastructure *)
-Hint Constructors mono_type wf_context usub value evalue reduce ereduce lc_expr lc_eexpr : core.
+Hint Constructors mono_type reduce ereduce wf_context usub value evalue lc_expr lc_eexpr : core.
 
 

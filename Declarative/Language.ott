@@ -142,6 +142,41 @@ monotype B
 monotype bind x : A . B
 
 defns
+Reduce :: '' ::=
+
+defn
+e1 --> e2 :: :: reduce :: 'r_' {{ com reduction in source language }}
+by
+
+e1 --> e2
+---------------- :: app
+e1 e3 --> e2 e3
+
+-------------------------------------- :: beta
+(lambda x : A. e1) e2 --> [e2 / x] e1
+
+monotype e
+--------------------------------------- :: inst
+(bind x : A. e1) e2 --> ([e / x] e1) e2
+
+defns
+ExtractedReduce :: '' ::=
+
+defn
+ee1 *--> ee2 :: :: ereduce :: 'er_' {{ com reduction in target language}}
+by
+
+ee1 *--> ee2
+--------------------- :: app
+ee1 ee3 *--> ee2 ee3
+
+----------------------------------- :: beta
+(elambda x. ee1) ee2 *--> [ee2 / x] ee1
+
+----------------------------------- :: elim
+(ebind   x. ee1) ee2 *--> ee1 ee2
+
+defns
 UnifiedSubtyping :: '' ::=
 
 defn
@@ -203,7 +238,7 @@ G , x : A |- B : *
 G , x : A |- e1 <: e2 : B
 x # e1* ,,
 x # e2*
-------------------------------------------------------- :: forall
+------------------------------------------------------- :: bind
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
 monotype e
@@ -222,7 +257,7 @@ G |- A <: forall x : B. C : *
 
 G |- A : k ,,
 G , x : A |- B <: C : *
--------------------------------------------- :: forall_2
+-------------------------------------------- :: forall
 G |- forall x : A. B <: forall x : A. C : *
 
 G |- e1 <: e2 : A ,,
@@ -289,38 +324,3 @@ evalue epi     x : eA. eB
 
 ------------------------ :: all
 evalue eforall x : eA. eB
-
-defns
-Reduce :: '' ::=
-
-defn
-e1 --> e2 :: :: reduce :: 'r_' {{ com reduction in source language }}
-by
-
-e1 --> e2
----------------- :: app
-e1 e3 --> e2 e3
-
--------------------------------------- :: beta
-(lambda x : A. e1) e2 --> [e2 / x] e1
-
-monotype e
---------------------------------------- :: inst
-(bind x : A. e1) e2 --> ([e / x] e1) e2
-
-defns
-ExtractedReduce :: '' ::=
-
-defn
-ee1 *--> ee2 :: :: ereduce :: 'er_' {{ com reduction in target language}}
-by
-
-ee1 *--> ee2
---------------------- :: app
-ee1 ee3 *--> ee2 ee3
-
------------------------------------ :: beta
-(elambda x. ee1) ee2 *--> [ee2 / x] ee1
-
------------------------------------ :: elim
-(ebind   x. ee1) ee2 *--> ee1 ee2

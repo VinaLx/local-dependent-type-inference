@@ -42,7 +42,7 @@ Proof.
     + assumption.
     + now apply IHHsub1.
     + now apply IHHsub2.
-  - apply s_forall with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k; auto 2.
+  - apply s_bind with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k; auto 2.
     + intros. distribute_ctx. apply H0; simpl; eauto 4.
     + intros. distribute_ctx. apply H2; simpl; eauto 4.
   - apply s_forall_l with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) e k.
@@ -67,7 +67,7 @@ Proof.
         ** assumption.
         ** auto.
         ** now apply IHHsub1.
-  - apply s_forall_2 with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k.
+  - apply s_forall with (L `union` dom (Γ1 ,, Γ2 ,, Γ3)) k.
     + now apply IHHsub.
     + intros. distribute_ctx. apply H0.
       * auto.
@@ -114,10 +114,10 @@ Proof.
   - apply s_abs with L k1 k2; eauto 3.
   - apply s_pi with L k1; eauto 3.
   - apply s_app with A; eauto 3.
-  - apply s_forall with L k; eauto.
+  - apply s_bind with L k; eauto.
   - assumption.
-  - apply s_forall_2 with L k; eauto.
-  - apply s_forall_2 with L k; eauto.
+  - apply s_forall with L k; eauto.
+  - apply s_forall with L k; eauto.
   - apply s_sub with A k; eauto.
 Qed.
 
@@ -131,12 +131,12 @@ Proof.
   - eapply s_abs; eauto.
   - eapply s_pi; eauto.
   - now apply s_app with A.
-  - now apply s_forall with L k.
-  - apply s_forall_2 with L k.
+  - now apply s_bind with L k.
+  - apply s_forall with L k.
     + assumption.
     + apply H3.
   - assumption.
-  - apply s_forall_2 with L k; assumption.
+  - apply s_forall with L k; assumption.
   - eauto.
 Qed.
 
@@ -172,7 +172,7 @@ Proof.
   - pick fresh x' and apply s_abs; eauto 3.
   - pick fresh x' and apply s_pi; eauto 3.
   - eauto.
-  - pick fresh x' and apply s_forall; eauto 3.
+  - pick fresh x' and apply s_bind; eauto 3.
   - apply s_forall_l with L e k0; eauto 3.
   - apply s_forall_r with (add x L) k0; auto.
   - eauto.
