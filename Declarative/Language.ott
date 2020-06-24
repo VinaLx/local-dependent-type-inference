@@ -142,6 +142,36 @@ monotype B
 monotype bind x : A . B
 
 defns
+Value :: '' ::=
+
+defn
+value e :: :: value :: 'v_'
+  {{ tex [[e]] ~ \mathbf{value} }}
+  {{ com values in source language }}
+by
+
+--------- :: kind
+value k
+
+--------- :: num
+value n
+
+--------- :: int
+value int
+
+---------------------- :: abs
+value lambda x : A. e
+
+---------------------- :: bind
+value bind   x : A. e
+
+---------------------- :: pi
+value pi     x : A. B
+
+---------------------- :: all
+value forall x : A. B
+
+defns
 Reduce :: '' ::=
 
 defn
@@ -160,6 +190,36 @@ monotype e
 (bind x : A. e1) e2 --> ([e / x] e1) e2
 
 defns
+ExtractedValue :: '' ::=
+
+defn
+evalue ee :: :: evalue :: 'ev_'
+  {{ tex [[ee]] ~ \mathbf{value} }}
+  {{ com values in extracted language }}
+by
+
+---------- :: kind
+evalue k
+
+---------- :: num
+evalue n
+
+---------- :: int
+evalue int
+
+--------------------- :: abs
+evalue elambda x. ee
+
+--------------------- :: bind
+evalue ebind   x. ee
+
+-------------------------- :: pi
+evalue epi     x : eA. eB
+
+-------------------------- :: all
+evalue eforall x : eA. eB
+
+defns
 ExtractedReduce :: '' ::=
 
 defn
@@ -170,11 +230,11 @@ ee1 *--> ee2
 --------------------- :: app
 ee1 ee3 *--> ee2 ee3
 
------------------------------------ :: beta
+---------------------------------------- :: beta
 (elambda x. ee1) ee2 *--> [ee2 / x] ee1
 
------------------------------------ :: elim
-(ebind   x. ee1) ee2 *--> ee1 ee2
+-------------------------------- :: elim
+(ebind x. ee1) ee2 *--> ee1 ee2
 
 defns
 UnifiedSubtyping :: '' ::=
@@ -196,7 +256,7 @@ defn
 G |- e1 <: e2 : A :: :: usub :: 's_' {{ com Unified Subtyping }}
 by
 
-|- G
+|- G ,,
 x : A in G
 ------------------- :: var
 G |- x <: x : A
@@ -222,7 +282,7 @@ G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B
 G |- A1 : k1 ,,
 G |- A2 : k1 ,,
 G |- A2 <: A1 : k1
-G , x : A1 |- B1 <: B1 : k2 ,,
+G , x : A1 |- B1 : k2 ,,
 G , x : A2 |- B1 <: B2 : k2
 ---------------------------------------- :: pi
 G |- pi x : A1. B1 <: pi x : A2. B2 : k2
@@ -264,63 +324,3 @@ G |- e1 <: e2 : A ,,
 G |- A  <: B  : k
 ------------------ :: sub
 G |- e1 <: e2 : B
-
-defns
-Value :: '' ::=
-
-defn
-value e :: :: value :: 'v_'
-  {{ tex [[e]] ~ \mathbf{value} }}
-  {{ com values in source language }}
-by
-
---------- :: kind
-value k
-
---------- :: num
-value n
-
---------- :: int
-value int
-
----------------------- :: abs
-value lambda x : A. e
-
----------------------- :: bind
-value bind   x : A. e
-
----------------------- :: pi
-value pi     x : A. B
-
----------------------- :: all
-value forall x : A. B
-
-defns
-ExtractedValue :: '' ::=
-
-defn
-evalue ee :: :: evalue :: 'ev_'
-  {{ tex [[ee]] ~ \mathbf{value} }}
-  {{ com values in extracted language }}
-by
-
----------- :: kind
-evalue k
-
----------- :: num
-evalue n
-
----------- :: int
-evalue int
-
---------------------- :: abs
-evalue elambda x. ee
-
---------------------- :: bind
-evalue ebind   x. ee
-
------------------------- :: pi
-evalue epi     x : eA. eB
-
------------------------- :: all
-evalue eforall x : eA. eB
