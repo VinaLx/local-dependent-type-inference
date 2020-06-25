@@ -469,15 +469,22 @@ Proof.
       apply H2. all: auto.
 Qed.
 
+Ltac instantiate_colimit x H :=
+  match type of H with
+  | forall x, x `notin` ?L -> _ =>
+    let H1 := fresh "H" in
+    assert (H1 : x `notin` L) by eauto;
+    specialize (H x H1); clear H1
+  end
+.
+
+
 Ltac instantiate_colimits :=
   match goal with
   | Fr : ?x `notin` ?L1 |- _ => repeat
     match goal with
     | H : forall x, x `notin` ?L2 -> _ |- _ =>
-      let H2 := fresh "H" in
-      assert (H2 : x `notin` L2) by eauto;
-      specialize (H x H2);
-      clear H2
+      instantiate_colimit x H
     end
   end
 .

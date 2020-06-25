@@ -51,6 +51,7 @@ formula :: formula_ ::=
   | x # e *    :: M :: exp_fresh
     {{ coq ([[x]] `notin` fv_eexpr (extract [[e]])) }}
     {{ tex [[x]] ~ \# ~ \lvert [[e]] \rvert }}
+  | G |= e : A :: M :: styping {{ coq susub [[G]] [[e]] [[e]] [[A]] }}
 
 terminals :: 'terminal_' ::=
   | lambda :: :: lambda {{ tex \lambda }}
@@ -324,3 +325,92 @@ G |- e1 <: e2 : A ,,
 G |- A  <: B  : k
 ------------------ :: sub
 G |- e1 <: e2 : B
+
+defns
+SimplifiedUnifiedSubtyping :: '' ::=
+
+defn
+|= G :: :: swf_context :: 'swf_' {{ com Context Wellformedness }}
+by
+
+------ :: nil
+|= nil
+
+|= G  ,,
+x # G ,,
+G |= A : k
+------------ :: cons
+|= G , x : A
+
+defn
+G |= e1 <: e2 : A :: :: susub :: 'ss_' {{ com Unified Subtyping }}
+by
+
+|= G ,,
+x : A in G
+------------------- :: var
+G |= x <: x : A
+
+|= G
+------------------- :: lit
+G |= n <: n : int
+
+|= G
+------------------- :: star
+G |= * <: * : box
+
+|= G
+------------------- :: int
+G |= int <: int : *
+
+% G |= A : k1 ,,
+G , x : A |= B : k2
+G , x : A |= e1 <: e2 : B
+------------------------------------------------------- :: abs
+G |= lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B
+
+% G |= A1 : k1 ,,
+% G |= A2 : k1 ,,
+G |= A2 <: A1 : k1
+G , x : A1 |= B1 : k2 ,,
+G , x : A2 |= B1 <: B2 : k2
+---------------------------------------- :: pi
+G |= pi x : A1. B1 <: pi x : A2. B2 : k2
+
+monotype e ,,
+G |= e : A
+G |= e1 <: e2 : pi x : A. B
+------------------------------- :: app
+G |= e1 e <: e2 e : [e/x]B
+
+% G |= A : k ,,
+G , x : A |= B : *
+G , x : A |= e1 <: e2 : B
+x # e1* ,,
+x # e2*
+------------------------------------------------------- :: bind
+G |= bind x : A. e1 <: bind x : A. e2 : forall x : A. B
+
+monotype e
+% G |= A : k ,,
+G |= e : A
+G |= [e/x] B <: C : * ,,
+G , x : A |= B : *
+------------------------------- :: forall_l
+G |= forall x : A. B <: C : *
+
+% G |= B : k ,,
+G |= A : *
+G , x : B |= A <: C : *
+------------------------------- :: forall_r
+G |= A <: forall x : B. C : *
+
+% G |= A : k ,,
+G , x : A |= B <: C : *
+-------------------------------------------- :: forall
+G |= forall x : A. B <: forall x : A. C : *
+
+G |= e1 <: e2 : A ,,
+G |= A  <: B  : k
+------------------ :: sub
+G |= e1 <: e2 : B
