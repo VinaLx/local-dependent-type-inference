@@ -16,7 +16,7 @@ Theorem soundness : forall Γ e1 e2 A,
     wf_soundness : forall Γ, ⊢ Γ -> ⊨ Γ.
 Proof.
   - intros * Sub. destruct Sub;
-    try solve [clear soundness; constructor; auto | econstructor; eauto 3].
+    try solve [clear soundness; constructor; auto | econstructor; eauto 3 ].
   - intros * Wf. destruct Wf.
     + constructor.
     + econstructor; eauto.

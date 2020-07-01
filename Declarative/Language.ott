@@ -45,12 +45,13 @@ formula :: formula_ ::=
   % a trick to combine with sed script for tex generation
   % to put several premises on the same line
   | formula ,, :: M :: cont     {{ coq [[formula]] }}
+  | formula << :: M :: redundant {{ tex \colorbox{gray}{$ \displaystyle [[formula]] $} }}
   | x : A in G :: M :: binding   {{ coq (binds [[x]] [[A]] [[G]]) }}
   | G |- e : A :: M :: typing    {{ coq (usub [[G]] [[e]] [[e]] [[A]]) }}
   | x # G      :: M :: ctx_fresh {{ coq ([[x]] `notin` dom [[G]]) }}
   | x # e *    :: M :: exp_fresh
     {{ coq ([[x]] `notin` fv_eexpr (extract [[e]])) }}
-    {{ tex [[x]] ~ \# ~ \lvert [[e]] \rvert }}
+    {{ tex [[x]] ~ \text{fresh in} ~ \lvert [[e]] \rvert }}
   | G |= e : A :: M :: styping {{ coq susub [[G]] [[e]] [[e]] [[A]] }}
 
 terminals :: 'terminal_' ::=
@@ -62,7 +63,7 @@ terminals :: 'terminal_' ::=
   | |- :: :: vdash {{ tex \vdash }}
   | .  :: :: dot   {{ tex .~ }}
   | <: :: :: sub   {{ tex \leq }}
-  | #  :: :: fresh {{ tex ~\#~ }}
+  | #  :: :: fresh {{ tex ~\text{fresh in}~ }}
   | *  :: :: star  {{ tex \star }}
   | box :: :: box  {{ tex \square }}
   | ,  :: :: comma {{ tex ,~ }}
@@ -75,6 +76,7 @@ terminals :: 'terminal_' ::=
   | nil  :: :: nil {{ tex \varnothing }}
   | int  :: :: int {{ tex \mathbb{N} }}
   | ,,   :: :: cont {{ tex \qquad }}
+  | |=   :: :: vDash {{ tex \vdash_s }}
 
 substitutions
   single e  x :: subst
@@ -274,14 +276,14 @@ G |- * <: * : box
 ------------------- :: int
 G |- int <: int : *
 
-G |- A : k1 ,,
+G |- A : k1 ,, <<
 G , x : A |- B : k2
 G , x : A |- e1 <: e2 : B
 ------------------------------------------------------- :: abs
 G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B
 
-G |- A1 : k1 ,,
-G |- A2 : k1 ,,
+G |- A1 : k1 ,, <<
+G |- A2 : k1 ,, <<
 G |- A2 <: A1 : k1
 G , x : A1 |- B1 : k2 ,,
 G , x : A2 |- B1 <: B2 : k2
@@ -294,7 +296,7 @@ G |- e1 <: e2 : pi x : A. B
 ------------------------------- :: app
 G |- e1 e <: e2 e : [e/x]B
 
-G |- A : k ,,
+G |- A : k ,, <<
 G , x : A |- B : *
 G , x : A |- e1 <: e2 : B
 x # e1* ,,
@@ -303,20 +305,20 @@ x # e2*
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
 monotype e
-G |- A : k ,,
+G |- A : k ,, <<
 G |- e : A
 G |- [e/x] B <: C : * ,,
 G , x : A |- B : *
 ------------------------------- :: forall_l
 G |- forall x : A. B <: C : *
 
-G |- B : k ,,
+G |- B : k ,, <<
 G |- A : *
 G , x : B |- A <: C : *
 ------------------------------- :: forall_r
 G |- A <: forall x : B. C : *
 
-G |- A : k ,,
+G |- A : k ,, <<
 G , x : A |- B <: C : *
 -------------------------------------------- :: forall
 G |- forall x : A. B <: forall x : A. C : *
@@ -330,7 +332,7 @@ defns
 SimplifiedUnifiedSubtyping :: '' ::=
 
 defn
-|= G :: :: swf_context :: 'swf_' {{ com Context Wellformedness }}
+|= G :: :: swf_context :: 'swf_' {{ com Context Wellformedness (Simplified Version) }}
 by
 
 ------ :: nil
@@ -343,7 +345,7 @@ G |= A : k
 |= G , x : A
 
 defn
-G |= e1 <: e2 : A :: :: susub :: 'ss_' {{ com Unified Subtyping }}
+G |= e1 <: e2 : A :: :: susub :: 'ss_' {{ com Unified Subtyping (Simplified Version) }}
 by
 
 |= G ,,
@@ -364,7 +366,7 @@ G |= * <: * : box
 G |= int <: int : *
 
 % G |= A : k1 ,,
-G , x : A |= B : k2
+G , x : A |= B : k2 ,,
 G , x : A |= e1 <: e2 : B
 ------------------------------------------------------- :: abs
 G |= lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B
@@ -391,7 +393,7 @@ x # e2*
 ------------------------------------------------------- :: bind
 G |= bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
-monotype e
+monotype e ,,
 % G |= A : k ,,
 G |= e : A
 G |= [e/x] B <: C : * ,,
@@ -400,7 +402,7 @@ G , x : A |= B : *
 G |= forall x : A. B <: C : *
 
 % G |= B : k ,,
-G |= A : *
+G |= A : * ,,
 G , x : B |= A <: C : *
 ------------------------------- :: forall_r
 G |= A <: forall x : B. C : *

@@ -1,5 +1,10 @@
-/^\\documentclass/a\
-\\usepackage{mathtools}
+/^\\documentclass/ {
+  s/11pt/10pt/
+  a\
+  \\usepackage{mathtools}
+}
+
+s/^\\usepackage{color}/\\usepackage{xcolor}/
 
 # delete the "XX Good 0 Bad" output
 /verbatim/,/verbatim/d
@@ -14,9 +19,12 @@
 
 # handles newlines for premises of rules
 /\\newcommand{\\ottpremise}/a\
-\\newcommand{\\ottpremisecont}[1]{ #1 }
+\\newcommand{\\ottpremisecont}[1]{ #1 \\qquad }
 
-/\\ottpremise.*\\qquad/s/ottpremise/ottpremisecont/g
+/\\ottpremise.*\\qquad/ {
+  s/\\qquad//
+  s/ottpremise/ottpremisecont/
+}
 
 # centering adjustment of array instead of left
 /\\newcommand{\\ottdrule}/s/{array}{l}/{array}{c}/g
@@ -32,4 +40,9 @@
     s/\\ottusedrule{//
     s/}$/ \\\\/
   }
+  # adjust line breaks for rules
+  /^\\ottdrulemonoXX(kind|var|int|app|lambda)/s/\\\\/\\qquad/
+  /^\\ottdrule(s)?sXX(var|lit|star|abs|app|forall{}|forallXXl)/s/\\\\/\\qquad/
+  /^\\ottdrule.*beta/s/\\\\/\\qquad/
+  /^\\ottdrule(e)?vXX(kind|num|abs|pi)/s/\\\\/\\qquad/
 }
