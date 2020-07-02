@@ -18,6 +18,8 @@ expr, e, A, B, C :: 'e_' ::= {{ com expressions }}
   | pi     x : A . B :: :: pi   (+ bind x in B +) {{ com dependent product }}
   | forall x : A . B :: :: all  (+ bind x in B +) {{ com implicit function type }}
   | bind   x : A . e :: :: bind (+ bind x in e +) {{ com implicit lambda }}
+  | castup [ A ] e   :: :: castup {{ com cast up }}
+  | castdn [ B ] e   :: :: castdn {{ com cast down }}
   | ( e )         :: S :: paren {{ coq ([[e]]) }}
   | [ e1 / x ] e2 :: M :: subst {{ coq (open_expr_wrt_expr [[x e2]] [[e1]]) }}
 
@@ -45,7 +47,8 @@ formula :: formula_ ::=
   % a trick to combine with sed script for tex generation
   % to put several premises on the same line
   | formula ,, :: M :: cont     {{ coq [[formula]] }}
-  | formula << :: M :: redundant {{ tex \colorbox{gray}{$ \displaystyle [[formula]] $} }}
+  | formula << :: M :: redundant
+     {{ coq [[formula]] }} {{ tex \colorbox{gray}{$ \displaystyle [[formula]] $} }}
   | x : A in G :: M :: binding   {{ coq (binds [[x]] [[A]] [[G]]) }}
   | G |- e : A :: M :: typing    {{ coq (usub [[G]] [[e]] [[e]] [[A]]) }}
   | x # G      :: M :: ctx_fresh {{ coq ([[x]] `notin` dom [[G]]) }}
@@ -77,6 +80,9 @@ terminals :: 'terminal_' ::=
   | int  :: :: int {{ tex \mathbb{N} }}
   | ,,   :: :: cont {{ tex \qquad }}
   | |=   :: :: vDash {{ tex \vdash_s }}
+  | ]    :: :: rbracket {{ tex ]~ }}
+  | castup :: :: castup {{ tex \mathrm{cast}_\Uparrow   }}
+  | castdn :: :: castdn {{ tex \mathrm{cast}_\Downarrow }}
 
 substitutions
   single e  x :: subst
@@ -99,6 +105,8 @@ Fixpoint extract (e : expr) : eexpr :=
   | e_bind A b => ee_bind (extract b)
   | e_pi   A B => ee_pi   (extract A) (extract B)
   | e_all  A B => ee_all  (extract A) (extract B)
+  | e_castup A e => extract e
+  | e_castdn A e => extract e
   end
 .
 }} % embed coq
@@ -144,6 +152,16 @@ monotype B
 ------------------------ :: bind
 monotype bind x : A . B
 
+monotype A ,,
+monotype e
+---------------------- :: castup
+monotype castup [A] e
+
+monotype B ,,
+monotype e
+---------------------- :: castdn
+monotype castdn [B] e
+
 defns
 Value :: '' ::=
 
@@ -174,11 +192,16 @@ value pi     x : A. B
 ---------------------- :: all
 value forall x : A. B
 
+value e
+------------------- :: castup
+value castup [A] e
+
 defns
 Reduce :: '' ::=
 
 defn
 e1 --> e2 :: :: reduce :: 'r_' {{ com reduction in source language }}
+
 by
 
 e1 --> e2
@@ -191,6 +214,19 @@ e1 e3 --> e2 e3
 monotype e
 --------------------------------------- :: inst
 (bind x : A. e1) e2 --> ([e / x] e1) e2
+
+e1 --> e2
+-------------------------------- :: castup
+castup [A] e1 --> castup [A] e2
+
+e1 --> e2
+-------------------------------- :: castdn
+castdn [A] e1 --> castdn [A] e2
+
+value e
+-------------------------------- :: cast_elim
+castdn [A] (castup [B] e) --> e
+
 
 defns
 ExtractedValue :: '' ::=
@@ -276,14 +312,14 @@ G |- * <: * : box
 ------------------- :: int
 G |- int <: int : *
 
-G |- A : k1 ,, <<
+% G |- A : k1 ,, <<
 G , x : A |- B : k2
 G , x : A |- e1 <: e2 : B
 ------------------------------------------------------- :: abs
 G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B
 
-G |- A1 : k1 ,, <<
-G |- A2 : k1 ,, <<
+% G |- A1 : k1 ,, <<
+% G |- A2 : k1 ,, <<
 G |- A2 <: A1 : k1
 G , x : A1 |- B1 : k2 ,,
 G , x : A2 |- B1 <: B2 : k2
@@ -296,7 +332,7 @@ G |- e1 <: e2 : pi x : A. B
 ------------------------------- :: app
 G |- e1 e <: e2 e : [e/x]B
 
-G |- A : k ,, <<
+% G |- A : k ,, <<
 G , x : A |- B : *
 G , x : A |- e1 <: e2 : B
 x # e1* ,,
@@ -304,21 +340,33 @@ x # e2*
 ------------------------------------------------------- :: bind
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
+G |- A : k
+A --> B
+G |- e1 <: e2 : B
+--------------------------------------- :: castup
+G |- castup [A] e1 <: castup [A] e2 : A
+
+G |- B : k
+A --> B
+G |- e1 <: e2 : A
+-------------------------------------- :: castdn
+G |- castdn [B] e1 <: castdn [B] e2 : A
+
 monotype e
-G |- A : k ,, <<
+% G |- A : k ,, <<
 G |- e : A
 G |- [e/x] B <: C : * ,,
 G , x : A |- B : *
 ------------------------------- :: forall_l
 G |- forall x : A. B <: C : *
 
-G |- B : k ,, <<
+% G |- B : k ,, <<
 G |- A : *
 G , x : B |- A <: C : *
 ------------------------------- :: forall_r
 G |- A <: forall x : B. C : *
 
-G |- A : k ,, <<
+% G |- A : k ,, <<
 G , x : A |- B <: C : *
 -------------------------------------------- :: forall
 G |- forall x : A. B <: forall x : A. C : *
@@ -392,6 +440,18 @@ x # e1* ,,
 x # e2*
 ------------------------------------------------------- :: bind
 G |= bind x : A. e1 <: bind x : A. e2 : forall x : A. B
+
+G |= A : k
+A --> B
+G |= e1 <: e2 : B
+--------------------------------------- :: castup
+G |= castup [A] e1 <: castup [A] e2 : A
+
+G |= B : k
+A --> B
+G |= e1 <: e2 : A
+-------------------------------------- :: castdn
+G |= castdn [B] e1 <: castdn [B] e2 : A
 
 monotype e ,,
 % G |= A : k ,,
