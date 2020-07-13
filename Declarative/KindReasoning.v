@@ -131,7 +131,7 @@ Qed.
 Hint Resolve head_kind_S : core.
 
 Lemma head_kind_invert_subst_rec : forall A e k m n,
-    head_kind (open_expr_wrt_expr_rec n e A) k m ->
+    head_kind (A <n> ^^ e) k m ->
     head_kind e k m \/ head_kind A k m.
 Proof.
   induction A; simpl; intros e k' m' n' K; try solve [inversion K].
@@ -142,14 +142,14 @@ Proof.
 Qed.
 
 Lemma head_kind_invert_subst : forall A e k n,
-    head_kind (A <^^> e) k n -> head_kind e k n \/ head_kind A k n.
+    head_kind (A ^^ e) k n -> head_kind e k n \/ head_kind A k n.
 Proof.
   unfold open_expr_wrt_expr.
   intros. now apply head_kind_invert_subst_rec with 0.
 Qed.
 
 Lemma head_kind_invert_subst_var : forall A x k n,
-    head_kind (A <^> x) k n -> head_kind A k n.
+    head_kind (A ^` x) k n -> head_kind A k n.
 Proof.
   intros.
   apply head_kind_invert_subst in H as [|].
@@ -158,19 +158,19 @@ Proof.
 Qed.
 
 Lemma head_kind_subst_rec : forall A e k m n,
-    head_kind A k m -> head_kind (open_expr_wrt_expr_rec n e A) k m.
+    head_kind A k m -> head_kind (A <n> ^^ e) k m.
 Proof.
   induction A; simpl; intros e k' m' n' K; inversion K; eauto.
 Qed.
 
 Lemma head_kind_subst : forall A e k n,
-    head_kind A k n -> head_kind (A <^^> e) k n.
+    head_kind A k n -> head_kind (A ^^ e) k n.
 Proof.
   intros. now apply head_kind_subst_rec.
 Qed.
 
 Lemma head_kind_subst_var : forall A x k n,
-    head_kind A k n -> head_kind (A <^> x) k n.
+    head_kind A k n -> head_kind (A ^` x) k n.
 Proof.
   intros. now apply head_kind_subst_rec.
 Qed.
@@ -184,7 +184,7 @@ Lemma head_kind_not_star : forall Γ e k n,
 Proof.
   intros. generalize dependent k.
   dependent induction H; intros k' K; inversion K; subst.
-  - pick fresh x. apply H5 with x k'; eauto.
+  - pick fresh x. apply H3 with x k'; eauto.
   - pick fresh x. apply H4 with x k'; eauto.
   - now apply IHusub2 with k'.
   - pick fresh x. apply H1 with x k'; eauto.
@@ -311,14 +311,14 @@ Hint Constructors tail_kind : core.
 
 Lemma tail_kind_subst_rec : forall A e k n,
     tail_kind A k ->
-    tail_kind (open_expr_wrt_expr_rec n e A) k.
+    tail_kind (A <n> ^^ e) k.
 Proof.
   induction A; simpl; intros e k' n' Htk; try solve [inversion Htk].
   - inversion Htk; subst; simpl; auto.
 Qed.
 
 Lemma tail_kind_subst_var : forall A x k,
-    tail_kind A k -> tail_kind (A <^> x) k.
+    tail_kind A k -> tail_kind (A ^` x) k.
 Proof.
   intros. now apply tail_kind_subst_rec.
 Qed.
@@ -331,13 +331,13 @@ Proof.
   intros Γ e A Hsub Htk.
   dependent induction Hsub; try solve [inversion Htk].
   - inversion Htk; subst.
-    + now apply box_never_welltype in Hsub1.
+    + now apply box_never_welltype in Hsub.
     + pick fresh x. apply H2 with x; eauto.
   - auto.
 Qed.
 
 Lemma open_is_kind_inversion : forall A e k n,
-    e_kind k = open_expr_wrt_expr_rec n e A -> A = e_kind k \/ e = e_kind k.
+    e_kind k = A <n> ^^ e -> A = e_kind k \/ e = e_kind k.
 Proof.
   induction A; simpl; intros e k' n' E; try solve [inversion E].
   - destruct (n' == n); auto.
@@ -355,6 +355,12 @@ Proof.
     + edestruct IHA2 as [H|[H|H]]; eauto.
 Qed.
 
+Lemma tail_box_never_reduce : forall A B,
+    tail_kind A k_box -> not (A ⟶ B).
+Proof.
+  intros. destruct H; intro Contra; inversion Contra.
+Qed.
+
 Lemma tail_box_impossible : forall Γ e A,
     Γ ⊢ e : A -> tail_kind A k_box -> False.
 Proof.
@@ -369,6 +375,8 @@ Proof.
     + auto.
     + apply tail_box_never_welltype with G e A; auto.
     + subst. now apply box_never_welltype in Hsub1.
+  - eapply tail_box_never_reduce; eauto.
+  - eapply tail_box_never_welltype. exact Hsub1. assumption.
   - apply reflexivity_r in Hsub2. eapply tail_box_never_welltype; eauto.
 Qed.
 
@@ -376,6 +384,7 @@ Lemma pi_box_impossible : forall Γ e A,
     Γ ⊢ e : e_pi BOX A -> False.
 Proof.
   intros.
+
   assert (tail_kind (e_pi BOX A) k_box) by auto.
   apply tail_box_impossible in H; auto.
 Qed.
@@ -412,6 +421,8 @@ Proof.
       eapply head_kind_invert_subst_var.
       eapply H2 with x; eauto.
     + eauto 3 using head_kind_sub_r.
+  - dependent induction Hsubr. assumption. eauto 3 using head_kind_sub_r.
+  - dependent induction Hsubr. assumption. eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr;
       [> assumption .. | eauto 3 using head_kind_sub_r ].
   - dependent induction Hsubr;

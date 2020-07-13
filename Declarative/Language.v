@@ -387,7 +387,8 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
  | s_int : forall (G:context),
      wf_context G ->
      usub G e_int e_int (e_kind k_star)
- | s_abs : forall (L:vars) (G:context) (A e1 e2 B:expr) (k2:kind),
+ | s_abs : forall (L:vars) (G:context) (A e1 e2 B:expr) (k1 k2:kind),
+        (usub  G   A   A   (e_kind k1) )    ->
       ( forall x , x \notin  L  ->  (usub   (( x ,  A ) ::  G )     ( open_expr_wrt_expr B (e_var_f x) )     ( open_expr_wrt_expr B (e_var_f x) )    (e_kind k2) )  )  ->
       ( forall x , x \notin  L  -> usub  (( x ,  A ) ::  G )   ( open_expr_wrt_expr e1 (e_var_f x) )   ( open_expr_wrt_expr e2 (e_var_f x) )   ( open_expr_wrt_expr B (e_var_f x) )  )  ->
      usub G (e_abs A e1) (e_abs A e2) (e_pi A B)
@@ -401,7 +402,8 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
       (usub  G   e   e   A )  ->
      usub G e1 e2 (e_pi A B) ->
      usub G (e_app e1 e) (e_app e2 e)  (open_expr_wrt_expr  B   e ) 
- | s_bind : forall (L:vars) (G:context) (A e1 e2 B:expr),
+ | s_bind : forall (L:vars) (G:context) (A e1 e2 B:expr) (k:kind),
+        (usub  G   A   A   (e_kind k) )    ->
       ( forall x , x \notin  L  ->  (usub   (( x ,  A ) ::  G )     ( open_expr_wrt_expr B (e_var_f x) )     ( open_expr_wrt_expr B (e_var_f x) )    (e_kind k_star) )  )  ->
       ( forall x , x \notin  L  -> usub  (( x ,  A ) ::  G )   ( open_expr_wrt_expr e1 (e_var_f x) )   ( open_expr_wrt_expr e2 (e_var_f x) )   ( open_expr_wrt_expr B (e_var_f x) )  )  ->
       ( forall x , x \notin  L  ->   ( x  `notin` fv_eexpr (extract   ( open_expr_wrt_expr e1 (e_var_f x) )  ))   )  ->
@@ -412,22 +414,25 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
      reduce A B ->
      usub G e1 e2 B ->
      usub G (e_castup A e1) (e_castup A e2) A
- | s_castdn : forall (G:context) (B e1 e2 A:expr) (k:kind),
+ | s_castdn : forall (G:context) (B e1 e2:expr) (k:kind) (A:expr),
       (usub  G   B   B   (e_kind k) )  ->
      reduce A B ->
      usub G e1 e2 A ->
-     usub G (e_castdn B e1) (e_castdn B e2) A
- | s_forall_l : forall (L:vars) (G:context) (A B C e:expr),
+     usub G (e_castdn B e1) (e_castdn B e2) B
+ | s_forall_l : forall (L:vars) (G:context) (A B C e:expr) (k:kind),
      mono_type e ->
+        (usub  G   A   A   (e_kind k) )    ->
       (usub  G   e   e   A )  ->
       usub G  (open_expr_wrt_expr  B   e )  C (e_kind k_star)  ->
       ( forall x , x \notin  L  ->  (usub   (( x ,  A ) ::  G )     ( open_expr_wrt_expr B (e_var_f x) )     ( open_expr_wrt_expr B (e_var_f x) )    (e_kind k_star) )  )  ->
      usub G (e_all A B) C (e_kind k_star)
- | s_forall_r : forall (L:vars) (G:context) (A B C:expr),
+ | s_forall_r : forall (L:vars) (G:context) (A B C:expr) (k:kind),
+        (usub  G   B   B   (e_kind k) )    ->
       (usub  G   A   A   (e_kind k_star) )  ->
       ( forall x , x \notin  L  -> usub  (( x ,  B ) ::  G )  A  ( open_expr_wrt_expr C (e_var_f x) )  (e_kind k_star) )  ->
      usub G A (e_all B C) (e_kind k_star)
- | s_forall : forall (L:vars) (G:context) (A B C:expr),
+ | s_forall : forall (L:vars) (G:context) (A B C:expr) (k:kind),
+        (usub  G   A   A   (e_kind k) )    ->
       ( forall x , x \notin  L  -> usub  (( x ,  A ) ::  G )   ( open_expr_wrt_expr B (e_var_f x) )   ( open_expr_wrt_expr C (e_var_f x) )  (e_kind k_star) )  ->
      usub G (e_all A B) (e_all A C) (e_kind k_star)
  | s_sub : forall (G:context) (e1 e2 B A:expr) (k:kind),

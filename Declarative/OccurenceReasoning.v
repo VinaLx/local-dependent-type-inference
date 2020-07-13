@@ -3,19 +3,19 @@ Require Import BasicProperties.
 Require Import Extraction.
 
 Lemma notin_fv_open_rec : forall x e1 e2 n,
-    x # open_expr_wrt_expr_rec n e2 e1 -> x # e1.
+    x # e1 <n> ^^ e2 -> x # e1.
 Proof.
   intros. generalize dependent n. induction e1; simpl; intros; eauto.
 Qed.
 
 Lemma notin_fv_open_var : forall x e y,
-    x # e <^> y -> x # e.
+    x # e ^` y -> x # e.
 Proof.
   eauto using notin_fv_open_rec.
 Qed.
 
 Lemma notin_fv_open : forall x e1 e2,
-    x # e1 <^^> e2 -> x # e1.
+    x # e1 ^^ e2 -> x # e1.
 Proof.
   eauto using notin_fv_open_rec.
 Qed.
@@ -121,7 +121,7 @@ Proof.
 Qed.
 
 Lemma notin_open_var_notin_open : forall e x v,
-    x `notin` fv_eexpr (e ⋆^ x) ->
+    x `notin` fv_eexpr (e ⋆^` x) ->
     e ⋆^^ v = e.
 Proof.
   intros.

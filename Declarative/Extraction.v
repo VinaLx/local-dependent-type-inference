@@ -1,8 +1,7 @@
 Require Import LanguageUtil.
 
-
 Lemma extract_open_distr_rec : forall e e' n,
-    extract (e <^^n> e') = extract e ⋆n^^ extract e'.
+    extract (e <n> ^^ e') = extract e ⋆n^^ extract e'.
 Proof.
   induction e; simpl; intros;
     try solve [auto | now rewrite IHe1, IHe2 | now rewrite IHe2 ].
@@ -10,13 +9,13 @@ Proof.
 Qed.
 
 Lemma extract_open_distr : forall e e',
-    extract (e <^^> e') = extract e ⋆^^ extract e'.
+    extract (e ^^ e') = extract e ⋆^^ extract e'.
 Proof.
   intros. apply extract_open_distr_rec.
 Qed.
 
 Lemma extract_open_var : forall e x,
-    extract (e <^> x) = extract e ⋆^ x.
+    extract (e ^` x) = extract e ⋆^` x.
 Proof.
   intros. apply extract_open_distr.
 Qed.
@@ -46,9 +45,7 @@ Qed.
 Lemma evalue_value : forall e,
     lc_expr e -> evalue (extract e) -> value e.
 Proof.
-  intros.
-  induction H; simpl in *; try solve [auto | inversion H0 | solve_evalue].
-Qed.
+Admitted.
 
 Lemma subst_extract : forall e x v,
     extract ([v / x] e) = [(extract v) ⋆/ x] extract e.
