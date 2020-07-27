@@ -114,7 +114,7 @@ Ltac apply_substitution_strategy :=
 
 Ltac solve_subst :=
   solve [
-      adjust_colimits_for gather_for_substitution;
+      adjust_cofinites_for gather_for_substitution;
       apply_substitution_strategy].
 
 Theorem substitution : forall Γ1 Γ2 x A B e1 e2 e3,

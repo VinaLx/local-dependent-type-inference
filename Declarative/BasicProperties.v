@@ -20,7 +20,7 @@ Local Ltac conclude_relevant_refl_in_ctx :=
       | _ =>
         let H' := fresh "H" in
         let k  := fresh "k" in
-        pose colimit H as H';
+        pose cofinite H as H';
         apply binded_type_correct in H' as (k & H')
       end
     end

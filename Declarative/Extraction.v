@@ -26,7 +26,7 @@ Proof.
   intros.
   induction H; simpl; auto;
     econstructor; eauto;
-      intros; instantiate_colimits; solve [now rewrite <- extract_open_var].
+      intros; instantiate_cofinites; solve [now rewrite <- extract_open_var].
 Qed.
 
 Hint Resolve lc_extract_lc : core.
@@ -34,7 +34,7 @@ Hint Resolve lc_extract_lc : core.
 Ltac solve_evalue :=
   constructor; auto;
   econstructor; auto;
-  intros; instantiate_colimits; try rewrite <- extract_open_var; eauto.
+  intros; instantiate_cofinites; try rewrite <- extract_open_var; eauto.
 
 Lemma value_evalue : forall e,
     value e -> evalue (extract e).

@@ -23,15 +23,15 @@ Proof.
 Qed.
 
 
-Ltac auto_instantiate_colimit H :=
+Ltac auto_instantiate_cofinite H :=
   match goal with
   | x : atom |- _ =>
     match goal with
-    | Fr : x `notin` ?L |- _ => instantiate_colimit x H
+    | Fr : x `notin` ?L |- _ => instantiate_cofinite x H
     end
   | _ =>
     let x := fresh "x" in
-    pick fresh x; instantiate_colimit x H
+    pick fresh x; instantiate_cofinite x H
   end
 .
 
@@ -44,7 +44,7 @@ Ltac conclude_typing_in_binding H :=
     | _ =>
       let H1 := fresh "H" in
       pose proof H as H1;
-      auto_instantiate_colimit H1;
+      auto_instantiate_cofinite H1;
       let H2 := fresh "H" in
       let k := fresh "k" in
       assert (exists k, G ⊢ A : e_kind k) as [k H2] by eauto 4;

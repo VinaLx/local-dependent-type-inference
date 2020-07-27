@@ -393,7 +393,7 @@ Ltac apply_unsized_sized_strategy :=
 Ltac solve_unsized_sized :=
   try solve
       [ destruct_exists; eauto 3
-      | (try reconstruct_sub); instantiate_colimits;
+      | (try reconstruct_sub); instantiate_cofinites;
         conclude_freshes; apply_unsized_sized_strategy
        ].
 
@@ -405,8 +405,8 @@ Proof.
   (* a little special for bind, for the strategy inappropriately instantiating freshness
      involving extracted expression *)
   - reconstruct_sub.
-    instantiate_colimit H0. instantiate_colimit H1.
-    instantiate_colimit H2. instantiate_colimit H3.
+    instantiate_cofinite H0. instantiate_cofinite H1.
+    instantiate_cofinite H2. instantiate_cofinite H3.
     conclude_freshes. apply_unsized_sized_strategy.
 Qed.
 
@@ -471,7 +471,7 @@ Lemma mono_type_order : forall e,
 Proof.
   intros. induction H; simpl; auto;
   try solve [ now rewrite IHmono_type1, IHmono_type2
-        | instantiate_colimits; rewrite open_var_forall_order_eq in H1;
+        | instantiate_cofinites; rewrite open_var_forall_order_eq in H1;
           now rewrite IHmono_type, H1].
 Qed.
 
@@ -628,7 +628,7 @@ Hint Rewrite open_var_forall_order_eq : trans.
 Hint Rewrite open_mono_order : trans.
 
 Ltac solve_with_IHorder :=
-  instantiate_colimits; match goal with
+  instantiate_cofinites; match goal with
   | Hl : _ ⊢ ?e1 <: ?e2 : * | ?n1
          |- _ ⊢ ?e1 <: ?e3 : * => match goal with
     | Hr : _ ⊢ e2 <: ?e3 : ?B | ?n2 |- _ =>
@@ -716,7 +716,7 @@ Ltac solve_l_forall_r_forall :=
 .
 
 Ltac solve_with_IHtsz :=
-  instantiate_colimits;
+  instantiate_cofinites;
   match goal with
   | Hl : ?Γ ⊢ ?e1 <: ?e2 : ?A | ?n1 |- ?Γ ⊢ ?e1 <: ?e3 : _ =>
     match goal with
@@ -801,7 +801,7 @@ Ltac narrowing_return_type_ctx :=
 .
 
 Ltac solve_pi_return_type :=
-  instantiate_colimits; unify_kinds;
+  instantiate_cofinites; unify_kinds;
   narrowing_return_type_ctx; solve_with_IHesz.
 
 Ltac solve_pi :=

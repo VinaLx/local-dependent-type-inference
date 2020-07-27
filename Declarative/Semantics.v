@@ -132,11 +132,11 @@ Proof.
     invert_operator_to_nf.
     + inversion V; subst. exists (H5 <^^> e). eauto.
     + inversion V. inversion H11. subst.
-        pick fresh x. instantiate_colimits.
+        pick fresh x. instantiate_cofinites.
         exists (e_app (H5 <^> x) e). eauto.
     + inversion V; subst. exists (H6 <^^> e). eauto.
     + inversion V; inversion H11. subst.
-        pick fresh x. instantiate_colimits.
+        pick fresh x. instantiate_cofinites.
         exists (e_app (H6 <^> x) e). eauto.
 Qed.
 
@@ -328,7 +328,7 @@ Proof.
   dependent induction Sub; intros.
   - apply pi_sub_inversion in H3 as (k' & L' & H').
     exists (L `union` L'). intros.
-    instantiate_colimits. destruct_pairs. eauto.
+    instantiate_cofinites. destruct_pairs. eauto.
   - apply IHSub1 with k; eauto using transitivity.
 Qed.
 
@@ -445,7 +445,7 @@ Proof.
       apply abs_principal_inversion in H3 as (L' & Sub4).
       pick fresh x for
            (L `union` L' `union` fv_expr e0 `union` fv_expr b `union` fv_expr B).
-      instantiate_colimits. destruct_pairs.
+      instantiate_cofinites. destruct_pairs.
       rewrite_open_with_subst.
       eauto 4 using substitution_cons, ctx_narrowing_cons.
     + invert_extractions. invert_sub_hyp.
@@ -454,8 +454,8 @@ Proof.
       apply bind_inversion in Sub2 as (F & L1 & Hb). destruct_pairs.
       apply forall_l_sub_inversion in H3 as (m & M & Subm & Sub_inst); auto.
       exists (e_app (e0 <^^> m) e), (e_app (b <^^> m) e). split_all; simpl.
-      * pick fresh x'. instantiate_colimits. find_extract_invariants.
-      * pick fresh x'. instantiate_colimits. find_extract_invariants.
+      * pick fresh x'. instantiate_cofinites. find_extract_invariants.
+      * pick fresh x'. instantiate_cofinites. find_extract_invariants.
       * eauto.
       * eauto.
       * eapply s_app; eauto. apply s_sub with (F <^^> m) k_star; auto.

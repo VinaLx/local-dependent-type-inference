@@ -381,7 +381,7 @@ Fixpoint lc_ctx (c : context) : Prop :=
 
 Import Program.Tactics.
 
-Ltac instantiate_colimit_with H x :=
+Ltac instantiate_cofinite_with H x :=
   match type of H with
   | forall x, x `notin` ?L -> _ =>
     let H1 := fresh "H" in
@@ -391,10 +391,10 @@ Ltac instantiate_colimit_with H x :=
   end
 .
 
-Ltac instantiate_colimits_with x :=
+Ltac instantiate_cofinites_with x :=
   repeat match goal with
   | H : forall x, x `notin` ?L -> _ |- _ =>
-    instantiate_colimit_with H x
+    instantiate_cofinite_with H x
   end
 .
 
@@ -407,15 +407,15 @@ Ltac detect_fresh_var_and_do t :=
   end
 .
 
-Ltac instantiate_colimits :=
-  detect_fresh_var_and_do instantiate_colimits_with.
+Ltac instantiate_cofinites :=
+  detect_fresh_var_and_do instantiate_cofinites_with.
 
-Ltac instantiate_colimit H :=
-  let f x := instantiate_colimit_with H x in
+Ltac instantiate_cofinite H :=
+  let f x := instantiate_cofinite_with H x in
   detect_fresh_var_and_do f
 .
 
-Ltac pose_colimit_with H x H' :=
+Ltac pose_cofinite_with H x H' :=
   match type of H with
   | forall x, x `notin` ?L -> _ =>
     let Fr := fresh "Fr" in
@@ -424,22 +424,22 @@ Ltac pose_colimit_with H x H' :=
   end
 .
 
-Ltac pose_colimit H H' :=
-  let f x := pose_colimit_with H x H' in
+Ltac pose_cofinite H H' :=
+  let f x := pose_cofinite_with H x H' in
   detect_fresh_var_and_do f
 .
 
-Tactic Notation "pose" "colimit" ident(H) :=
+Tactic Notation "pose" "cofinite" ident(H) :=
   let H' := fresh H in
-  pose_colimit H H'.
+  pose_cofinite H H'.
 
-Tactic Notation "pose" "colimit" ident(H) "as" ident(H') :=
-  pose_colimit H H'.
+Tactic Notation "pose" "cofinite" ident(H) "as" ident(H') :=
+  pose_cofinite H H'.
 
 Lemma usub_lc : forall Γ e1 e2 A,
     Γ ⊢ e1 <: e2 : A -> lc_ctx Γ /\ lc_expr e1 /\ lc_expr e2 /\ lc_expr A.
 Proof.
-  Local Ltac solve_with_pairs_in_colimits := instantiate_colimits; destruct_pairs; auto.
+  Local Ltac solve_with_pairs_in_cofinites := instantiate_cofinites; destruct_pairs; auto.
 
   apply sub_mut with
       (P := fun c e1 e2 A (_ : c ⊢ e1 <: e2 : A) =>
@@ -447,8 +447,8 @@ Proof.
       (P0 := fun c (_ : ⊢ c) => lc_ctx c); simpl; intros; auto;
     try solve
         [repeat split;
-         solve [ solve_with_pairs_in_colimits
-               | econstructor; intros; solve_with_pairs_in_colimits]].
+         solve [ solve_with_pairs_in_cofinites
+               | econstructor; intros; solve_with_pairs_in_cofinites]].
 
   - induction G. inversion b.
     destruct a, H. inversion w. subst. destruct b.
@@ -470,7 +470,7 @@ Ltac solve_basic_lc :=
   | H : _ ⊢ _ <: ?e : _ |- lc_expr ?e => apply usub_lc in H
   | H : _ ⊢ _ <: _ : ?e |- lc_expr ?e => apply usub_lc in H
   | H : forall x, x `notin` ?L -> _, x : ?A ⊢ _ <: _ : _ |- lc_expr ?A =>
-    instantiate_colimit H; apply usub_lc in H; simpl in H
+    instantiate_cofinite H; apply usub_lc in H; simpl in H
   end; destruct_pairs; assumption
 .
 
@@ -540,7 +540,7 @@ Ltac instantiate_trivial_equals := repeat
   end
 .
 
-Lemma strengthen_colimit : forall L' P L ,
+Lemma strengthen_cofinite : forall L' P L ,
     (forall x, x `notin` L -> P x) ->
     (forall x, x `notin` (L `union` L') -> P x).
 Proof.
@@ -548,10 +548,10 @@ Proof.
 Qed.
 
 (*
-Adjusting the colimit requirement in the hypothesis to
+Adjusting the cofinite requirement in the hypothesis to
 help 'eauto' inferring the often-omitted cofinite lists
 *)
-Ltac adjust_colimits L' :=
+Ltac adjust_cofinites L' :=
   repeat
     match goal with
     | H : forall x, x `notin` ?L -> _ |- _ =>
@@ -559,15 +559,15 @@ Ltac adjust_colimits L' :=
       | context [L'] => fail 1
       | _ =>
         let H' := fresh H in
-        pose proof (strengthen_colimit L' _ _ H) as H';
+        pose proof (strengthen_cofinite L' _ _ H) as H';
         simpl in H'; clear H
       end
     end
 .
 
-Ltac adjust_colimits_for gather :=
+Ltac adjust_cofinites_for gather :=
   let L := gather in
-  adjust_colimits L.
+  adjust_cofinites L.
 
 (*
 1. Using the '+' tactical to enable backtracking in case of fail on
