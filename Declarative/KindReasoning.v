@@ -356,7 +356,7 @@ Proof.
 Qed.
 
 Lemma tail_box_never_reduce : forall A B,
-    tail_kind A k_box -> not (A ⟶ B).
+    tail_kind A k_box -> not (A ⟹ B).
 Proof.
   intros. destruct H; intro Contra; inversion Contra.
 Qed.

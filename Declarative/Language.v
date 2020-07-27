@@ -35,7 +35,9 @@ Inductive eexpr : Set :=  (*r extracted expression *)
  | ee_abs (ee:eexpr)
  | ee_bind (ee:eexpr)
  | ee_pi (eA:eexpr) (eB:eexpr)
- | ee_all (eA:eexpr) (eB:eexpr).
+ | ee_all (eA:eexpr) (eB:eexpr)
+ | ee_castup (ee:eexpr)
+ | ee_castdn (ee:eexpr).
 
 Definition context : Set := (list (exprvar * expr)).
 
@@ -57,6 +59,8 @@ Fixpoint open_eexpr_wrt_eexpr_rec (k:nat) (ee_5:eexpr) (ee__6:eexpr) {struct ee_
   | (ee_bind ee) => ee_bind (open_eexpr_wrt_eexpr_rec (S k) ee_5 ee)
   | (ee_pi eA eB) => ee_pi (open_eexpr_wrt_eexpr_rec k ee_5 eA) (open_eexpr_wrt_eexpr_rec (S k) ee_5 eB)
   | (ee_all eA eB) => ee_all (open_eexpr_wrt_eexpr_rec k ee_5 eA) (open_eexpr_wrt_eexpr_rec (S k) ee_5 eB)
+  | (ee_castup ee) => ee_castup (open_eexpr_wrt_eexpr_rec k ee_5 ee)
+  | (ee_castdn ee) => ee_castdn (open_eexpr_wrt_eexpr_rec k ee_5 ee)
 end.
 
 Fixpoint open_expr_wrt_expr_rec (k:nat) (e_5:expr) (e__6:expr) {struct e__6}: expr :=
@@ -148,7 +152,13 @@ Inductive lc_eexpr : eexpr -> Prop :=    (* defn lc_eexpr *)
  | lc_ee_all : forall (L:vars) (eA eB:eexpr),
      (lc_eexpr eA) ->
       ( forall x , x \notin  L  -> lc_eexpr  ( open_eexpr_wrt_eexpr eB (ee_var_f x) )  )  ->
-     (lc_eexpr (ee_all eA eB)).
+     (lc_eexpr (ee_all eA eB))
+ | lc_ee_castup : forall (ee:eexpr),
+     (lc_eexpr ee) ->
+     (lc_eexpr (ee_castup ee))
+ | lc_ee_castdn : forall (ee:eexpr),
+     (lc_eexpr ee) ->
+     (lc_eexpr (ee_castdn ee)).
 (** free variables *)
 Fixpoint fv_expr (e_5:expr) : vars :=
   match e_5 with
@@ -178,6 +188,8 @@ Fixpoint fv_eexpr (ee_5:eexpr) : vars :=
   | (ee_bind ee) => (fv_eexpr ee)
   | (ee_pi eA eB) => (fv_eexpr eA) \u (fv_eexpr eB)
   | (ee_all eA eB) => (fv_eexpr eA) \u (fv_eexpr eB)
+  | (ee_castup ee) => (fv_eexpr ee)
+  | (ee_castdn ee) => (fv_eexpr ee)
 end.
 
 (** substitutions *)
@@ -209,6 +221,8 @@ Fixpoint subst_eexpr (ee_5:eexpr) (x5:exprvar) (ee__6:eexpr) {struct ee__6} : ee
   | (ee_bind ee) => ee_bind (subst_eexpr ee_5 x5 ee)
   | (ee_pi eA eB) => ee_pi (subst_eexpr ee_5 x5 eA) (subst_eexpr ee_5 x5 eB)
   | (ee_all eA eB) => ee_all (subst_eexpr ee_5 x5 eA) (subst_eexpr ee_5 x5 eB)
+  | (ee_castup ee) => ee_castup (subst_eexpr ee_5 x5 ee)
+  | (ee_castdn ee) => ee_castdn (subst_eexpr ee_5 x5 ee)
 end.
 
 Fixpoint extract (e : expr) : eexpr :=
@@ -223,8 +237,8 @@ Fixpoint extract (e : expr) : eexpr :=
   | e_bind A b => ee_bind (extract b)
   | e_pi   A B => ee_pi   (extract A) (extract B)
   | e_all  A B => ee_all  (extract A) (extract B)
-  | e_castup A e => extract e
-  | e_castdn A e => extract e
+  | e_castup A e => ee_castup (extract e)
+  | e_castdn A e => ee_castdn (extract e)
   end
 .
 
@@ -292,7 +306,7 @@ Inductive value : expr -> Prop :=    (* defn value *)
      value (e_all A B)
  | v_castup : forall (A e:expr),
      lc_expr A ->
-     value e ->
+     lc_expr e ->
      value (e_castup A e).
 
 (* defns Reduce *)
@@ -312,10 +326,6 @@ Inductive reduce : expr -> expr -> Prop :=    (* defn reduce *)
      lc_expr e2 ->
      mono_type e ->
      reduce (e_app  ( (e_bind A e1) )  e2) (e_app  (  (open_expr_wrt_expr  e1   e )  )  e2)
- | r_castup : forall (A e1 e2:expr),
-     lc_expr A ->
-     reduce e1 e2 ->
-     reduce (e_castup A e1) (e_castup A e2)
  | r_castdn : forall (A e1 e2:expr),
      lc_expr A ->
      reduce e1 e2 ->
@@ -323,8 +333,29 @@ Inductive reduce : expr -> expr -> Prop :=    (* defn reduce *)
  | r_cast_elim : forall (A B e:expr),
      lc_expr A ->
      lc_expr B ->
-     value e ->
+     lc_expr e ->
      reduce (e_castdn A  ( (e_castup B e) ) ) e.
+
+(* defns DeterministicReduce *)
+Inductive dreduce : expr -> expr -> Prop :=    (* defn dreduce *)
+ | dr_app : forall (e1 e3 e2:expr),
+     lc_expr e3 ->
+     dreduce e1 e2 ->
+     dreduce (e_app e1 e3) (e_app e2 e3)
+ | dr_beta : forall (A e1 e2:expr),
+     lc_expr A ->
+     lc_expr (e_abs A e1) ->
+     lc_expr e2 ->
+     dreduce (e_app  ( (e_abs A e1) )  e2)  (open_expr_wrt_expr  e1   e2 ) 
+ | dr_castdn : forall (A e1 e2:expr),
+     lc_expr A ->
+     dreduce e1 e2 ->
+     dreduce (e_castdn A e1) (e_castdn A e2)
+ | dr_cast_elim : forall (A B e:expr),
+     lc_expr A ->
+     lc_expr B ->
+     lc_expr e ->
+     dreduce (e_castdn A  ( (e_castup B e) ) ) e.
 
 (* defns ExtractedValue *)
 Inductive evalue : eexpr -> Prop :=    (* defn evalue *)
@@ -347,7 +378,10 @@ Inductive evalue : eexpr -> Prop :=    (* defn evalue *)
  | ev_all : forall (eA eB:eexpr),
      lc_eexpr eA ->
      lc_eexpr (ee_all eA eB) ->
-     evalue (ee_all eA eB).
+     evalue (ee_all eA eB)
+ | ev_castup : forall (ee:eexpr),
+     lc_eexpr ee ->
+     evalue (ee_castup ee).
 
 (* defns ExtractedReduce *)
 Inductive ereduce : eexpr -> eexpr -> Prop :=    (* defn ereduce *)
@@ -362,7 +396,13 @@ Inductive ereduce : eexpr -> eexpr -> Prop :=    (* defn ereduce *)
  | er_elim : forall (L:vars) (ee1 ee2:eexpr),
      lc_eexpr (ee_bind ee1) ->
      lc_eexpr ee2 ->
-      ( forall x , x \notin  L  -> ereduce (ee_app  ( (ee_bind ee1) )  ee2) (ee_app  ( open_eexpr_wrt_eexpr ee1 (ee_var_f x) )  ee2) ) .
+      ( forall x , x \notin  L  -> ereduce (ee_app  ( (ee_bind ee1) )  ee2) (ee_app  ( open_eexpr_wrt_eexpr ee1 (ee_var_f x) )  ee2) ) 
+ | er_castdn : forall (ee1 ee2:eexpr),
+     ereduce ee1 ee2 ->
+     ereduce (ee_castdn ee1) (ee_castdn ee2)
+ | er_cast_elim : forall (ee:eexpr),
+     lc_eexpr ee ->
+     ereduce (ee_castdn  ( (ee_castup ee) ) ) ee.
 
 (* defns UnifiedSubtyping *)
 Inductive wf_context : context -> Prop :=    (* defn wf_context *)
@@ -411,12 +451,12 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
      usub G (e_bind A e1) (e_bind A e2) (e_all A B)
  | s_castup : forall (G:context) (A e1 e2:expr) (k:kind) (B:expr),
       (usub  G   A   A   (e_kind k) )  ->
-     reduce A B ->
+     dreduce A B ->
      usub G e1 e2 B ->
      usub G (e_castup A e1) (e_castup A e2) A
  | s_castdn : forall (G:context) (B e1 e2:expr) (k:kind) (A:expr),
       (usub  G   B   B   (e_kind k) )  ->
-     reduce A B ->
+     dreduce A B ->
      usub G e1 e2 A ->
      usub G (e_castdn B e1) (e_castdn B e2) B
  | s_forall_l : forall (L:vars) (G:context) (A B C e:expr) (k:kind),
@@ -513,6 +553,6 @@ with susub : context -> expr -> expr -> expr -> Prop :=    (* defn susub *)
 
 
 (** infrastructure *)
-Hint Constructors mono_type value reduce evalue ereduce wf_context usub swf_context susub lc_expr lc_eexpr : core.
+Hint Constructors mono_type value reduce dreduce evalue ereduce wf_context usub swf_context susub lc_expr lc_eexpr : core.
 
 

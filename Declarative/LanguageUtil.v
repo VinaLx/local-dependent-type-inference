@@ -18,6 +18,8 @@ Notation "e1 ⟶ e2"  := (reduce  e1 e2)
     (at level 60, no associativity) : type_scope.
 Notation "e1 ⋆⟶ e2" := (ereduce e1 e2)
     (at level 60, no associativity) : type_scope.
+Notation "e1 ⟹ e2" := (dreduce e1 e2)
+    (at level 60, no associativity) : type_scope.
 
 Declare Scope ctx_scope.
 Delimit Scope ctx_scope with ctx.
@@ -387,7 +389,6 @@ Ltac instantiate_cofinite_with H x :=
     let H1 := fresh "H" in
     assert (H1 : x `notin` L) by eauto;
     specialize (H x H1); clear H1
-  | ?e => idtac e
   end
 .
 

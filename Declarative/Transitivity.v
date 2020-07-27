@@ -50,12 +50,12 @@ Inductive sized_usub : context -> expr -> expr -> expr -> nat -> Prop :=    (* d
      G ⊢ e_bind A e1 <: e_bind A e2 : e_all A B | S (n1 + n2 + n3)
  | ss_castup : forall (G:context) (A e1 e2:expr) (k:kind) (B:expr) n1 n2,
      G ⊢ A <: A : e_kind k | n1 ->
-     A ⟶ B ->
+     A ⟹ B ->
      G ⊢ e1 <: e2 : B | n2 ->
      G ⊢ e_castup A e1 <: e_castup A e2 : A | S (n1 + n2)
  | ss_castdn : forall (G:context) (B e1 e2:expr) (k:kind) (A:expr) n1 n2,
      G ⊢ B <: B : e_kind k | n1 ->
-     A ⟶ B ->
+     A ⟹ B ->
      G ⊢ e1 <: e2 : A | n2 ->
      G ⊢ e_castdn B e1 <: e_castdn B e2 : B | S (n1 + n2)
  | ss_forall_l : forall (L:vars) (G:context) (A B C e:expr) (k:kind) n1 n2 n3 n4,

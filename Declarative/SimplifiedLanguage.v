@@ -10,6 +10,8 @@ Notation "G ⊨ e1 <: e2 : A" := (susub G e1 e2 A)
 Notation "⊨ G" := (swf_context G)
     (no associativity, at level 65) : type_scope.
 
+
+(*
 Theorem soundness : forall Γ e1 e2 A,
     Γ ⊢ e1 <: e2 : A -> Γ ⊨ e1 <: e2 : A
   with
@@ -84,3 +86,4 @@ Proof.
     + constructor.
     + econstructor; eauto.
 Qed.
+*)

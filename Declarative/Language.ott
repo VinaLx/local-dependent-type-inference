@@ -39,6 +39,8 @@ eexpr, ee, eA, eB, eC :: 'ee_' ::= {{ com extracted expression }}
   | ebind   x . ee :: :: bind (+ bind x in ee +)
   | epi     x : eA . eB :: :: pi  (+ bind x in eB +)
   | eforall x : eA . eB :: :: all (+ bind x in eB +)
+  | ecastup ee :: :: castup
+  | ecastdn ee :: :: castdn
   | ( ee )          :: S :: paren {{ coq ([[ee]]) }}
   | [ ee1 / x ] ee2 :: M :: subst {{ coq (open_eexpr_wrt_eexpr [[x ee2]] [[ee1]]) }}
 
@@ -105,8 +107,8 @@ Fixpoint extract (e : expr) : eexpr :=
   | e_bind A b => ee_bind (extract b)
   | e_pi   A B => ee_pi   (extract A) (extract B)
   | e_all  A B => ee_all  (extract A) (extract B)
-  | e_castup A e => extract e
-  | e_castdn A e => extract e
+  | e_castup A e => ee_castup (extract e)
+  | e_castdn A e => ee_castdn (extract e)
   end
 .
 }} % embed coq
@@ -192,7 +194,6 @@ value pi     x : A. B
 ---------------------- :: all
 value forall x : A. B
 
-value e
 ------------------- :: castup
 value castup [A] e
 
@@ -203,7 +204,6 @@ defn
 e1 --> e2 :: :: reduce :: 'r_' {{ com reduction in source language }}
 
 by
-
 e1 --> e2
 ---------------- :: app
 e1 e3 --> e2 e3
@@ -216,16 +216,32 @@ monotype e
 (bind x : A. e1) e2 --> ([e / x] e1) e2
 
 e1 --> e2
--------------------------------- :: castup
-castup [A] e1 --> castup [A] e2
-
-e1 --> e2
 -------------------------------- :: castdn
 castdn [A] e1 --> castdn [A] e2
 
-value e
 -------------------------------- :: cast_elim
 castdn [A] (castup [B] e) --> e
+
+defns
+DeterministicReduce :: '' ::=
+
+defn
+e1 ==> e2 :: :: dreduce :: 'dr_' {{ com deterministic reduction }}
+by
+
+e1 ==> e2
+---------------- :: app
+e1 e3 ==> e2 e3
+
+-------------------------------------- :: beta
+(lambda x : A. e1) e2 ==> [e2 / x] e1
+
+e1 ==> e2
+-------------------------------- :: castdn
+castdn [A] e1 ==> castdn [A] e2
+
+-------------------------------- :: cast_elim
+castdn [A] (castup [B] e) ==> e
 
 
 defns
@@ -258,6 +274,9 @@ evalue epi     x : eA. eB
 -------------------------- :: all
 evalue eforall x : eA. eB
 
+------------------ :: castup
+evalue ecastup ee
+
 defns
 ExtractedReduce :: '' ::=
 
@@ -274,6 +293,14 @@ ee1 ee3 *--> ee2 ee3
 
 -------------------------------- :: elim
 (ebind x. ee1) ee2 *--> ee1 ee2
+
+ee1 *--> ee2
+-------------------------------- :: castdn
+ecastdn ee1 *--> ecastdn ee2
+
+-------------------------------- :: cast_elim
+ecastdn (ecastup ee) *--> ee
+
 
 defns
 UnifiedSubtyping :: '' ::=
@@ -341,13 +368,13 @@ x # e2*
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
 G |- A : k
-A --> B
+A ==> B
 G |- e1 <: e2 : B
 --------------------------------------- :: castup
 G |- castup [A] e1 <: castup [A] e2 : A
 
 G |- B : k
-A --> B
+A ==> B
 G |- e1 <: e2 : A
 --------------------------------------- :: castdn
 G |- castdn [B] e1 <: castdn [B] e2 : B
