@@ -1,5 +1,5 @@
 Require Import Declarative.BasicProperties.
-Require Import Declarative.KindReasoning.
+Require Import Declarative.KindProperties.
 Require Import Declarative.OccurenceReasoning.
 Require Import Declarative.FSetReasoning.
 Require Import Extraction.

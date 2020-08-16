@@ -7,6 +7,7 @@ Declarative/LanguageUtil.v
 Declarative/Extraction.v
 Declarative/Properties.v
 Declarative/Transitivity.v
-Declarative/KindReasoning.v
+Declarative/KindUniqueness.v
+Declarative/KindProperties.v
 Declarative/OccurenceReasoning.v
 Declarative/Semantics.v

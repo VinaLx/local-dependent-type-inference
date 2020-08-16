@@ -3,7 +3,7 @@ Require Import BasicProperties.
 Require Import Properties.
 Require Import Transitivity.
 Require Import Extraction.
-Require Import KindReasoning.
+Require Import KindProperties.
 Require Import OccurenceReasoning.
 
 Require Import Program.Tactics.

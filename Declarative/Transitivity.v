@@ -1,6 +1,7 @@
 Require Import Declarative.LanguageUtil.
 Require Import BasicProperties.
-Require Import KindReasoning.
+Require Import KindProperties.
+Require Import KindUniqueness.
 Require Import Properties.
 Require Import OccurenceReasoning.
 Require Import FSetReasoning.
