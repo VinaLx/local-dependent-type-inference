@@ -219,6 +219,10 @@ e1 --> e2
 -------------------------------- :: castdn
 castdn [A] e1 --> castdn [A] e2
 
+monotype e
+-------------------------------------------------------- :: cast_inst
+castdn [A] (bind x : B. e1) --> castdn [A] ([e / x] e1)
+
 -------------------------------- :: cast_elim
 castdn [A] (castup [B] e) --> e
 
@@ -297,6 +301,9 @@ ee1 ee3 *--> ee2 ee3
 ee1 *--> ee2
 -------------------------------- :: castdn
 ecastdn ee1 *--> ecastdn ee2
+
+-------------------------------------- :: cast_inst
+ecastdn (ebind x. ee) *--> ecastdn ee
 
 -------------------------------- :: cast_elim
 ecastdn (ecastup ee) *--> ee

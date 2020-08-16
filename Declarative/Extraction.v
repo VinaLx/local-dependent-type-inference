@@ -45,7 +45,9 @@ Qed.
 Lemma evalue_value : forall e,
     lc_expr e -> evalue (extract e) -> value e.
 Proof.
-Admitted.
+  intros e LC.
+  induction LC; simpl; intros EV; try solve [inversion EV | eauto].
+Qed.
 
 Lemma subst_extract : forall e x v,
     extract ([v / x] e) = [(extract v) ⋆/ x] extract e.

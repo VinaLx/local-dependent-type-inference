@@ -330,6 +330,12 @@ Inductive reduce : expr -> expr -> Prop :=    (* defn reduce *)
      lc_expr A ->
      reduce e1 e2 ->
      reduce (e_castdn A e1) (e_castdn A e2)
+ | r_cast_inst : forall (A B e1 e:expr),
+     lc_expr B ->
+     lc_expr (e_bind B e1) ->
+     lc_expr A ->
+     mono_type e ->
+     reduce (e_castdn A  ( (e_bind B e1) ) ) (e_castdn A  (  (open_expr_wrt_expr  e1   e )  ) )
  | r_cast_elim : forall (A B e:expr),
      lc_expr A ->
      lc_expr B ->
@@ -400,6 +406,9 @@ Inductive ereduce : eexpr -> eexpr -> Prop :=    (* defn ereduce *)
  | er_castdn : forall (ee1 ee2:eexpr),
      ereduce ee1 ee2 ->
      ereduce (ee_castdn ee1) (ee_castdn ee2)
+ | er_cast_inst : forall (L:vars) (ee:eexpr),
+     lc_eexpr (ee_bind ee) ->
+      ( forall x , x \notin  L  -> ereduce (ee_castdn  ( (ee_bind ee) ) ) (ee_castdn  ( open_eexpr_wrt_eexpr ee (ee_var_f x) ) ) ) 
  | er_cast_elim : forall (ee:eexpr),
      lc_eexpr ee ->
      ereduce (ee_castdn  ( (ee_castup ee) ) ) ee.

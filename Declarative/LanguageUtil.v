@@ -503,13 +503,29 @@ Proof.
   intros. dependent induction H; eauto.
 Qed.
 
+Lemma lc_castup_l : forall Γ A b e T,
+    Γ ⊢ e_castup A b <: e : T -> lc_expr A /\ lc_expr b.
+Proof.
+  intros. dependent induction H; eauto.
+Qed.
+
+Lemma lc_castup_r : forall Γ e A b T,
+    Γ ⊢ e <: e_castup A b : T -> lc_expr A /\ lc_expr b.
+Proof.
+  intros. dependent induction H; eauto.
+Qed.
+
 Ltac solve_more_lc :=
   match goal with
   | H : _ ⊢ e_abs ?A _ <: _ : _ |- lc_expr ?A => apply lc_abs_param_l in H
   | H : _ ⊢ _ <: e_abs ?A _ : _ |- lc_expr ?A => apply lc_abs_param_r in H
   | H : _ ⊢ e_bind ?A _ <: _ : _ |- lc_expr ?A => apply lc_bind_param_l in H
   | H : _ ⊢ _ <: e_bind ?A _ : _ |- lc_expr ?A => apply lc_bind_param_r in H
-  end; assumption
+  | H : _ ⊢ e_castup ?A _ <: _ : _ |- lc_expr ?A => apply lc_castup_l in H
+  | H : _ ⊢ _ <: e_castup ?A _ : _ |- lc_expr ?A => apply lc_castup_r in H
+  | H : _ ⊢ e_castup _ ?b <: _ : _ |- lc_expr ?b => apply lc_castup_l in H
+  | H : _ ⊢ _ <: e_castup _ ?b : _ |- lc_expr ?b => apply lc_castup_r in H
+  end; destruct_conjs; assumption
 .
 
 Hint Extern 1 (lc_expr _) => solve_more_lc : core.
