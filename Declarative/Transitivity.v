@@ -576,9 +576,6 @@ end end end
 Ltac solve_right_subsumption :=
   let H := find_IHtsz in solve_right_subsumption_impl H.
 
-Ltac discharge_equality E :=
-  try solve [inversion E]; subst; try (rewrite E in *; clear E).
-
 Ltac unify_kind k A :=
   let E := fresh in
   match A with

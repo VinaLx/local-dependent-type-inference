@@ -77,6 +77,7 @@ terminals :: 'terminal_' ::=
   | eforall :: :: eforall {{ tex \forall }}
   | ebind   :: :: ebind   {{ tex \Lambda }}
   | -->  :: :: reduce  {{ tex \longrightarrow }}
+  | ==>  :: :: dreduce {{ tex \Longrightarrow }}
   | *--> :: :: ereduce {{ tex \prescript{\ast}{}\longrightarrow ~ }}
   | nil  :: :: nil {{ tex \varnothing }}
   | int  :: :: int {{ tex \mathbb{N} }}
@@ -201,7 +202,7 @@ defns
 Reduce :: '' ::=
 
 defn
-e1 --> e2 :: :: reduce :: 'r_' {{ com reduction in source language }}
+e1 --> e2 :: :: reduce :: 'r_' {{ com Reduction in Source Language }}
 
 by
 e1 --> e2
@@ -230,7 +231,7 @@ defns
 DeterministicReduce :: '' ::=
 
 defn
-e1 ==> e2 :: :: dreduce :: 'dr_' {{ com deterministic reduction }}
+e1 ==> e2 :: :: dreduce :: 'dr_' {{ com Deterministic Reduction }}
 by
 
 e1 ==> e2
@@ -254,7 +255,7 @@ ExtractedValue :: '' ::=
 defn
 evalue ee :: :: evalue :: 'ev_'
   {{ tex [[ee]] ~ \mathbf{value} }}
-  {{ com values in extracted language }}
+  {{ com Values in Extracted Language }}
 by
 
 ---------- :: kind
@@ -285,7 +286,7 @@ defns
 ExtractedReduce :: '' ::=
 
 defn
-ee1 *--> ee2 :: :: ereduce :: 'er_' {{ com reduction in target language}}
+ee1 *--> ee2 :: :: ereduce :: 'er_' {{ com Reduction in Extracted Language}}
 by
 
 ee1 *--> ee2
@@ -476,13 +477,13 @@ x # e2*
 G |= bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
 G |= A : k
-A --> B
+A ==> B
 G |= e1 <: e2 : B
 --------------------------------------- :: castup
 G |= castup [A] e1 <: castup [A] e2 : A
 
 G |= B : k
-A --> B
+A ==> B
 G |= e1 <: e2 : A
 -------------------------------------- :: castdn
 G |= castdn [B] e1 <: castdn [B] e2 : A

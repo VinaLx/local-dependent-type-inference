@@ -625,3 +625,6 @@ Ltac apply_fresh_base_fixed H gather_vars atom_name :=
   let L := gather_vars in
   let L := beautify_fset L in
   pick fresh atom_name excluding L and apply H.
+
+Ltac discharge_equality E :=
+  try solve [inversion E]; subst; try (rewrite E in *; clear E).

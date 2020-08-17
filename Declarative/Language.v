@@ -534,12 +534,12 @@ with susub : context -> expr -> expr -> expr -> Prop :=    (* defn susub *)
      susub G (e_bind A e1) (e_bind A e2) (e_all A B)
  | ss_castup : forall (G:context) (A e1 e2:expr) (k:kind) (B:expr),
       susub  G   A   A   (e_kind k)  ->
-     reduce A B ->
+     dreduce A B ->
      susub G e1 e2 B ->
      susub G (e_castup A e1) (e_castup A e2) A
  | ss_castdn : forall (G:context) (B e1 e2 A:expr) (k:kind),
       susub  G   B   B   (e_kind k)  ->
-     reduce A B ->
+     dreduce A B ->
      susub G e1 e2 A ->
      susub G (e_castdn B e1) (e_castdn B e2) A
  | ss_forall_l : forall (L:vars) (G:context) (A B C e:expr),

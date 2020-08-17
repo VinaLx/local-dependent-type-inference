@@ -3,6 +3,7 @@ Declarative/Language.v
 Declarative/BasicProperties.v
 Declarative/FSetReasoning.v
 Declarative/SimplifiedLanguage.v
+Declarative/BoxReasoning.v
 Declarative/LanguageUtil.v
 Declarative/Extraction.v
 Declarative/Properties.v
