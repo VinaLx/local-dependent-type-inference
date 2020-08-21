@@ -58,7 +58,7 @@ Inductive sized_usub : context -> expr -> expr -> expr -> nat -> Prop :=    (* d
      G ⊢ B <: B : e_kind k | n1 ->
      A ⟹ B ->
      G ⊢ e1 <: e2 : A | n2 ->
-     G ⊢ e_castdn B e1 <: e_castdn B e2 : B | S (n1 + n2)
+     G ⊢ e_castdn e1 <: e_castdn e2 : B | S (n1 + n2)
  | ss_forall_l : forall (L:vars) (G:context) (A B C e:expr) (k:kind) n1 n2 n3 n4,
      mono_type e ->
      G ⊢ A <: A : e_kind k | n1 ->
@@ -419,7 +419,7 @@ Fixpoint forall_order (e : expr) : nat :=
   | e_bind A B => forall_order A + forall_order B
   | e_all  A B => S (forall_order A + forall_order B)
   | e_castup A e => forall_order A + forall_order e
-  | e_castdn A e => forall_order A + forall_order e
+  | e_castdn   e => forall_order e
   | _ => 0
   end
 .
@@ -437,7 +437,7 @@ Fixpoint esize (e : expr) : nat :=
   | e_all  A B => S (esize A + esize B)
   | e_bind A B => S (esize A + esize B)
   | e_castup A e => S (esize A + esize e)
-  | e_castdn A e => S (esize A + esize e)
+  | e_castdn e => S (esize e)
   end
 .
 
@@ -757,7 +757,7 @@ Ltac solve_castup :=
 
 Ltac solve_castdn :=
   match goal with
-  | |- _ ⊢ e_castdn _ _ <: e_castdn _ _ : _ =>
+  | |- _ ⊢ e_castdn _ <: e_castdn _ : _ =>
     eapply s_castdn; try solve_with_IHtsz; eauto
   end
 .

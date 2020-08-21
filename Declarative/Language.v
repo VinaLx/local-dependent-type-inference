@@ -23,7 +23,7 @@ Inductive expr : Set :=  (*r expressions *)
  | e_all (A:expr) (B:expr) (*r implicit function type *)
  | e_bind (A:expr) (e:expr) (*r implicit lambda *)
  | e_castup (A:expr) (e:expr) (*r cast up *)
- | e_castdn (B:expr) (e:expr) (*r cast down *).
+ | e_castdn (e:expr) (*r cast down *).
 
 Inductive eexpr : Set :=  (*r extracted expression *)
  | ee_var_b (_:nat)
@@ -76,7 +76,7 @@ Fixpoint open_expr_wrt_expr_rec (k:nat) (e_5:expr) (e__6:expr) {struct e__6}: ex
   | (e_all A B) => e_all (open_expr_wrt_expr_rec k e_5 A) (open_expr_wrt_expr_rec (S k) e_5 B)
   | (e_bind A e) => e_bind (open_expr_wrt_expr_rec k e_5 A) (open_expr_wrt_expr_rec (S k) e_5 e)
   | (e_castup A e) => e_castup (open_expr_wrt_expr_rec k e_5 A) (open_expr_wrt_expr_rec k e_5 e)
-  | (e_castdn B e) => e_castdn (open_expr_wrt_expr_rec k e_5 B) (open_expr_wrt_expr_rec k e_5 e)
+  | (e_castdn e) => e_castdn (open_expr_wrt_expr_rec k e_5 e)
 end.
 
 Definition open_eexpr_wrt_eexpr ee_5 ee__6 := open_eexpr_wrt_eexpr_rec 0 ee__6 ee_5.
@@ -120,10 +120,9 @@ Inductive lc_expr : expr -> Prop :=    (* defn lc_expr *)
      (lc_expr A) ->
      (lc_expr e) ->
      (lc_expr (e_castup A e))
- | lc_e_castdn : forall (B e:expr),
-     (lc_expr B) ->
+ | lc_e_castdn : forall (e:expr),
      (lc_expr e) ->
-     (lc_expr (e_castdn B e)).
+     (lc_expr (e_castdn e)).
 
 (* defns LC_eexpr *)
 Inductive lc_eexpr : eexpr -> Prop :=    (* defn lc_eexpr *)
@@ -173,7 +172,7 @@ Fixpoint fv_expr (e_5:expr) : vars :=
   | (e_all A B) => (fv_expr A) \u (fv_expr B)
   | (e_bind A e) => (fv_expr A) \u (fv_expr e)
   | (e_castup A e) => (fv_expr A) \u (fv_expr e)
-  | (e_castdn B e) => (fv_expr B) \u (fv_expr e)
+  | (e_castdn e) => (fv_expr e)
 end.
 
 Fixpoint fv_eexpr (ee_5:eexpr) : vars :=
@@ -206,7 +205,7 @@ Fixpoint subst_expr (e_5:expr) (x5:exprvar) (e__6:expr) {struct e__6} : expr :=
   | (e_all A B) => e_all (subst_expr e_5 x5 A) (subst_expr e_5 x5 B)
   | (e_bind A e) => e_bind (subst_expr e_5 x5 A) (subst_expr e_5 x5 e)
   | (e_castup A e) => e_castup (subst_expr e_5 x5 A) (subst_expr e_5 x5 e)
-  | (e_castdn B e) => e_castdn (subst_expr e_5 x5 B) (subst_expr e_5 x5 e)
+  | (e_castdn e) => e_castdn (subst_expr e_5 x5 e)
 end.
 
 Fixpoint subst_eexpr (ee_5:eexpr) (x5:exprvar) (ee__6:eexpr) {struct ee__6} : eexpr :=
@@ -238,7 +237,7 @@ Fixpoint extract (e : expr) : eexpr :=
   | e_pi   A B => ee_pi   (extract A) (extract B)
   | e_all  A B => ee_all  (extract A) (extract B)
   | e_castup A e => ee_castup (extract e)
-  | e_castdn A e => ee_castdn (extract e)
+  | e_castdn   e => ee_castdn (extract e)
   end
 .
 
@@ -275,10 +274,10 @@ Inductive mono_type : expr -> Prop :=    (* defn mono_type *)
       mono_type A  ->
      mono_type e ->
      mono_type (e_castup A e)
- | mono_castdn : forall (B e:expr),
+ | mono_castdn : forall (e B:expr),
       mono_type B  ->
      mono_type e ->
-     mono_type (e_castdn B e).
+     mono_type (e_castdn e).
 
 (* defns Value *)
 Inductive value : expr -> Prop :=    (* defn value *)
@@ -326,21 +325,18 @@ Inductive reduce : expr -> expr -> Prop :=    (* defn reduce *)
      lc_expr e2 ->
      mono_type e ->
      reduce (e_app  ( (e_bind A e1) )  e2) (e_app  (  (open_expr_wrt_expr  e1   e )  )  e2)
- | r_castdn : forall (A e1 e2:expr),
-     lc_expr A ->
+ | r_castdn : forall (e1 e2:expr),
      reduce e1 e2 ->
-     reduce (e_castdn A e1) (e_castdn A e2)
- | r_cast_inst : forall (A B e1 e:expr),
+     reduce (e_castdn e1) (e_castdn e2)
+ | r_cast_inst : forall (B e1 e:expr),
      lc_expr B ->
      lc_expr (e_bind B e1) ->
-     lc_expr A ->
      mono_type e ->
-     reduce (e_castdn A  ( (e_bind B e1) ) ) (e_castdn A  (  (open_expr_wrt_expr  e1   e )  ) )
- | r_cast_elim : forall (A B e:expr),
-     lc_expr A ->
+     reduce (e_castdn  ( (e_bind B e1) ) ) (e_castdn  (  (open_expr_wrt_expr  e1   e )  ) )
+ | r_cast_elim : forall (B e:expr),
      lc_expr B ->
      lc_expr e ->
-     reduce (e_castdn A  ( (e_castup B e) ) ) e.
+     reduce (e_castdn  ( (e_castup B e) ) ) e.
 
 (* defns DeterministicReduce *)
 Inductive dreduce : expr -> expr -> Prop :=    (* defn dreduce *)
@@ -353,15 +349,13 @@ Inductive dreduce : expr -> expr -> Prop :=    (* defn dreduce *)
      lc_expr (e_abs A e1) ->
      lc_expr e2 ->
      dreduce (e_app  ( (e_abs A e1) )  e2)  (open_expr_wrt_expr  e1   e2 ) 
- | dr_castdn : forall (A e1 e2:expr),
-     lc_expr A ->
+ | dr_castdn : forall (e1 e2:expr),
      dreduce e1 e2 ->
-     dreduce (e_castdn A e1) (e_castdn A e2)
- | dr_cast_elim : forall (A B e:expr),
-     lc_expr A ->
+     dreduce (e_castdn e1) (e_castdn e2)
+ | dr_cast_elim : forall (B e:expr),
      lc_expr B ->
      lc_expr e ->
-     dreduce (e_castdn A  ( (e_castup B e) ) ) e.
+     dreduce (e_castdn  ( (e_castup B e) ) ) e.
 
 (* defns ExtractedValue *)
 Inductive evalue : eexpr -> Prop :=    (* defn evalue *)
@@ -463,11 +457,11 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
      dreduce A B ->
      usub G e1 e2 B ->
      usub G (e_castup A e1) (e_castup A e2) A
- | s_castdn : forall (G:context) (B e1 e2:expr) (k:kind) (A:expr),
+ | s_castdn : forall (G:context) (e1 e2 B:expr) (k:kind) (A:expr),
       (usub  G   B   B   (e_kind k) )  ->
      dreduce A B ->
      usub G e1 e2 A ->
-     usub G (e_castdn B e1) (e_castdn B e2) B
+     usub G (e_castdn e1) (e_castdn e2) B
  | s_forall_l : forall (L:vars) (G:context) (A B C e:expr) (k:kind),
      mono_type e ->
         (usub  G   A   A   (e_kind k) )    ->
@@ -537,11 +531,11 @@ with susub : context -> expr -> expr -> expr -> Prop :=    (* defn susub *)
      dreduce A B ->
      susub G e1 e2 B ->
      susub G (e_castup A e1) (e_castup A e2) A
- | ss_castdn : forall (G:context) (B e1 e2 A:expr) (k:kind),
+ | ss_castdn : forall (G:context) (e1 e2 A B:expr) (k:kind),
       susub  G   B   B   (e_kind k)  ->
      dreduce A B ->
      susub G e1 e2 A ->
-     susub G (e_castdn B e1) (e_castdn B e2) A
+     susub G (e_castdn e1) (e_castdn e2) A
  | ss_forall_l : forall (L:vars) (G:context) (A B C e:expr),
       mono_type e  ->
       susub  G   e   e   A  ->

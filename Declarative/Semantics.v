@@ -31,18 +31,6 @@ Ltac find_impossible_reduction :=
 
 Ltac solve_impossible_reduction := try find_impossible_reduction.
 
-Ltac conclude_type_refl H :=
-  match type of H with
-  | ?G ⊢ _ <: _ : ?A =>
-    let k := fresh "k" in
-    let H := fresh "H" in
-    let EBox := fresh "Ebox" in
-    assert (A = BOX \/ exists k, G ⊢ A : e_kind k) as [Ebox | [k H]]
-        by (eapply type_correctness; eassumption);
-    [inversion EBox; subst |]
-  end
-.
-
 Ltac conclude_refls H :=
   match type of H with
   | ?G ⊢ ?e1 <: ?e2 : ?A =>
@@ -54,8 +42,8 @@ Ltac conclude_refls H :=
   end
 .
 
-Lemma castdn_not_of_star : forall Γ A e,
-    Γ ⊢ e_castdn A e : * -> False.
+Lemma castdn_not_of_star : forall Γ e,
+    Γ ⊢ e_castdn e : * -> False.
 Proof.
   intros.
   dependent induction H.
@@ -142,9 +130,9 @@ Proof.
   - now eapply IHusub1.
 Qed.
 
-Lemma castdn_le : forall Γ A b e T,
-    Γ ⊢ e_castdn A b <: e : T ->
-    exists c, e = e_castdn A c.
+Lemma castdn_le : forall Γ a e T,
+    Γ ⊢ e_castdn a <: e : T ->
+    exists b, e = e_castdn b.
 Proof.
   intros. dependent induction H.
   - eauto.
@@ -152,9 +140,9 @@ Proof.
   - now eapply IHusub1.
 Qed.
 
-Lemma castdn_ge : forall Γ A b e T,
-    Γ ⊢ e <: e_castdn A b : T ->
-    exists c, e = e_castdn A c.
+Lemma castdn_ge : forall Γ a e T,
+    Γ ⊢ e <: e_castdn a: T ->
+    exists b, e = e_castdn b.
 Proof.
   intros. dependent induction H.
   - eauto.
@@ -170,7 +158,7 @@ Ltac invert_sub_hyp :=
   match goal with
   | _ : _ ⊢ e_abs    ?A _ <: e_abs    ?A _ : _ |- _ => idtac
   | _ : _ ⊢ e_bind   ?A _ <: e_bind   ?A _ : _ |- _ => idtac
-  | _ : _ ⊢ e_castdn ?A _ <: e_castdn ?A _ : _ |- _ => idtac
+  | _ : _ ⊢ e_castdn    _ <: e_castdn    _ : _ |- _ => idtac
   | _ : _ ⊢ e_castup ?A _ <: e_castup ?A _ : _ |- _ => idtac
   | H : _ ⊢ e_abs _ _ <: _ : _ |- _ =>
     pose (H' := H); apply abs_le in H' as (b & E)
@@ -240,16 +228,6 @@ Proof.
   intros.
   conclude_type_refl H.
   now apply abs_inversion with (e_pi A B) k.
-Qed.
-
-Lemma castdn_inversion : forall Γ e1 e2 A B,
-    Γ ⊢ e_castdn A e1 <: e_castdn A e2 : B ->
-    exists C k, Γ ⊢ e1 <: e2 : C /\ C ⟹ A /\ Γ ⊢ A <: B : e_kind k.
-Proof.
-  intros. dependent induction H.
-  - eauto.
-  - edestruct IHusub1 as (C & k1 & Sub1 & R & Sub2); eauto.
-    exists C, k1. eauto using transitivity.
 Qed.
 
 Lemma castup_inversion : forall Γ e1 e2 A B,
@@ -631,7 +609,7 @@ Qed.
 
 Lemma castdn_extraction_inversion : forall e ee,
     ee_castdn ee = extract e ->
-    exists A e', e = e_castdn A e' /\ ee = extract e'.
+    exists e', e = e_castdn e' /\ ee = extract e'.
 Proof.
   induction e; simpl; intros; inversion H; eauto.
 Qed.
@@ -798,14 +776,14 @@ Proof.
       (* main case for r_castdn *)
       * destruct IHSub2 with ee2 ee0 as (e1' & e2' & IH); eauto.
         destruct_conjs. subst.
-        exists (e_castdn B e1'), (e_castdn B e2'). repeat split; eauto 3.
+        exists (e_castdn e1'), (e_castdn e2'). repeat split; eauto 3.
       * invert_extractions. invert_sub_hyp. inversion H3.
       * invert_extractions. invert_sub_hyp. inversion H3.
     + invert_extractions. invert_sub_hyp. inversion H1; subst; solve_impossible_reduction.
     (* main case for r_cast_inst *)
       apply bind_inversion in Sub2 as (F & L1 & Hb). destruct_pairs.
       apply forall_l_sub_inversion in H8 as (m & M & Subm & Sub_inst); auto.
-      exists (e_castdn B (e ^^ m)), (e_castdn B (b ^^ m)). split_all; simpl.
+      exists (e_castdn (e ^^ m)), (e_castdn (b ^^ m)). split_all; simpl.
       * pick fresh x'. instantiate_cofinites. find_extract_invariants.
       * pick fresh x'. instantiate_cofinites. find_extract_invariants.
       * eauto.

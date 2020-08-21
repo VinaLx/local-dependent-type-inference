@@ -278,10 +278,12 @@ Proof.
   induction e; simpl; intros; auto 3;
     try solve
         [inversion H0 as [[Hinv1 Hinv2]];
-         (apply IHe1 in Hinv1; apply IHe2 in Hinv2); (auto || congruence)].
+         (apply IHe1 in Hinv1; apply IHe2 in Hinv2); (auto 2 || congruence)].
   - destruct (m == n).
     + destruct (n0 == n); congruence.
     + simpl in H0. destruct (n0 == n); easy.
+  - inversion H0 as [[Hinv1]].
+    apply IHe in Hinv1; (auto || congruence).
 Qed.
 
 Hint Resolve open_rec_eq_cancel : ln.
@@ -293,7 +295,7 @@ Proof.
     try solve
         [ reflexivity
         | pick fresh x; rewrite IHLC;
-          erewrite open_rec_eq_cancel with (m := 0); eauto
+          try erewrite open_rec_eq_cancel with (m := 0); eauto
         | now (rewrite IHLC1; rewrite IHLC2)].
 Qed.
 
@@ -302,7 +304,7 @@ Lemma subst_open_rec_distr : forall e x v e' n,
     [v / x] e <n> ^^ e' = ([v / x] e) <n> ^^ ([v / x] e').
 Proof.
   induction e; simpl; intros; auto;
-    try solve [rewrite IHe1; auto; rewrite IHe2; auto].
+    try solve [(rewrite IHe || rewrite IHe1, IHe2); auto].
   - destruct (n0 == n); auto.
   - destruct (x == x0). rewrite lc_open_eq; auto. auto.
 Qed.
@@ -330,7 +332,7 @@ Hint Rewrite subst_open_var_assoc : assoc.
 Lemma fresh_subst_eq : forall e x e', x # e -> [e' / x] e = e.
 Proof.
   induction e; simpl; intros;
-    try solve [auto | rewrite IHe1; auto; rewrite IHe2; auto].
+    try solve [auto | (rewrite IHe || rewrite IHe1, IHe2); auto].
   - destruct (x == x0).
     + apply notin_singleton_1 in H. contradiction.
     + auto.
@@ -534,7 +536,7 @@ Lemma subst_mono : forall e x e',
     mono_type e -> mono_type e' -> mono_type ([e' / x] e).
 Proof.
   intros.
-  induction H; simpl; auto.
+  induction H; simpl; eauto.
   (* var *)
   - destruct (x0 == x); auto.
   - pick fresh x' and apply mono_pi.

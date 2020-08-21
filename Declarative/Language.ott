@@ -19,7 +19,7 @@ expr, e, A, B, C :: 'e_' ::= {{ com expressions }}
   | forall x : A . B :: :: all  (+ bind x in B +) {{ com implicit function type }}
   | bind   x : A . e :: :: bind (+ bind x in e +) {{ com implicit lambda }}
   | castup [ A ] e   :: :: castup {{ com cast up }}
-  | castdn [ B ] e   :: :: castdn {{ com cast down }}
+  | castdn       e   :: :: castdn {{ com cast down }}
   | ( e )         :: S :: paren {{ coq ([[e]]) }}
   | [ e1 / x ] e2 :: M :: subst {{ coq (open_expr_wrt_expr [[x e2]] [[e1]]) }}
 
@@ -109,7 +109,7 @@ Fixpoint extract (e : expr) : eexpr :=
   | e_pi   A B => ee_pi   (extract A) (extract B)
   | e_all  A B => ee_all  (extract A) (extract B)
   | e_castup A e => ee_castup (extract e)
-  | e_castdn A e => ee_castdn (extract e)
+  | e_castdn   e => ee_castdn (extract e)
   end
 .
 }} % embed coq
@@ -163,7 +163,7 @@ monotype castup [A] e
 monotype B ,,
 monotype e
 ---------------------- :: castdn
-monotype castdn [B] e
+monotype castdn e
 
 defns
 Value :: '' ::=
@@ -218,14 +218,14 @@ monotype e
 
 e1 --> e2
 -------------------------------- :: castdn
-castdn [A] e1 --> castdn [A] e2
+castdn e1 --> castdn e2
 
 monotype e
 -------------------------------------------------------- :: cast_inst
-castdn [A] (bind x : B. e1) --> castdn [A] ([e / x] e1)
+castdn (bind x : B. e1) --> castdn ([e / x] e1)
 
 -------------------------------- :: cast_elim
-castdn [A] (castup [B] e) --> e
+castdn (castup [B] e) --> e
 
 defns
 DeterministicReduce :: '' ::=
@@ -242,11 +242,11 @@ e1 e3 ==> e2 e3
 (lambda x : A. e1) e2 ==> [e2 / x] e1
 
 e1 ==> e2
--------------------------------- :: castdn
-castdn [A] e1 ==> castdn [A] e2
+---------------------------- :: castdn
+castdn e1 ==> castdn e2
 
--------------------------------- :: cast_elim
-castdn [A] (castup [B] e) ==> e
+---------------------------- :: cast_elim
+castdn (castup [B] e) ==> e
 
 
 defns
@@ -385,7 +385,7 @@ G |- B : k
 A ==> B
 G |- e1 <: e2 : A
 --------------------------------------- :: castdn
-G |- castdn [B] e1 <: castdn [B] e2 : B
+G |- castdn e1 <: castdn e2 : B
 
 monotype e
 G |- A : k ,, <<
@@ -485,8 +485,8 @@ G |= castup [A] e1 <: castup [A] e2 : A
 G |= B : k
 A ==> B
 G |= e1 <: e2 : A
--------------------------------------- :: castdn
-G |= castdn [B] e1 <: castdn [B] e2 : A
+-------------------------------- :: castdn
+G |= castdn e1 <: castdn e2 : A
 
 monotype e ,,
 % G |= A : k ,,

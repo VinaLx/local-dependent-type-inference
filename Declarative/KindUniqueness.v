@@ -1,5 +1,7 @@
 Require Import KindProperties.
 Require Import LanguageUtil.
+Require Import Properties.
+Require Import BoxReasoning.
 
 Theorem gen_head_kind_uniqueness : forall Γ e A k,
     Γ ⊢ e : A -> forall n B, head_kind A k n -> Γ ⊢ e : B -> head_kind B k n.
@@ -32,15 +34,19 @@ Proof.
     + inversion Hk; constructor.
     + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr. assumption. eauto 3 using head_kind_sub_r.
-  - dependent induction Hsubr. assumption. eauto 3 using head_kind_sub_r.
-  - dependent induction Hsubr;
-      [> assumption .. | eauto 3 using head_kind_sub_r ].
-  - dependent induction Hsubr;
-      [> assumption .. | eauto 3 using head_kind_sub_r ].
-  - dependent induction Hsubr;
-      [> assumption .. | eauto 3 using head_kind_sub_r ].
+  - destruct k.
+    + conclude_type_refl Hsub2. inversion H.
+      box_reasoning. assert False by eauto using expr_of_box_never_be_reduced.
+      contradiction.
+    + conclude_type_refl Hsub2. inversion H.
+      assert False by eauto using box_never_be_reduced.
+      contradiction.
+  - dependent induction Hsubr; eauto 3 using head_kind_sub_r.
+  - dependent induction Hsubr; eauto 3 using head_kind_sub_r.
+  - dependent induction Hsubr; eauto 3 using head_kind_sub_r.
   - eauto 3 using head_kind_sub_l.
 Qed.
+
 
 Corollary gen_kind_uniqueness : forall Γ e A k,
     Γ ⊢ e : (e_kind k) -> Γ ⊢ e : A -> A = e_kind k.

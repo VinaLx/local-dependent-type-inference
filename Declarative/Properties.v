@@ -211,3 +211,15 @@ Proof.
     + apply IHusub1 with A k; auto.
       apply kind_sub_inversion_l in H0_0 as (E1 & E2 & E3). now subst.
 Qed.
+
+Ltac conclude_type_refl H :=
+  match type of H with
+  | ?G ⊢ _ <: _ : ?A =>
+    let k := fresh "k" in
+    let H := fresh "H" in
+    let EBox := fresh "Ebox" in
+    assert (A = BOX \/ exists k, G ⊢ A : e_kind k) as [Ebox | [k H]]
+        by (eapply type_correctness; eassumption);
+    [inversion EBox; subst |]
+  end
+.

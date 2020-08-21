@@ -129,8 +129,8 @@ Proof.
   - box_welltype_contradiction.
 Qed.
 
-Lemma castdn_of_box_impossible : forall Γ A e1 e2,
-    not (Γ ⊢ e_castdn A e1 <: e_castdn A e2 : BOX).
+Lemma castdn_of_box_impossible : forall Γ e1 e2,
+    not (Γ ⊢ e_castdn e1 <: e_castdn e2 : BOX).
 Proof.
   intros. intro.
   inversion H; box_welltype_contradiction.
@@ -182,8 +182,8 @@ Ltac box_reasoning :=
       apply app_box_never_welltype in H; contradiction
     | H : _ ⊢ e_abs _ BOX : _ |- _ =>
       apply lambda_box_never_welltype in H; contradiction
-    | H : _ ⊢ e_castdn ?A _ <: e_castdn ?A _ : BOX |- _ =>
-      apply castdn_of_box_impossible in H;  contradiction
+    | H : _ ⊢ e_castdn _ <: e_castdn _ : BOX |- _ =>
+      apply castdn_of_box_impossible in H; contradiction
     (* reasoning *)
     | H1 : head_kind ?e _ _ |- _ =>
       match goal with
@@ -262,8 +262,8 @@ Proof with eauto 2 with box.
   - inversion H0.
   - box_reasoning.
     + dependent induction H3...
-  - inversion H0.
-  - dependent induction H3...
+  - inversion H.
+  - dependent induction H2...
 Qed.
 
 Hint Resolve box_never_be_reduced : box.
@@ -276,9 +276,9 @@ Proof.
   - box_reasoning.
   - dependent induction H3; box_reasoning.
   - box_reasoning.
-  - dependent induction H3.
-    + clear IHusub1 IHusub2 H3.
-      dependent induction H3_0; box_reasoning.
+  - dependent induction H2.
+    + clear IHusub1 IHusub2 H2.
+      dependent induction H2_0; box_reasoning.
       Unshelve. exact 0.
     + eauto 2.
 Qed.

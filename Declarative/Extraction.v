@@ -4,7 +4,11 @@ Lemma extract_open_distr_rec : forall e e' n,
     extract (e <n> ^^ e') = extract e ⋆n^^ extract e'.
 Proof.
   induction e; simpl; intros;
-    try solve [auto | now rewrite IHe1, IHe2 | now rewrite IHe2 ].
+    try solve
+        [ auto
+        | now rewrite IHe
+        | now rewrite IHe1, IHe2
+        | now rewrite IHe2 ].
   - now destruct (n0 == n).
 Qed.
 
@@ -56,6 +60,7 @@ Proof.
     try solve
         [ auto
         | now destruct (x == x0)
+        | now rewrite IHe
         | now rewrite IHe2
         | now rewrite IHe1, IHe2].
 Qed.
