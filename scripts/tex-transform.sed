@@ -43,7 +43,8 @@ s/^\\usepackage{color}/\\usepackage{xcolor}/
   # adjust line breaks for rules
   /^\\ottdrulemonoXX(kind|var|int|app|lambda|castup)/s/\\\\/\\qquad/
   /^\\ottdrule(s)?sXX(var|lit|star|abs|app|forall{}|forallXXl|castup)/s/\\\\/\\qquad/
-  /^\\ottdrule(e)?rXX(beta|castup)/s/\\\\/\\qquad/
+  /^\\ottdrule(e)?rXX(beta|castup|castdn)/s/\\\\/\\qquad/
+  /^\\ottdruledrXX(app|castdn)/s/\\\\/\\qquad/
   /^\\ottdrule(e)?vXX(kind|num|abs|pi)/s/\\\\/\\qquad/
   /^\\ottdrule(s)?wfXX(nil)/s/\\\\/\\qquad/
 }
