@@ -77,7 +77,7 @@ terminals :: 'terminal_' ::=
   | eforall :: :: eforall {{ tex \forall }}
   | ebind   :: :: ebind   {{ tex \Lambda }}
   | -->  :: :: reduce  {{ tex \longrightarrow }}
-  | ==>  :: :: dreduce {{ tex \Longrightarrow }}
+  | ==>  :: :: dreduce {{ tex \longrightarrow_\beta }}
   | *--> :: :: ereduce {{ tex \prescript{\ast}{}\longrightarrow ~ }}
   | nil  :: :: nil {{ tex \varnothing }}
   | int  :: :: int {{ tex \mathbb{N} }}
@@ -478,7 +478,7 @@ G |= B : k
 A ==> B
 G |= e1 <: e2 : A
 -------------------------------- :: castdn
-G |= castdn e1 <: castdn e2 : A
+G |= castdn e1 <: castdn e2 : B
 
 monotype e ,,
 % G |= A : k ,,

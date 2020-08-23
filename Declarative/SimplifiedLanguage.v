@@ -1,6 +1,7 @@
 Require Import LanguageUtil.
 Require Import BasicProperties.
 Require Import Properties.
+Require Import Semantics.
 
 Notation "G ⊨ e : A" := (susub G e e A)
     (at level 65, e at next level, no associativity) : type_scope.
@@ -11,31 +12,28 @@ Notation "⊨ G" := (swf_context G)
     (no associativity, at level 65) : type_scope.
 
 
-(*
+Lemma type_reduce_restricted_2 : forall A B Γ e1 e2,
+    A ⟶ B -> Γ ⊢ e1 <: e2 : A -> A ⟹ B.
+Proof.
+  intros. conclude_type_refl H0.
+  + inversion H.
+  + eauto using type_reduce_restricted.
+    Unshelve. exact 0.
+Qed.
+
 Theorem soundness : forall Γ e1 e2 A,
     Γ ⊢ e1 <: e2 : A -> Γ ⊨ e1 <: e2 : A
   with
     wf_soundness : forall Γ, ⊢ Γ -> ⊨ Γ.
 Proof.
   - intros * Sub. destruct Sub;
-    try solve [clear soundness; constructor; auto | econstructor; eauto 3 ].
+      solve [ clear soundness; constructor; auto
+            | econstructor; eauto 3 using type_reduce_restricted, type_reduce_restricted_2].
   - intros * Wf. destruct Wf.
     + constructor.
     + econstructor; eauto.
+      Show Proof.
 Qed.
-
-
-Ltac auto_instantiate_cofinite H :=
-  match goal with
-  | x : atom |- _ =>
-    match goal with
-    | Fr : x `notin` ?L |- _ => instantiate_cofinite x H
-    end
-  | _ =>
-    let x := fresh "x" in
-    pick fresh x; instantiate_cofinite x H
-  end
-.
 
 Ltac conclude_typing_in_binding H :=
   match type of H with
@@ -46,7 +44,7 @@ Ltac conclude_typing_in_binding H :=
     | _ =>
       let H1 := fresh "H" in
       pose proof H as H1;
-      auto_instantiate_cofinite H1;
+      instantiate_cofinite H1;
       let H2 := fresh "H" in
       let k := fresh "k" in
       assert (exists k, G ⊢ A : e_kind k) as [k H2] by eauto 4;
@@ -80,10 +78,7 @@ Proof.
   - intros * Sub. destruct Sub;
     try solve [ clear completeness; constructor; auto
               | conclude_typing_in_bindings; econstructor; eauto 3].
-    + apply completeness in Sub.
-      econstructor; eauto 3.
   - intros * Wf. destruct Wf.
     + constructor.
     + econstructor; eauto.
 Qed.
-*)
