@@ -27,13 +27,14 @@ Theorem soundness : forall Γ e1 e2 A,
     wf_soundness : forall Γ, ⊢ Γ -> ⊨ Γ.
 Proof.
   - intros * Sub. destruct Sub;
-      solve [ clear soundness; constructor; auto
-            | econstructor; eauto 3 using type_reduce_restricted, type_reduce_restricted_2].
+    try solve [ clear soundness; constructor; auto
+              | econstructor; eauto 3 using type_reduce_restricted, type_reduce_restricted_2].
   - intros * Wf. destruct Wf.
     + constructor.
     + econstructor; eauto.
-      Show Proof.
 Qed.
+
+
 
 Ltac conclude_typing_in_binding H :=
   match type of H with

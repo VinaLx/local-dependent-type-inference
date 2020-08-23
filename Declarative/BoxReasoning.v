@@ -86,10 +86,10 @@ Lemma box_never_reduce : forall Γ e,
     Γ ⊢ e : BOX -> forall e', not (e ⟶ e').
 Proof.
   intros * Sub.
-  dependent induction Sub; intros; intro R; try solve [inversion R].
+  dependent induction Sub; intros; intro R;
+    try solve [inversion R | box_welltype_contradiction].
+  (* r_app *)
   - solve_open_is_box.
-  - box_welltype_contradiction.
-  - box_welltype_contradiction.
 Qed.
 
 Lemma castup_box_never_welltype : forall Γ A B,
@@ -241,6 +241,15 @@ Proof.
   - eauto 2.
 Qed.
 
+Lemma mu_head_kind_impossible : forall Γ A e B,
+    Γ ⊢ e_mu A e : B -> forall n k, head_kind e k n -> False.
+Proof.
+  intros.
+  dependent induction H.
+  - instantiate_cofinites. destruct k0; box_reasoning.
+  - eauto 2.
+Qed.
+
 Lemma castup_head_kind_box_impossible : forall Γ A e B,
     Γ ⊢ e_castup A e : B -> forall n, head_kind e k_box n -> False.
 Proof.
@@ -253,6 +262,7 @@ Qed.
 Hint Resolve app_head_kind_impossible : box.
 Hint Resolve lambda_head_kind_impossible : box.
 Hint Resolve castup_head_kind_box_impossible : box.
+Hint Resolve mu_head_kind_impossible : box.
 
 Lemma box_never_be_reduced : forall e e',
     e ⟶ e' -> forall n, head_kind e' k_box n -> forall Γ A, Γ ⊢ e : A -> False.
@@ -266,6 +276,8 @@ Proof with eauto 2 with box.
     + dependent induction H3...
   (* r_inst *)
   - inversion H3.
+  (* r_mu *)
+  - box_reasoning.
   (* r_castdn *)
   - inversion H.
   (* r_cast_inst *)
@@ -286,6 +298,8 @@ Proof.
   (* r_beta *)
   - dependent induction H3; box_reasoning.
   (* r_inst *)
+  - box_reasoning.
+  (* r_mu *)
   - box_reasoning.
   (* r_castdn *)
   - box_reasoning.

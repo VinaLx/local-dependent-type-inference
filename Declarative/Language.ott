@@ -18,6 +18,7 @@ expr, e, A, B, C :: 'e_' ::= {{ com expressions }}
   | pi     x : A . B :: :: pi   (+ bind x in B +) {{ com dependent product }}
   | forall x : A . B :: :: all  (+ bind x in B +) {{ com implicit function type }}
   | bind   x : A . e :: :: bind (+ bind x in e +) {{ com implicit lambda }}
+  | mu     x : A . e :: :: mu   (+ bind x in e +) {{ com fix point expression }}
   | castup [ A ] e   :: :: castup {{ com cast up }}
   | castdn       e   :: :: castdn {{ com cast down }}
   | ( e )         :: S :: paren {{ coq ([[e]]) }}
@@ -37,6 +38,7 @@ eexpr, ee, eA, eB, eC :: 'ee_' ::= {{ com extracted expression }}
   | ee1 ee2 :: :: app
   | elambda x . ee :: :: abs  (+ bind x in ee +)
   | ebind   x . ee :: :: bind (+ bind x in ee +)
+  | emu     x . ee :: :: mu   (+ bind x in ee +)
   | epi     x : eA . eB :: :: pi  (+ bind x in eB +)
   | eforall x : eA . eB :: :: all (+ bind x in eB +)
   | ecastup ee :: :: castup
@@ -64,6 +66,7 @@ terminals :: 'terminal_' ::=
   | forall :: :: forall {{ tex \forall }}
   | bind   :: :: bind   {{ tex \Lambda }}
   | pi :: :: pi    {{ tex \Pi }}
+  | mu :: :: mu    {{ tex \mu }}
   | in :: :: in    {{ tex \in }}
   | |- :: :: vdash {{ tex \vdash }}
   | .  :: :: dot   {{ tex .~ }}
@@ -76,6 +79,7 @@ terminals :: 'terminal_' ::=
   | epi     :: :: epi     {{ tex \Pi }}
   | eforall :: :: eforall {{ tex \forall }}
   | ebind   :: :: ebind   {{ tex \Lambda }}
+  | emu     :: :: emu     {{ tex \mu }}
   | -->  :: :: reduce  {{ tex \longrightarrow }}
   | ==>  :: :: dreduce {{ tex \longrightarrow_\beta }}
   | *--> :: :: ereduce {{ tex \prescript{\ast}{}\longrightarrow ~ }}
@@ -106,6 +110,7 @@ Fixpoint extract (e : expr) : eexpr :=
   | e_app  f a => ee_app  (extract f) (extract a)
   | e_abs  A b => ee_abs  (extract b)
   | e_bind A b => ee_bind (extract b)
+  | e_mu   A b => ee_mu   (extract b)
   | e_pi   A B => ee_pi   (extract A) (extract B)
   | e_all  A B => ee_all  (extract A) (extract B)
   | e_castup A e => ee_castup (extract e)
@@ -157,6 +162,11 @@ monotype bind x : A . B
 
 monotype A ,,
 monotype e
+---------------------- :: mu
+monotype mu x : A . e
+
+monotype A ,,
+monotype e
 ---------------------- :: castup
 monotype castup [A] e
 
@@ -164,6 +174,7 @@ monotype B ,,
 monotype e
 ---------------------- :: castdn
 monotype castdn e
+
 
 defns
 Value :: '' ::=
@@ -216,6 +227,9 @@ monotype e
 --------------------------------------- :: inst
 (bind x : A. e1) e2 --> ([e / x] e1) e2
 
+-------------------------------------- :: mu
+mu x : A. e --> [mu x : A. e / x] e
+
 e1 --> e2
 -------------------------------- :: castdn
 castdn e1 --> castdn e2
@@ -240,6 +254,9 @@ e1 e3 ==> e2 e3
 
 -------------------------------------- :: beta
 (lambda x : A. e1) e2 ==> [e2 / x] e1
+
+------------------------------------ :: mu
+mu x : A. e ==> [mu x : A. e / x] e
 
 defns
 ExtractedValue :: '' ::=
@@ -290,6 +307,9 @@ ee1 ee3 *--> ee2 ee3
 
 -------------------------------- :: elim
 (ebind x. ee1) ee2 *--> ee1 ee2
+
+-------------------------------- :: mu
+emu x . ee *--> [emu x. ee / x] ee
 
 ee1 *--> ee2
 -------------------------------- :: castdn
@@ -366,6 +386,12 @@ x # e1* ,,
 x # e2*
 ------------------------------------------------------- :: bind
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
+
+monotype mu x : A. e ,,
+G |- A : k <<
+G , x : A |- e : A
+------------------------------------ :: mu
+G |- mu x : A. e <: mu x : A. e : A
 
 G |- A : k
 A --> B
@@ -467,6 +493,11 @@ x # e1* ,,
 x # e2*
 ------------------------------------------------------- :: bind
 G |= bind x : A. e1 <: bind x : A. e2 : forall x : A. B
+
+monotype mu x : A. e
+G , x : A |= e : A
+------------------------------------ :: mu
+G |= mu x : A. e <: mu x : A. e : A
 
 G |= A : k
 A ==> B

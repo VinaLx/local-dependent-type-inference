@@ -346,6 +346,7 @@ Proof.
     + auto.
     + apply tail_box_never_welltype with G e A; auto.
     + subst. now apply box_never_welltype in Hsub1.
+  - pick fresh x. eapply H1; eauto.
   - eapply tail_box_never_reduce; eauto.
   - eapply tail_box_never_welltype. exact Hsub1. assumption.
   - apply reflexivity_r in Hsub2. eapply tail_box_never_welltype; eauto.

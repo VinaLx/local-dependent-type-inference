@@ -40,6 +40,8 @@ Proof.
   - pick fresh x0. apply notin_union_3; auto.
     eapply notin_fv_open_var. apply H3; auto.
   - pick fresh x0. apply notin_union_3; auto.
+    eapply notin_fv_open_var. apply H2; auto.
+  - pick fresh x0. apply notin_union_3; auto.
     eapply notin_fv_open_var. apply H4; auto.
   - pick fresh x0. apply notin_union_3; auto.
     eapply notin_fv_open_var. apply H1; auto.

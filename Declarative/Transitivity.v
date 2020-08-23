@@ -49,6 +49,11 @@ Inductive sized_usub : context -> expr -> expr -> expr -> nat -> Prop :=    (* d
      (forall x , x \notin L -> x `notin` fv_eexpr (extract (e1 ^` x))) ->
      (forall x , x \notin L -> x `notin` fv_eexpr (extract (e2 ^` x))) ->
      G ⊢ e_bind A e1 <: e_bind A e2 : e_all A B | S (n1 + n2 + n3)
+ | ss_mu : forall (L:vars) (G:context) (A e:expr) (k:kind) n1 n2,
+     mono_type (e_mu A e) ->
+     G ⊢ A <: A : e_kind k | n1 ->
+     (forall x , x \notin L -> G , x : A ⊢ e ^` x <: e ^` x : A | n2) ->
+     G ⊢ e_mu A e <: e_mu A e : A | S (n1 + n2)
  | ss_castup : forall (G:context) (A e1 e2:expr) (k:kind) (B:expr) n1 n2,
      G ⊢ A <: A : e_kind k | n1 ->
      A ⟶ B ->
@@ -128,6 +133,8 @@ Proof.
   - pick fresh x and apply ss_bind; eauto.
     solve_weakening_with H0.
     solve_weakening_with H2.
+  - pick fresh x and apply ss_mu; eauto.
+    solve_weakening_with H1.
   - eauto.
   - eauto.
   - pick fresh x and apply ss_forall_l; eauto.
@@ -254,6 +261,10 @@ Proof.
       eauto 4 using fv_subst_inclusion.
     + rewrite subst_open_var_assoc, subst_extract; auto 2.
       eauto 4 using fv_subst_inclusion.
+  - pick_fresh_with_dom_and_apply ss_mu; eauto.
+    + inversion H. subst. pick fresh x'' and apply mono_mu. auto.
+      autorewrite with assoc; auto 3.
+    + assoc_goal_and_apply H1. eapply wf_cons; eauto.
   - eauto using reduce_subst.
   - eauto using reduce_subst.
   - apply ss_forall_l with
@@ -339,16 +350,22 @@ Ltac rewrite_open_or_subst e x x0 :=
 
 Ltac rewrite_for_rename :=
   match goal with
-  | _ : ?x `notin` dom ?Γ |- ?Γ, ?x0 : _ ⊢ ?e1 <: ?e2 : ?e3 | _ =>
+  | _ : ?x `notin` dom ?Γ |- ?Γ, ?x0 : ?A ⊢ ?e1 <: ?e2 : ?e3 | _ =>
     match x with
     | x0 => fail 1
     | _ =>
+      let A' := fresh A in
+      let E := fresh "E" in
+      pose (A' := A); assert (A' = A) as E by auto;
+      (* this is in case of e1 e2 or e3 appear in A,
+         then the rewrite could pollute the Γ, x : A *)
+      replace (Γ, x0 : A) with (Γ, x0 : A') by auto;
       rewrite_open_or_subst e3 x x0;
       rewrite_open_or_subst e1 x x0;
-      match e1 with
+      (match e1 with
       | e2 => idtac
       | _ => rewrite_open_or_subst e2 x x0
-      end
+      end); rewrite E; clear E A'
     end
   end
 .
@@ -365,6 +382,7 @@ Ltac try_sized_constructors :=
   eapply ss_abs +
   eapply ss_pi +
   eapply ss_bind +
+  eapply ss_mu +
   eapply ss_forall +
   eapply ss_forall_l +
   eapply ss_forall_r
@@ -420,6 +438,7 @@ Fixpoint forall_order (e : expr) : nat :=
   | e_all  A B => S (forall_order A + forall_order B)
   | e_castup A e => forall_order A + forall_order e
   | e_castdn   e => forall_order e
+  | e_mu   A e => forall_order A + forall_order e
   | _ => 0
   end
 .
@@ -436,6 +455,7 @@ Fixpoint esize (e : expr) : nat :=
   | e_pi   A B => S (esize A + esize B)
   | e_all  A B => S (esize A + esize B)
   | e_bind A B => S (esize A + esize B)
+  | e_mu   A e => S (esize A + esize e)
   | e_castup A e => S (esize A + esize e)
   | e_castdn e => S (esize e)
   end
@@ -815,6 +835,7 @@ Ltac easy_solves_l := try solve [solve_left_forall_l | solve_left_subsumption].
 Ltac easy_solves_r :=
   try solve
       [ auto
+      | eauto 2
       | star_absurd
       | solve_right_subsumption
       | solve_right_forall_r

@@ -42,12 +42,9 @@ Ltac crush_lc :=
             [ progress auto
             | progress eauto using lc_subst, lc_open_preserve
             | progress autorewrite with assoc; auto ]
-    | H : ?T |- lc_expr (?e ^^ _) =>
+    | H : lc_expr ?T |- lc_expr (?e ^^ _) =>
       match T with
-      | context [lc_expr ?T2] =>
-        match T2 with
-        | context [e] => inversion H; subst
-        end
+      | context [e] => inversion H; subst
       end
     | |- lc_expr ([_ / _] _) => apply lc_subst
     end
@@ -59,7 +56,7 @@ Hint Extern 1 (forall x, x `notin` _ -> lc_expr _) => crush_lc : lc.
 Lemma value_subst : forall e x v,
     lc_expr v -> value e -> value ([v / x] e).
 Proof.
-  intros * Lc V. induction V; simpl; eauto with lc.
+  intros * Lc V. induction V; simpl; eauto 4 with lc.
 Qed.
 
 Hint Resolve mono_lc : mono.
@@ -68,9 +65,12 @@ Hint Resolve value_subst : value.
 
 Lemma reduce_subst : forall A B,
     A ⟶ B -> forall x e, mono_type e -> ([e / x] A) ⟶ ([e / x] B).
-Proof with try rewrite subst_open_distr; eauto with lc mono value.
+Proof with try rewrite subst_open_distr; eauto 4 with lc mono value.
   intros A B Hr.
   induction Hr; simpl; intros...
+  - simpl. constructor. crush_lc.
+    inversion H0; subst.
+    apply lc_e_mu with (add x L); crush_lc.
 Qed.
 
 Lemma dom_subst_equal : forall Γ x v,
@@ -146,6 +146,12 @@ Proof.
   - solve_subst.
   - solve_subst.
   - solve_subst.
+  - adjust_cofinites_for gather_for_substitution.
+    eapply s_mu.
+    + inversion m. subst.
+      pick fresh x' and apply mono_mu; autorewrite with assoc; eauto.
+    + apply_substitution_strategy.
+    + apply_substitution_strategy.
   - solve_subst.
   - solve_subst.
   - apply s_forall_l with (add x L) ([e3 / x] e) k;

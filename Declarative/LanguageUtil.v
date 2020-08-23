@@ -371,6 +371,7 @@ Proof.
   - solve_inductive_case_with lc_e_pi.
   - solve_inductive_case_with lc_e_all.
   - solve_inductive_case_with lc_e_bind.
+  - solve_inductive_case_with lc_e_mu.
 Qed.
 
 Lemma lc_open_preserve : forall e e',
@@ -556,6 +557,9 @@ Proof.
   - pick fresh x' and apply mono_bind.
     + assumption.
     + autorewrite with assoc; auto.
+  - pick fresh x' and apply mono_mu.
+    + assumption.
+    + autorewrite with assoc; auto.
 Qed.
 
 Hint Resolve subst_mono : core.
@@ -608,6 +612,7 @@ Ltac try_constructors :=
   eapply s_pi +
   eapply s_app +
   eapply s_bind +
+  eapply s_mu +
   eapply s_castup +
   eapply s_castdn +
   eapply s_forall +

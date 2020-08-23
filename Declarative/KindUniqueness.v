@@ -33,6 +33,9 @@ Proof.
   - dependent induction Hsubr.
     + inversion Hk; constructor.
     + eauto 3 using head_kind_sub_r.
+  - dependent induction Hsubr.
+    + assumption.
+    + eauto 3 using head_kind_sub_r.
   - dependent induction Hsubr. assumption. eauto 3 using head_kind_sub_r.
   - destruct k.
     + conclude_type_refl Hsub2. inversion H.

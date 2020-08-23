@@ -240,6 +240,24 @@ Proof.
     exists C, k1; eauto using transitivity.
 Qed.
 
+Ltac rewrite_open_with_subst_impl G :=
+  match G with
+  | context [?e ^^ ?v] =>
+    progress
+      match v with
+      | e_var_f _ => idtac
+      | _ => erewrite (open_subst_eq e); eauto 3
+      end
+  end
+.
+
+Ltac rewrite_open_with_subst :=
+  repeat
+    match goal with
+    | |- ?g => rewrite_open_with_subst_impl g
+    end
+.
+
 Lemma type_preservation' : forall Γ e1 e2 A,
     Γ ⊢ e1 <: e2 : A -> forall k n e1' e2', head_kind A k n -> e1 ⟹ e1' -> e2 ⟹ e2' -> Γ ⊢ e1' <: e2' : A.
 Proof.
@@ -264,6 +282,15 @@ Proof.
         instantiate_cofinites.
         rewrite (open_subst_eq b x e), (open_subst_eq e0 x e), (open_subst_eq B x e); auto.
         eauto 4 using substitution_cons, ctx_narrowing_cons.
+  - inversion R1; inversion R2; subst.
+    assert (G ⊢ e_mu A e : A) by eauto.
+    instantiate_cofinites. conclude_freshes. rewrite_open_with_subst.
+    pose (A' := A); assert (A' = A) as E by auto.
+    replace (e_mu A e) with (e_mu A' e) by auto.
+    replace A with ([(e_mu A e) / x] A). rewrite E.
+    eapply substitution_cons; eauto.
+    now apply fresh_subst_eq.
+
   - assert (head_kind A k' n') by (eapply head_kind_sub_l; eauto).
     eauto.
 Qed.
@@ -484,6 +511,7 @@ Proof.
     + inversion V; inversion H11. subst.
         pick fresh x. instantiate_cofinites.
         exists (e_app (H6 ^` x) e). eauto.
+  - split; right; eauto.
   - split.
     + destruct H2.
       * destruct (is_castup_dec e1), (is_bind_dec e1).
@@ -543,6 +571,9 @@ Proof.
     + pick fresh x. exists (ee_app (extract H5 ⋆^` x) (extract e)).
       eapply er_elim; eauto 3.
       replace (ee_bind (extract H5)) with (extract (e_bind H3 H5)) by reflexivity.
+      eauto using lc_extract_lc.
+  - split; right; exists ((extract e) ⋆^^ ee_mu (extract e));
+      econstructor; replace (ee_mu (extract e)) with (extract (e_mu A e)) by auto;
       eauto using lc_extract_lc.
   (* castdn *)
   - instantiate_trivial_equals.
@@ -676,24 +707,6 @@ Qed.
 
 Ltac split_all := repeat split.
 
-Ltac rewrite_open_with_subst_impl G :=
-  match G with
-  | context [?e ^^ ?v] =>
-    progress
-      match v with
-      | e_var_f _ => idtac
-      | _ => erewrite (open_subst_eq e); eauto
-      end
-  end
-.
-
-Ltac rewrite_open_with_subst :=
-  repeat
-    match goal with
-    | |- ?g => rewrite_open_with_subst_impl g
-    end
-.
-
 Ltac rewrite_extract_invariant G e :=
   match G with
   | context [e ⋆^^ _] =>
@@ -815,6 +828,20 @@ Proof.
                 fv_expr e0 `union` fv_expr b `union` fv_expr F).
         rewrite_open_with_subst.
         eauto 3 using substitution_cons.
+  - inversion H2; inversion H3; subst.
+    assert (nil ⊢ e_mu A e : A) by eauto.
+    exists (e ^^ (e_mu A e)), (e ^^ (e_mu A e)). split_all.
+    + now rewrite extract_open_distr.
+    + now rewrite extract_open_distr.
+    + eauto.
+    + eauto.
+    + pick fresh x for (L `union` fv_expr A `union` fv_expr e). instantiate_cofinites.
+      conclude_freshes. rewrite_open_with_subst.
+      pose (A' := A). assert (A' = A) as E by auto.
+      replace (e_mu A e) with (e_mu A' e) by auto.
+      replace A with ([(e_mu A e) / x] A) by now apply fresh_subst_eq.
+      rewrite E.
+      eapply substitution_cons; eauto 3.
   - inversion H0; subst.
     + inversion H1; subst.
       (* main case for r_castdn *)
