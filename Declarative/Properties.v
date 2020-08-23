@@ -67,7 +67,7 @@ Hint Resolve subst_mono : mono.
 Hint Resolve value_subst : value.
 
 Lemma reduce_subst : forall A B,
-    A ⟹ B -> forall x e, mono_type e -> ([e / x] A) ⟹ ([e / x] B).
+    A ⟶ B -> forall x e, mono_type e -> ([e / x] A) ⟶ ([e / x] B).
 Proof with try rewrite subst_open_distr; eauto with lc mono value.
   intros A B Hr.
   induction Hr; simpl; intros...
@@ -103,7 +103,7 @@ Ltac substitution_strategy :=
   | |- _ ⊢ ([?v / ?x] ?e1) ^^ _ <: _ : _ =>
     rewrite <- subst_open_distr
   | |- _ `notin` fv_eexpr _ => solve [eauto 4 using fv_subst_inclusion]
-  | |- _ ⟹ _ => solve [eauto using reduce_subst]
+  | |- _ ⟶ _ => solve [eauto using reduce_subst]
   | _ => try_constructors
   | _ => solve [eauto]
   end

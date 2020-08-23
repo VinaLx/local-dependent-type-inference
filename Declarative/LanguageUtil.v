@@ -21,6 +21,14 @@ Notation "e1 ⋆⟶ e2" := (ereduce e1 e2)
 Notation "e1 ⟹ e2" := (dreduce e1 e2)
     (at level 60, no associativity) : type_scope.
 
+Lemma dreduce_reduce : forall e1 e2,
+    e1 ⟹ e2 -> e1 ⟶ e2.
+Proof.
+  intros. dependent induction H; eauto.
+Qed.
+
+Hint Resolve dreduce_reduce : core.
+
 Declare Scope ctx_scope.
 Delimit Scope ctx_scope with ctx.
 Bind Scope ctx_scope with context.

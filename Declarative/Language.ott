@@ -241,14 +241,6 @@ e1 e3 ==> e2 e3
 -------------------------------------- :: beta
 (lambda x : A. e1) e2 ==> [e2 / x] e1
 
-e1 ==> e2
----------------------------- :: castdn
-castdn e1 ==> castdn e2
-
----------------------------- :: cast_elim
-castdn (castup [B] e) ==> e
-
-
 defns
 ExtractedValue :: '' ::=
 
@@ -376,13 +368,13 @@ x # e2*
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
 G |- A : k
-A ==> B
+A --> B
 G |- e1 <: e2 : B
 --------------------------------------- :: castup
 G |- castup [A] e1 <: castup [A] e2 : A
 
 G |- B : k
-A ==> B
+A --> B
 G |- e1 <: e2 : A
 --------------------------------------- :: castdn
 G |- castdn e1 <: castdn e2 : B

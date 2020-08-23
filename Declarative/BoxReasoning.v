@@ -83,7 +83,7 @@ Proof.
 Qed.
 
 Lemma box_never_reduce : forall Γ e,
-    Γ ⊢ e : BOX -> forall e', not (e ⟹ e').
+    Γ ⊢ e : BOX -> forall e', not (e ⟶ e').
 Proof.
   intros * Sub.
   dependent induction Sub; intros; intro R; try solve [inversion R].
@@ -171,7 +171,7 @@ Ltac box_reasoning :=
     progress match goal with
     (* base cases *)
     | _ =>
-      solve [box_welltype_contradiction | eauto 2 with box]
+      solve [box_welltype_contradiction | eauto 3 with box]
     | H : _ ⊢ _ <: _ : e_pi BOX _ |- _ =>
       apply pi_box_impossible in H; contradiction
     | H : _ ⊢ e_app ?e1 ?e <: e_app ?e2 ?e : BOX |- _ =>
@@ -255,30 +255,48 @@ Hint Resolve lambda_head_kind_impossible : box.
 Hint Resolve castup_head_kind_box_impossible : box.
 
 Lemma box_never_be_reduced : forall e e',
-    e ⟹ e' -> forall n, head_kind e' k_box n -> forall Γ A, Γ ⊢ e : A -> False.
+    e ⟶ e' -> forall n, head_kind e' k_box n -> forall Γ A, Γ ⊢ e : A -> False.
 Proof with eauto 2 with box.
   intros * R.
   dependent induction R; intros.
+  (* r_app *)
   - inversion H0.
+  (* r_beta *)
   - box_reasoning.
     + dependent induction H3...
+  (* r_inst *)
+  - inversion H3.
+  (* r_castdn *)
   - inversion H.
+  (* r_cast_inst *)
+  - inversion H2.
+  (* r_cast_elim *)
   - dependent induction H2...
 Qed.
 
 Hint Resolve box_never_be_reduced : box.
 
 Lemma expr_of_box_never_be_reduced : forall e' e,
-    e' ⟹ e -> forall Γ A, Γ ⊢ e : BOX -> forall Γ', Γ' ⊢ e' : A -> False.
+    e' ⟶ e -> forall Γ A, Γ ⊢ e : BOX -> forall Γ', Γ' ⊢ e' : A -> False.
 Proof.
   intros * R.
   induction R; intros.
+  (* r_app *)
   - box_reasoning.
+  (* r_beta *)
   - dependent induction H3; box_reasoning.
+  (* r_inst *)
   - box_reasoning.
+  (* r_castdn *)
+  - box_reasoning.
+  (* r_inst *)
+  - box_reasoning.
+  (* r_cast_elim *)
   - dependent induction H2.
     + clear IHusub1 IHusub2 H2.
       dependent induction H2_0; box_reasoning.
       Unshelve. exact 0.
     + eauto 2.
 Qed.
+
+Hint Resolve expr_of_box_never_be_reduced : box.

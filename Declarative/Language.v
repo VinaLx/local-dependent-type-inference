@@ -348,14 +348,7 @@ Inductive dreduce : expr -> expr -> Prop :=    (* defn dreduce *)
      lc_expr A ->
      lc_expr (e_abs A e1) ->
      lc_expr e2 ->
-     dreduce (e_app  ( (e_abs A e1) )  e2)  (open_expr_wrt_expr  e1   e2 ) 
- | dr_castdn : forall (e1 e2:expr),
-     dreduce e1 e2 ->
-     dreduce (e_castdn e1) (e_castdn e2)
- | dr_cast_elim : forall (B e:expr),
-     lc_expr B ->
-     lc_expr e ->
-     dreduce (e_castdn  ( (e_castup B e) ) ) e.
+     dreduce (e_app  ( (e_abs A e1) )  e2)  (open_expr_wrt_expr  e1   e2 ) .
 
 (* defns ExtractedValue *)
 Inductive evalue : eexpr -> Prop :=    (* defn evalue *)
@@ -454,12 +447,12 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
      usub G (e_bind A e1) (e_bind A e2) (e_all A B)
  | s_castup : forall (G:context) (A e1 e2:expr) (k:kind) (B:expr),
       (usub  G   A   A   (e_kind k) )  ->
-     dreduce A B ->
+     reduce A B ->
      usub G e1 e2 B ->
      usub G (e_castup A e1) (e_castup A e2) A
  | s_castdn : forall (G:context) (e1 e2 B:expr) (k:kind) (A:expr),
       (usub  G   B   B   (e_kind k) )  ->
-     dreduce A B ->
+     reduce A B ->
      usub G e1 e2 A ->
      usub G (e_castdn e1) (e_castdn e2) B
  | s_forall_l : forall (L:vars) (G:context) (A B C e:expr) (k:kind),

@@ -232,7 +232,7 @@ Qed.
 
 Lemma castup_inversion : forall Γ e1 e2 A B,
     Γ ⊢ e_castup A e1 <: e_castup A e2 : B ->
-    exists C k, Γ ⊢ e1 <: e2 : C /\ A ⟹ C /\ Γ ⊢ A <: B : e_kind k.
+    exists C k, Γ ⊢ e1 <: e2 : C /\ A ⟶ C /\ Γ ⊢ A <: B : e_kind k.
 Proof.
   intros. dependent induction H.
   - eauto.
@@ -264,9 +264,6 @@ Proof.
         instantiate_cofinites.
         rewrite (open_subst_eq b x e), (open_subst_eq e0 x e), (open_subst_eq B x e); auto.
         eauto 4 using substitution_cons, ctx_narrowing_cons.
-  - conclude_type_refl Sub2. inversion H.
-    destruct k'; box_reasoning.
-    eapply expr_of_box_never_be_reduced in H; [contradiction | eauto ..].
   - assert (head_kind A k' n') by (eapply head_kind_sub_l; eauto).
     eauto.
 Qed.
@@ -448,7 +445,7 @@ Qed.
 
 
 Lemma irreducible_value : forall Γ e A B,
-    Γ ⊢ e : A -> A ⟹ B -> not (is_castup e) -> not (is_bind e) -> value e -> False.
+    Γ ⊢ e : A -> A ⟶ B -> not (is_castup e) -> not (is_bind e) -> value e -> False.
 Proof.
   intros * Sub R H1 H2 V.
   inversion V; subst.
@@ -719,6 +716,53 @@ Proof.
   intros. destruct e; simpl in *; inversion H; eauto.
 Qed.
 
+Lemma expr_of_box_never_be_reduced_2 : forall A B a Γ1 Γ2,
+    A ⟶ B -> Γ1 ⊢ a : A -> Γ2 ⊢ B : BOX -> False.
+Proof.
+  intros.
+  conclude_type_refl H0.
+  - inversion H.
+  - eauto using expr_of_box_never_be_reduced.
+Qed.
+
+Tactic Notation "absurd" "by" tactic(t) :=
+  assert False by t; contradiction.
+
+Lemma type_reduce_restricted : forall e e',
+    e ⟶ e' -> forall Γ A n k, Γ ⊢ e : A -> head_kind A k n -> e ⟹ e'.
+Proof.
+  intros * R.
+  induction R; intros * Sub K; eauto.
+  (* r_app *)
+  - dependent induction Sub.
+    + box_reasoning.
+      * destruct k; box_reasoning.
+      * eauto.
+    (* or `eauto using head_kind_sub_l` *)
+    + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
+  (* r_inst *)
+  - dependent induction Sub.
+    + box_reasoning.
+      * destruct k; box_reasoning.
+      * apply bind_inversion in Sub2. destruct_conjs.
+        eapply head_kind_sub_l in H6. inversion H6. eauto.
+    + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
+  (* r_castdn *)
+  - dependent induction Sub.
+    + destruct k; box_reasoning.
+      absurd by eauto 3 using expr_of_box_never_be_reduced_2.
+    + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
+  (* r_cast_inst *)
+  - dependent induction Sub.
+    + destruct k; box_reasoning.
+      absurd by eauto 3 using expr_of_box_never_be_reduced_2.
+    + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
+  (* r_cast_elim *)
+  - dependent induction Sub.
+    + destruct k; box_reasoning.
+      absurd by eauto 3 using expr_of_box_never_be_reduced_2.
+    + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
+Qed.
 
 Theorem preservation : forall e1 e2 A,
     nil ⊢ e1 <: e2 : A ->
@@ -790,7 +834,8 @@ Proof.
       * eauto.
       * eapply s_castdn; eauto.
         eapply s_sub with (F ^^ m) k_star; auto.
-        pick fresh x' for (L `union` L0 `union` L1 `union` fv_expr e `union` fv_expr b `union` fv_expr F). rewrite_open_with_subst.
+        pick fresh x' for (L `union` L0 `union` L1 `union` fv_expr e `union` fv_expr b `union` fv_expr F).
+        rewrite_open_with_subst.
         eauto 3 using substitution_cons.
       * intro. apply is_forall_eq in H12. destruct_exists. subst. inversion H.
     + invert_extractions. invert_sub_hyp. inversion H1; subst; solve_impossible_reduction.
@@ -798,7 +843,7 @@ Proof.
       * exists e, b. repeat split; eauto.
         apply castup_inversion in Sub2 as (C & k' & Sub & R & Sub').
         apply s_sub with C k'. auto.
-        eapply type_preservation; eauto.
+        eapply type_preservation; eauto using type_reduce_restricted. Unshelve. all: exact 0.
   - edestruct IHSub1 as (e1' & e2' & H1); eauto.
     destruct_pairs.
     exists e1', e2'. repeat split; eauto.
