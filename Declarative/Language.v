@@ -477,18 +477,18 @@ with usub : context -> expr -> expr -> expr -> Prop :=    (* defn usub *)
       ( forall x , x \notin  L  ->  ( x  `notin` fv_eexpr (extract   ( open_expr_wrt_expr e2 (e_var_f x) )  ))  )  ->
      usub G (e_bind A e1) (e_bind A e2) (e_all A B)
  | s_mu : forall (L:vars) (G:context) (A e:expr) (k:kind),
-      mono_type (e_mu A e)  ->
-       (usub  G   A   A   (e_kind k) )   ->
+     mono_type (e_mu A e) ->
+        (usub  G   A   A   (e_kind k) )    ->
       ( forall x , x \notin  L  ->  (usub   (( x ,  A ) ::  G )     ( open_expr_wrt_expr e (e_var_f x) )     ( open_expr_wrt_expr e (e_var_f x) )    A )  )  ->
      usub G (e_mu A e) (e_mu A e) A
  | s_castup : forall (G:context) (A e1 e2:expr) (k:kind) (B:expr),
       (usub  G   A   A   (e_kind k) )  ->
-     reduce A B ->
+      reduce A B  ->
      usub G e1 e2 B ->
      usub G (e_castup A e1) (e_castup A e2) A
  | s_castdn : forall (G:context) (e1 e2 B:expr) (k:kind) (A:expr),
       (usub  G   B   B   (e_kind k) )  ->
-     reduce A B ->
+      reduce A B  ->
      usub G e1 e2 A ->
      usub G (e_castdn e1) (e_castdn e2) B
  | s_forall_l : forall (L:vars) (G:context) (A B C e:expr) (k:kind),
@@ -561,12 +561,12 @@ with susub : context -> expr -> expr -> expr -> Prop :=    (* defn susub *)
      susub G (e_mu A e) (e_mu A e) A
  | ss_castup : forall (G:context) (A e1 e2:expr) (k:kind) (B:expr),
       susub  G   A   A   (e_kind k)  ->
-     dreduce A B ->
+      dreduce A B  ->
      susub G e1 e2 B ->
      susub G (e_castup A e1) (e_castup A e2) A
  | ss_castdn : forall (G:context) (e1 e2 B:expr) (k:kind) (A:expr),
       susub  G   B   B   (e_kind k)  ->
-     dreduce A B ->
+      dreduce A B  ->
      susub G e1 e2 A ->
      susub G (e_castdn e1) (e_castdn e2) B
  | ss_forall_l : forall (L:vars) (G:context) (A B C e:expr),

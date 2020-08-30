@@ -387,20 +387,20 @@ x # e2*
 ------------------------------------------------------- :: bind
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
-monotype mu x : A. e ,,
-G |- A : k <<
+monotype mu x : A. e
+G |- A : k ,, <<
 G , x : A |- e : A
 ------------------------------------ :: mu
 G |- mu x : A. e <: mu x : A. e : A
 
 G |- A : k
-A --> B
+A --> B ,,
 G |- e1 <: e2 : B
 --------------------------------------- :: castup
 G |- castup [A] e1 <: castup [A] e2 : A
 
 G |- B : k
-A --> B
+A --> B ,,
 G |- e1 <: e2 : A
 --------------------------------------- :: castdn
 G |- castdn e1 <: castdn e2 : B
@@ -500,13 +500,13 @@ G , x : A |= e : A
 G |= mu x : A. e <: mu x : A. e : A
 
 G |= A : k
-A ==> B
+A ==> B ,,
 G |= e1 <: e2 : B
 --------------------------------------- :: castup
 G |= castup [A] e1 <: castup [A] e2 : A
 
 G |= B : k
-A ==> B
+A ==> B ,,
 G |= e1 <: e2 : A
 -------------------------------- :: castdn
 G |= castdn e1 <: castdn e2 : B

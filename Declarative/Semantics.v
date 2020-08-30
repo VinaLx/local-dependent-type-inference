@@ -829,13 +829,15 @@ Proof.
         rewrite_open_with_subst.
         eauto 3 using substitution_cons.
   - inversion H2; inversion H3; subst.
+    (* r_mu *)
     assert (nil ⊢ e_mu A e : A) by eauto.
     exists (e ^^ (e_mu A e)), (e ^^ (e_mu A e)). split_all.
     + now rewrite extract_open_distr.
     + now rewrite extract_open_distr.
     + eauto.
     + eauto.
-    + pick fresh x for (L `union` fv_expr A `union` fv_expr e). instantiate_cofinites.
+    + pick fresh x for (L `union` fv_expr A `union` fv_expr e).
+      instantiate_cofinites.
       conclude_freshes. rewrite_open_with_subst.
       pose (A' := A). assert (A' = A) as E by auto.
       replace (e_mu A e) with (e_mu A' e) by auto.
