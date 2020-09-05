@@ -5,7 +5,7 @@ COQ_MAKE     := coq_makefile
 COQ_MAKEFILE := CoqMakefile
 
 OTT_SOURCES  := Declarative/Language.ott
-OTT_COQ_OUTS := Declarative/Language.v
+OTT_COQ_OUTS := Declarative/Language.v Declarative/DKDeclarative.v
 
 OTT_TEX_FLAGS := -tex_show_meta false
 TEX_DIR := tex
@@ -25,7 +25,7 @@ ${COQ_PROJECT} : ${OTT_COQ_OUTS} ${COQ_SOURCES}
 	@echo -R . ${PROJECT}           > $@
 	@$(foreach f,$^,echo ${f}      >> $@;)
 
-${OTT_COQ_OUTS} : ${OTT_SOURCES}
+Declarative/%.v : Declarative/%.ott
 	@echo "MAKE: Generating rules for coq by ott"
 	@ott -o $@ $^
 

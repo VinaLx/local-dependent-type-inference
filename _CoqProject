@@ -1,5 +1,6 @@
 -R . DependentInference
 Declarative/Language.v
+Declarative/DKDeclarative.v
 Declarative/BasicProperties.v
 Declarative/FSetReasoning.v
 Declarative/SimplifiedLanguage.v
@@ -10,5 +11,6 @@ Declarative/Properties.v
 Declarative/Transitivity.v
 Declarative/KindUniqueness.v
 Declarative/KindProperties.v
+Declarative/DKSubsumption.v
 Declarative/OccurenceReasoning.v
 Declarative/Semantics.v

@@ -57,7 +57,7 @@ Notation "⊢ G" := (wf_context G)
     (no associativity, at level 65) : type_scope.
 
 Notation "x : A ∈ G" := (binds x A G)
-    (no associativity, at level 65) : type_scope.
+    (no associativity, A at next level, at level 65) : type_scope.
 
 Notation "x # e" := (x `notin` fv_expr e)
     (no associativity, at level 65) : type_scope.
