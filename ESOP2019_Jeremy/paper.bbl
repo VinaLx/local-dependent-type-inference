@@ -1,0 +1,245 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{ahmed2006step}
+Ahmed, A.: Step-indexed syntactic logical relations for recursive and
+  quantified types. In: European Symposium on Programming (ESOP) (2006)
+
+\bibitem{alpuimdisjoint}
+Alpuim, J., Oliveira, B.C.d.S., Shi, Z.: Disjoint polymorphism. In: European
+  Symposium on Programming (ESOP) (2017)
+
+\bibitem{Barendregt_1983}
+Barendregt, H., Coppo, M., Dezani-Ciancaglini, M.: A filter lambda model and
+  the completeness of type assignment. The journal of symbolic logic
+  \textbf{48}(04),  931--940 (1983)
+
+\bibitem{bi_et_al:LIPIcs:2018:9214}
+Bi, X., Oliveira, B.C.d.S.: {Typed First-Class Traits}. In: European Conference
+  on Object-Oriented Programming (ECOOP) (2018)
+
+\bibitem{bi_et_al:LIPIcs:2018:9227}
+Bi, X., Oliveira, B.C.d.S., Schrijvers, T.: {The Essence of Nested
+  Composition}. In: European Conference on Object-Oriented Programming (ECOOP)
+  (2018)
+
+\bibitem{biernacki2015logical}
+Biernacki, D., Polesiuk, P.: Logical relations for coherence of effect
+  subtyping. In: International Conference on Typed Lambda Calculi and
+  Applications (TLCA) (2015)
+
+\bibitem{lasselambda}
+Blaauwbroek, L.: On the Interaction Between Unrestricted Union and Intersection
+  Types and Computational Effects. Master's thesis, Technical University
+  Eindhoven (2017)
+
+\bibitem{Breazu_Tannen_1991}
+Breazu-Tannen, V., Coquand, T., Gunter, C.A., Scedrov, A.: Inheritance as
+  implicit coercion. Information and Computation  \textbf{93}(1),  172--221
+  (1991)
+
+\bibitem{brent1980chip}
+Brent, R.P., Kung, H.T.: The chip complexity of binary arithmetic. In:
+  Proceedings of the twelfth annual ACM symposium on Theory of computing. pp.
+  190--200 (1980)
+
+\bibitem{cardelli1985understanding}
+Cardelli, L., Wegner, P.: On understanding types, data abstraction, and
+  polymorphism. {ACM} Computing Surveys  \textbf{17}(4),  471--523 (1985)
+
+\bibitem{CARETTE_2009}
+Carette, J., Kiselyov, O., Shan, C.C.: Finally tagless, partially evaluated:
+  Tagless staged interpreters for simpler typed languages. Journal of
+  Functional Programming  \textbf{19}(05), ~509 (2009)
+
+\bibitem{Castagna_1992}
+Castagna, G., Ghelli, G., Longo, G.: A calculus for overloaded functions with
+  subtyping. In: Conference on LISP and Functional Programming (1992)
+
+\bibitem{Castagna_2017}
+Castagna, G., Lanvin, V.: Gradual typing with union and intersection types.
+  Proceedings of the {ACM} on Programming Languages  \textbf{1}({ICFP}),  1--28
+  (aug 2017)
+
+\bibitem{castagna2014polymorphic}
+Castagna, G., Nguyen, K., Xu, Z., Im, H., Lenglet, S., Padovani, L.:
+  Polymorphic functions with set-theoretic types: part 1: syntax, semantics,
+  and evaluation. In: Principles of Programming Languages (POPL) (2014)
+
+\bibitem{Curien_1992}
+Curien, P.L., Ghelli, G.: Coherence of subsumption, minimum typing and
+  type-checking in f$_\leq$. Mathematical Structures in Computer Science (MSCS)
+   \textbf{2}(01), ~55 (1992)
+
+\bibitem{dunfield2014elaborating}
+Dunfield, J.: Elaborating intersection and union types. Journal of Functional
+  Programming (JFP)  \textbf{24}(2-3),  133--165 (2014)
+
+\bibitem{dunfield2013complete}
+Dunfield, J., Krishnaswami, N.R.: Complete and easy bidirectional typechecking
+  for higher-rank polymorphism. In: International Conference on Functional
+  Programming (ICFP) (2013)
+
+\bibitem{fokkinga1989tupling}
+Fokkinga, M.M.: Tupling and mutumorphisms. Squiggolist  \textbf{1}(4) (1989)
+
+\bibitem{gaster1996polymorphic}
+Gaster, B.R., Jones, M.P.: A polymorphic type system for extensible records and
+  variants. Tech. rep., University of Nottingham (1996)
+
+\bibitem{DBLP:conf/icfp/GibbonsW14}
+Gibbons, J., Wu, N.: Folding domain-specific languages: deep and shallow
+  embeddings (functional pearl). In: {ICFP}. pp. 339--347. {ACM} (2014)
+
+\bibitem{Harper:1991:RCB:99583.99603}
+Harper, R., Pierce, B.: A record calculus based on symmetric concatenation. In:
+  Principles of Programming Languages (POPL) (1991)
+
+\bibitem{Henglein_1994}
+Henglein, F.: Dynamic typing: syntax and proof theory. Science of Computer
+  Programming  \textbf{22}(3),  197--230 (6 1994)
+
+\bibitem{herman2010space}
+Herman, D., Tomb, A., Flanagan, C.: Space-efficient gradual typing.
+  Higher-Order and Symbolic Computation  \textbf{23}(2), ~167 (2010)
+
+\bibitem{hindley1969principal}
+Hindley, R.: The principal type-scheme of an object in combinatory logic.
+  Transactions of the american mathematical society  \textbf{146},  29--60
+  (1969)
+
+\bibitem{hinze2004algebra}
+Hinze, R.: An algebra of scans. In: International Conference on Mathematics of
+  Program Construction. pp. 186--210 (2004)
+
+\bibitem{hofer_polymorphic_2008}
+Hofer, C., Ostermann, K., Rendel, T., Moors, A.: Polymorphic embedding of
+  {DSL}s. In: International Conference on Generative Programming and Component
+  Engineering ({GPCE}) (2008)
+
+\bibitem{Kurata_1995}
+Kurata, T., Takahashi, M.: Decidable properties of intersection type systems.
+  Typed Lambda Calculi and Applications pp. 297--311 (1995)
+
+\bibitem{laurent2012intersection}
+Laurent, O.: Intersection types with subtyping by means of cut elimination.
+  Fundamenta Informaticae  \textbf{121}(1-4),  203--226 (2012)
+
+\bibitem{Laurent12note}
+Laurent, O.: A syntactic introduction to intersection types (2012), unpublished
+  note
+
+\bibitem{Laurent18b}
+Laurent, O.: Intersection subtyping with constructors. In: Proceedings of the
+  Ninth Workshop on {I}ntersection {T}ypes and {R}elated {S}ystems (2018)
+
+\bibitem{leijen2005extensible}
+Leijen, D.: Extensible records with scoped labels. Trends in Functional
+  Programming  \textbf{5},  297--312 (2005)
+
+\bibitem{milner1978theory}
+Milner, R.: A theory of type polymorphism in programming. Journal of computer
+  and system sciences  \textbf{17}(3),  348--375 (1978)
+
+\bibitem{morrisrow}
+Morris, J.G., McKinna, J.: Abstracting extensible data types. In: Principles of
+  Programming Languages (POPL) (2019)
+
+\bibitem{muehlboeck2018empowering}
+Muehlboeck, F., Tate, R.: Empowering union and intersection types with
+  integrated subtyping. In: OOPSLA (2018)
+
+\bibitem{oliveira2012extensibility}
+Oliveira, B.C.d.S., Cook, W.R.: Extensibility for the masses. In: European
+  Conference on Object-Oriented Programming (ECOOP) (2012)
+
+\bibitem{oliveira2016disjoint}
+Oliveira, B.C.d.S., Shi, Z., Alpuim, J.: Disjoint intersection types. In:
+  International Conference on Functional Programming (ICFP) (2016)
+
+\bibitem{oliveira2013feature}
+Oliveira, B.C.d.S., Van Der~Storm, T., Loh, A., Cook, W.R.: Feature-oriented
+  programming with object algebras. In: European Conference on Object-Oriented
+  Programming (ECOOP) (2013)
+
+\bibitem{pierce1989decision}
+Pierce, B.C.: A decision procedure for the subtype relation on intersection
+  types with bounded variables. Tech. rep., Carnegie Mellon University (1989)
+
+\bibitem{pierce1991programming}
+Pierce, B.C.: Programming with intersection types and bounded polymorphism.
+  Ph.D. thesis, University of Pennsylvania (1991)
+
+\bibitem{pierce1994bounded}
+Pierce, B.C.: Bounded quantification is undecidable. Information and
+  Computation  \textbf{112}(1),  131--165 (1994)
+
+\bibitem{Rehof_2011}
+Rehof, J., Urzyczyn, P.: Finite combinatory logic with intersection types. In:
+  International Conference on Typed Lambda Calculi and Applications (2011)
+
+\bibitem{rendel14attributes}
+Rendel, T., Brachth\"{a}user, J.I., Ostermann, K.: From object algebras to
+  attribute grammars. In: Object-Oriented Programming, Systems Languages and
+  Applications (OOPSLA) (2014)
+
+\bibitem{reynolds1983types}
+Reynolds, J.C.: Types, abstraction and parametric polymorphism. In: Proceedings
+  of the IFIP 9th World Computer Congress (1983)
+
+\bibitem{reynolds1988preliminary}
+Reynolds, J.C.: Preliminary design of the programming language forsythe. Tech.
+  rep., Carnegie Mellon University (1988)
+
+\bibitem{Reynolds_1991}
+Reynolds, J.C.: The coherence of languages with intersection types. In: Lecture
+  Notes in Computer Science (LNCS), pp. 675--700. Springer Berlin Heidelberg
+  (1991)
+
+\bibitem{emgm}
+d.~S.~Oliveira, B.C., Hinze, R., L{\"{o}}h, A.: Extensible and modular generics
+  for the masses. In: Revised Selected Papers from the Seventh Symposium on
+  Trends in Functional Programming, {TFP} 2006, Nottingham, United Kingdom,
+  19-21 April 2006. pp. 199--216 (2006)
+
+\bibitem{SCHWINGHAMMER_2008}
+Schwinghammer, J.: Coherence of subsumption for monadic types. Journal of
+  Functional Programming (JFP)  \textbf{19}(02), ~157 (2008)
+
+\bibitem{scott1970outline}
+Scott, D.: Outline of a mathematical theory of computation. Oxford University
+  Computing Laboratory, Programming Research Group (1970)
+
+\bibitem{scott1971toward}
+Scott, D.S., Strachey, C.: Toward a mathematical semantics for computer
+  languages, vol.~1. Oxford University Computing Laboratory, Programming
+  Research Group (1971)
+
+\bibitem{Siek_2015}
+Siek, J., Thiemann, P., Wadler, P.: Blame and coercion: together again for the
+  first time. In: Conference on Programming Language Design and Implementation
+  (PLDI) (2015)
+
+\bibitem{Statman_2015}
+Statman, R.: A finite model property for intersection types. Electronic
+  Proceedings in Theoretical Computer Science  \textbf{177}, ~1--9 (2015)
+
+\bibitem{Wadler89typeclasses}
+Wadler, P., Blott, S.: How to make ad-hoc polymorphism less ad hoc. In:
+  Proceedings of the 16th ACM SIGPLAN-SIGACT Symposium on Principles of
+  Programming Languages. POPL '89 (1989)
+
+\bibitem{wadler1998expression}
+Wadler, P.: The expression problem. Java-genericity mailing list  (1998)
+
+\bibitem{wand1987complete}
+Wand, M.: Complete type inference for simple objects. In: Symposium on Logic in
+  Computer Science (LICS) (1987)
+
+\bibitem{zhang19shallow}
+Zhang, W., d.~S.~Oliveira, B.C.: Shallow edls and object-oriented programming.
+  To appear in Programming Journal  (2019)
+
+\end{thebibliography}
