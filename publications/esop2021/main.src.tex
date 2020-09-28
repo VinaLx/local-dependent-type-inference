@@ -1,0 +1,39 @@
+\documentclass{llncs}
+
+\usepackage[T1]{fontenc}
+\usepackage{ottalt}
+\usepackage{xcolor}
+
+\inputott{dependent-subtyping.ott}
+
+\newcommand{\rulehl}[2][gray!40]{
+  \colorbox{#1}{$\displaystyle#2$}}
+
+\begin{document}
+
+\title{Some title}
+
+\author{Mingqi XUE \and Bruno Oliveira}
+\institute{
+    the University of Hong Kong \\
+    \email{\{mqxue,bruno\}@cs.hku.hk}
+}
+
+\maketitle
+
+\begin{abstract}
+    Some abstract
+\end{abstract}
+
+\section{Introduction}
+
+\begin{drulepar}{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}
+    \drule{s-var}
+    \drule{s-pi}
+    \drule{s-abs}
+    \drule{s-app}
+\end{drulepar}
+
+Some introduction
+
+\end{document}

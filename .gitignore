@@ -3,3 +3,8 @@
 CoqMakefile*
 .coqdeps.d
 *.aux
+*.dvi
+*.dump
+*.fls
+*.log
+*.fdb*
