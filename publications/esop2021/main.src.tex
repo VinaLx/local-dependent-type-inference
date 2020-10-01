@@ -3,11 +3,22 @@
 \usepackage[T1]{fontenc}
 \usepackage{ottalt}
 \usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{setspace}
 
 \inputott{dependent-subtyping.ott}
 
 \newcommand{\rulehl}[2][gray!40]{
   \colorbox{#1}{$\displaystyle#2$}}
+
+\newcommand{\extract}[1]{\lvert #1 \rvert}
+\newcommand{\castup}[0]{\mathrm{cast}_\Uparrow}
+\newcommand{\castdn}[0]{\mathrm{cast}_\Downarrow}
+\newcommand{\system}[0]{the Dependent DK Subtyping System }
+\newcommand{\System}[0]{The Dependent DK Subtyping System }
 
 \begin{document}
 
@@ -25,15 +36,215 @@
     Some abstract
 \end{abstract}
 
-\section{Introduction}
+\section{the Dependent Subtyping System}
 
-\begin{drulepar}{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}
-    \drule{s-var}
-    \drule{s-pi}
-    \drule{s-abs}
-    \drule{s-app}
-\end{drulepar}
+\begin{figure}
+\centering
+\begin{equation*}
+\begin{array}{llcl}
+    \text{Kinds} & k & ~\Coloneqq ~ & [[*]] \mid [[box]] \\
+    \text{Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[e1 e2]] \mid [[lambda x : A. e]]
+        \mid [[pi x : A. B]] \mid [[bind x : A. e]] \\
+        & & \mid & [[forall x : A. B]] \mid [[mu x : A. e]] \mid [[castup [A] e]] \mid [[castdn e]]   \\
+    \text{Mono-Expressions} ~ & \tau, \sigma & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid \tau_1 ~ \tau_2 \mid \lambda \, x : \tau. ~ \sigma \mid \Pi \, x : \tau. ~ \sigma \mid \Lambda \, x : \tau. ~ \sigma \\
+        & & \mid & \mu \, x : \tau. ~ \sigma \mid \castup \, [\tau]~ \sigma \mid \castdn \, \tau \\
+    \text{Values} & v & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[lambda x : A. e]] \mid [[pi x : A. B]] \mid [[bind x : A. e]] \\
+        & & \mid & [[forall x : A. B]] \mid [[castup [A] e]] \\
+    \text{Contexts} & \Gamma & ~ \Coloneqq ~ & [[nil]] \mid [[G , x : A]] \\
+    \text{Syntactic Sugar} ~ & A \rightarrow B & \triangleq & [[pi x : A. B]] \qquad \text{where} ~ x \notin \mathrm{FV}(B)
+\end{array}
+\end{equation*}
+\caption{Syntax of \system}
+\label{fig:syntax}
+\end{figure}
 
-Some introduction
+\subsection{Syntax}
+
+Figure \ref{fig:syntax} presents the syntax of \system, which follows a similar
+syntax to the Calculus of Constructions\cite{CoquandThierry1988Tcoc}, featuring
+$[[*]]$ and $[[box]]$ in the kind hierarchy, and unifying the concepts of terms
+and types as expressions. ``Type'', ``term'' and ``expression'' are used
+interchangeably in later sections for whichever makes sense in the contexts.
+And we have following additional language constructs.
+
+\subsubsection{Implicit Polymorphism}
+
+The $\forall$ type is the generalized version of implicit polymorphism in
+non-dependent languages, whose arguments range over all well-typed expressions
+besides well-formed types. It is implicit in the way that the type arguments are
+deduced during application rather than being explicitly passed.
+We also generalized the concept of ``monotypes'' to
+``mono-expressions'' that excludes the $\forall$ types from expressions.
+
+Also, the idea of ``polymorphic types'' is naturally dependent, so $\forall$
+types can be viewed as the implicit counterpart of $\Pi$ types. We also have
+the $\Lambda$ (pronounced as ``bind'') expression as the implicit counterpart of
+$\lambda$ abstractions, which is similar to the design of $\text{ICC}^*$\cite{barras2008implicit}.
+
+\subsubsection{Explicit Type-level Computation}
+\label{sec:cast}
+
+\System adopts the iso-types\cite{yang2016unified}, featuring explicit type-level
+computations with cast operators $\castdn$ and $\castup$, which respectively perform one-step
+type reduction and type expansion based on the operational semantics.
+The reduction in cast operators is deterministic so that the type annotation is
+only needed during type expansions ($\castup$).
+
+\subsubsection{Fixpoint Operator}
+
+We add the fixpoint operator $\mu$ to support general recursion for both term-level
+and type-level. Iso-recursive types are supported due to the presence of $\castup$
+and $\castdn$, which correspond to the ``fold'' and ``unfold'' operations when
+working on recursive types. However, we do not support subtyping for recursive
+types in the current system due to the complexity.
+
+\begin{figure}
+    \centering
+
+    \drules[r]{$[[e1 --> e2]]$}{Operational Semantics}{
+        app,beta,inst,mu,castdn,castXXinst,castXXelim}
+
+    \caption{Operational Semantics of \system}
+    \label{fig:semantics}
+\end{figure}
+
+\subsection{Operational Semantics}
+
+Figure \ref{fig:semantics} presents the operational semantics of our system,
+which mostly follows the call-by-name variant of the Pure Iso-type System\cite{yang2019pure},
+where arguments of $\beta$-reduction (\rref{r-beta}) and expressions inside $\castdn \castup$
+are not required to be values (\rref{r-cast-elim}). Meanwhile we consider $\castup$ terms to be a value,
+and only performs reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unroll
+operation of fixpoint operator is supported by \rref{r-mu}.
+
+\subsubsection{indeterministic Implicit Instantiations}
+
+Notably rules involving instantiating implicit parameters of $\Lambda$ terms
+(\rref{r-inst,r-cast-inst}) are not deterministic and even type-safe, which seems to
+contradict our previous claim of deterministic reduction inside cast in section \ref{sec:cast}.
+These issues are resolved by imposing restrictions on type systems such that
+\textbf{a)} said indeterministic reductions are not well-typed inside cast operations
+\textbf{b)} the instantiation choices of implicit parameters do not affect the
+overall runtime type-safety.
+Details will be explained in the later sections.
+
+\begin{figure}
+    \centering
+    \drules[wf]{$[[|- G]]$}{Well-formed Context}{nil,cons}
+
+    \drules[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}{
+        var,lit,int,star,abs,pi,app,bind,mu,castup,castdn,forallXXl,forallXXr,forall,sub}
+    \begin{equation*}
+       \text{Syntactic Sugar} \qquad [[G |- e : A]] \triangleq [[G |- e <: e : A]]
+    \end{equation*}
+    \caption{(Sub)Typing Rules of \system}
+    \label{fig:typing}
+\end{figure}
+
+\subsection{Unified Subtyping System}
+
+Figure \ref{fig:typing} shows the typing rules of the system. We adopt the design
+of ``Unified Subtyping''\cite{yang2017unifying} where the subtyping rules and
+typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$,
+which elegantly solves the traditional issue of mutual dependency between typing
+and subtyping in a dependent type system.
+The interpretaion of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
+subtype of $[[e2]]$ and they are both of type $[[A]]$''.
+In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
+special case of unified subtyping judgment $[[G |- e <: e : A]]$,
+and the idea of well-formed types $\Gamma \vdash A$ is expressed by
+$[[G |- A : k]]$ where $k$ is either $[[*]]$ or $[[box]]$.
+
+\subsubsection{DK-Style Subtyping}
+
+The subtyping rules for $\forall$ types (\rref{s-forall-l,s-forall-r}) follows
+the spirit of the DK's declarative subtyping rules\cite{DunfieldJoshua2013Caeb},
+where the subtyping relation is interpreted as a ``more general than'' relation.
+A polymorphic type is more general than another type when its well-typed
+instantiation is more general than that (\rref{s-forall-l}). And a polymorphic
+type is less general when another type is more general with the type parameter of
+the poly-type abstracted out (\rref{s-forall-r}). Also we add \rref{s-forall}
+to axiomize the subtyping relation between two polymorphic types due to the
+issues presented in the formalization.
+We shall discuss it in more detail in later sections.
+
+
+\subsubsection{Mono-expression Restrictions}
+
+As in DK's system, the type arguments for instantiation in \rref{s-forall-l} are
+required to be mono-expressions, which has cascading effects on typing rules of
+other expressions. The arguments for applications are required to be
+mono-expressions, and the whole fixpoint expression is required to be mono-expressions. We shall
+discuss the reason behind the restrictions in later sections.
+
+\subsubsection{Kind Restriction for $\forall$ Types}
+\label{sec:kind-restriction}
+
+For the kinding of types, we mainly follow the design of the Calculus of
+Constructions\cite{CoquandThierry1988Tcoc}, but specifically restrict the $\forall$
+expressions to only have the kind $[[*]]$, which prevents other types of kind
+$[[*]]$ from having kind $[[forall x : int. *]]$, which significantly complicates
+the metatheory when reasoning about the kind of types.
+This restriction propagates to the introduction rule of $\forall$ types (\rref{s-bind}),
+where $[[B]]$ is required to only have kind $[[*]]$.
+This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
+from type computations. Therefore in cast operators,
+the possibility of indeterministic implicit instantiations is eliminated.
+
+\begin{figure}
+    \centering
+    \begin{equation*}
+        \begin{array}{llcl}
+            \text{Extracted Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
+            & & \mid & [[eforall x : eA. eB]] \mid [[emu x. ee]] \mid [[ecastup ee]] \mid [[ecastdn ee]]
+        \end{array}
+    \end{equation*}
+
+    \begin{equation*}
+    {\setstretch{1.5}
+    \begin{array}{cc}
+        \extract{[[x]]} = [[x]] \qquad
+        \extract{[[n]]} = [[n]] &
+        \extract{[[k]]} = [[k]] \qquad
+        \extract{[[int]]} = [[int]] \\
+        \extract{[[e1 e2]]} = \extract{[[e1]]} ~ \extract{[[e2]]} &
+        \extract{[[mu x : A. e]]} = \mu \, x. ~ \extract{[[e]]} \\
+        \extract{[[lambda x : A. e]]} = \lambda \, x. ~ \extract{[[e]]} &
+        \extract{[[pi x : A. B]]} = \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+        \extract{[[bind x : A. e]]} = \Lambda \, x. ~ \extract{[[e]]} &
+        \extract{[[forall x : A. B]]} = \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+        \extract{[[castup [A] e]]} = \castup \, \extract{[[e]]} &
+        \extract{[[castdn e]]} = \castdn \, \extract{[[e]]}
+    \end{array}
+    }
+    \end{equation*}
+
+    \caption{Extraction of Expressions}
+    \label{fig:extraction}
+\end{figure}
+
+\subsubsection{Runtime Irrelevance of Implicit Arguments}
+
+Our direct operational semantics choose random mono-expressions to instantiate
+the implicit arguments which potentially breaks type safety. So we adopt a
+restriction that is similar to the Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit}
+to make the choice of implicit argument irrelevant to the computation, by only
+allowing the implicit parameters to occur in type annotations in the body of
+implicit abstraction. Figure \ref{fig:extraction} shows the extraction function
+that gets rid of all the type annotations in expressions, and enforcing the
+freshness of implicit parameter in the extracted expression. The type safety of
+the direct operational semantics is proved indirectly with the help of
+the extraction of expressions, which we will come back to in later sections.
+
+\subsubsection{Redundant Premises}
+
+All the premises highlight in gray are redundant in a way that
+the system without them is proved equivalent to the system in figure \ref{fig:typing}.
+They are there to simplify the mechanized proofs of certain lemmas.
+
+\section{Metatheory}
+
+\bibliographystyle{splncs04}
+\bibliography{reference}
 
 \end{document}

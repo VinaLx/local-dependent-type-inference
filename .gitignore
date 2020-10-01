@@ -8,3 +8,4 @@ CoqMakefile*
 *.fls
 *.log
 *.fdb*
+*.bbl

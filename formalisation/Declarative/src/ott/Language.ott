@@ -30,7 +30,7 @@ context, G {{ tex \Gamma }} :: 'ctx_' ::=
   | G , x : A :: :: cons
     {{ com context binding }} {{ coq (([[x]], [[A]]) :: [[G]]) }}
 
-eexpr, ee, eA, eB, eC :: 'ee_' ::= {{ com extracted expression }}
+eexpr, ee {{tex e}}, eA {{tex A}}, eB {{tex B}}, eC {{tex C}} :: 'ee_' ::= {{ com extracted expression }}
   | x   :: :: var
   | k   :: :: kind
   | n   :: :: num
@@ -88,6 +88,8 @@ terminals :: 'terminal_' ::=
   | ]    :: :: rbracket {{ tex ]~ }}
   | castup :: :: castup {{ tex \mathrm{cast}_\Uparrow   }}
   | castdn :: :: castdn {{ tex \mathrm{cast}_\Downarrow }}
+  | ecastup :: :: ecastup {{ tex \mathrm{cast}_\Uparrow }}
+  | ecastdn :: :: ecastdn {{ tex \mathrm{cast}_\Downarrow }}
 
 substitutions
   single e  x :: subst
