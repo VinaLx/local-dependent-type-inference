@@ -1,11 +1,21 @@
+.DS_Store
+
+# coq object files
 *.vo
 *.glob
+*.aux
+
+# coq makefile
 CoqMakefile*
 .coqdeps.d
-*.aux
+
+# latex intermediate files
 *.dvi
 *.dump
 *.fls
 *.log
 *.fdb*
 *.bbl
+
+# ott filtered tex source
+*.filt.tex
