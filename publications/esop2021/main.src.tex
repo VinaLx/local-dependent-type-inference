@@ -8,6 +8,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{setspace}
+\usepackage{xspace}
 
 \inputott{dependent-subtyping.ott}
 
@@ -17,14 +18,16 @@
 \newcommand{\extract}[1]{\lvert #1 \rvert}
 \newcommand{\castup}[0]{\mathrm{cast}_\Uparrow}
 \newcommand{\castdn}[0]{\mathrm{cast}_\Downarrow}
-\newcommand{\system}[0]{the Dependent DK Subtyping System }
-\newcommand{\System}[0]{The Dependent DK Subtyping System }
+\newcommand{\system}[0]{the dependent implicitly polymorphic calculus\xspace}
+\newcommand{\System}[0]{The dependent implicitly polymorphic calculus\xspace}
+
+\newcommand{\name}[0]{$\lambda_{I}^{\forall}$\xspace}
 
 \begin{document}
 
-\title{Some title}
+\title{A Dependently Typed Calculus with Polymorphic Subtyping}
 
-\author{Mingqi XUE \and Bruno Oliveira}
+\author{Mingqi Xue \and Bruno C. d. S. Oliveira}
 \institute{
     the University of Hong Kong \\
     \email{\{mqxue,bruno\}@cs.hku.hk}
@@ -33,7 +36,27 @@
 \maketitle
 
 \begin{abstract}
-    Some abstract
+  A \emph{polymorphic subtyping} relation, which relates more general types
+  to more specific ones, is at the core of many modern functional languages.
+  As those languages start moving towards dependently typed programming a
+  natural question is how can polymorphic subtyping be adapted to such settings.
+  
+  This paper presents \system (\name): a simple dependently typed calculus
+  with polymorphic subtyping. The subtyping relation in \name
+  generalizes the well-known polymorphic subtyping relation by
+  Odersky and L\"aufer (1996). Because \name is dependently typed,
+  integrating subtyping to the calculus is non-trivial. To overcome
+  many of the issues arizing from integrating subtyping with dependent
+  types, the calculus employs \emph{unified subtyping}, which is a technique
+  that unifies typing and subtyping into a single relation. Moreover, \name
+  employs explicit casts instead of a conversion rule, allowing
+  unrestricted recursion to be naturally supported.
+  We prove various non-trivial results, including \emph{type soundness} and \emph{transitivity}
+  of unified subtyping. The calculus and all corresponding proofs
+  are mechanized in the Coq theorem prover and we also have a simple prototype
+  implementation of \name.
+%A complication that arizes in the type-soundness proof
+%is that a direct semantics is non-deterministic due 
 \end{abstract}
 
 \section{the Dependent Subtyping System}
