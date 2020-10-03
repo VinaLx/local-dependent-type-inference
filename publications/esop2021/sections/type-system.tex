@@ -1,65 +1,14 @@
-\documentclass{llncs}
-
-\usepackage[T1]{fontenc}
-\usepackage{ottalt}
-\usepackage{xcolor}
-\usepackage{mathtools}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{setspace}
-\usepackage{xspace}
-
-\inputott{dependent-subtyping.ott}
-
-\newcommand{\rulehl}[2][gray!40]{
-  \colorbox{#1}{$\displaystyle#2$}}
-
-\newcommand{\extract}[1]{\lvert #1 \rvert}
-\newcommand{\castup}[0]{\mathrm{cast}_\Uparrow}
-\newcommand{\castdn}[0]{\mathrm{cast}_\Downarrow}
-\newcommand{\system}[0]{the dependent implicitly polymorphic calculus\xspace}
-\newcommand{\System}[0]{The dependent implicitly polymorphic calculus\xspace}
-
-\newcommand{\name}[0]{$\lambda_{I}^{\forall}$\xspace}
-
-\begin{document}
-
-\title{A Dependently Typed Calculus with Polymorphic Subtyping}
-
-\author{Mingqi Xue \and Bruno C. d. S. Oliveira}
-\institute{
-    The University of Hong Kong \\
-    \email{\{mqxue,bruno\}@cs.hku.hk}
-}
-
-\maketitle
-
-\begin{abstract}
-  A \emph{polymorphic subtyping} relation, which relates more general types
-  to more specific ones, is at the core of many modern functional languages.
-  As those languages start moving towards dependently typed programming a
-  natural question is how can polymorphic subtyping be adapted to such settings.
-  
-  This paper presents \system (\name): a simple dependently typed calculus
-  with polymorphic subtyping. The subtyping relation in \name
-  generalizes the well-known polymorphic subtyping relation by
-  Odersky and L\"aufer (1996). Because \name is dependently typed,
-  integrating subtyping to the calculus is non-trivial. To overcome
-  many of the issues arizing from integrating subtyping with dependent
-  types, the calculus employs \emph{unified subtyping}, which is a technique
-  that unifies typing and subtyping into a single relation. Moreover, \name
-  employs explicit casts instead of a conversion rule, allowing
-  unrestricted recursion to be naturally supported.
-  We prove various non-trivial results, including \emph{type soundness} and \emph{transitivity}
-  of unified subtyping. The calculus and all corresponding proofs
-  are mechanized in the Coq theorem prover and we also have a simple prototype
-  implementation of \name.
-%A complication that arizes in the type-soundness proof
-%is that a direct semantics is non-deterministic due 
-\end{abstract}
-
 \section{\System}
+
+This section introduces the static and dynamic semantics of
+\name: a dependently typed calculus with type casts
+and implicit polymorphism. The calculus employs
+\emph{unified subtyping}~\cite{CoquandThierry1988Tcoc}
+and has a single relation that generalizes both typing and subtyping.
+The calculus can be seen as a variant of the \emph{calculus of constructions}~\cite{},
+but it uses a simple form of casts~\cite{} instead of the conversion rule
+and features unrestricted recursion. We present syntax, unified subtyping
+and reduction for \name.
 
 \begin{figure}[t]
 \centering
@@ -77,79 +26,102 @@
     \text{Syntactic Sugar} ~ & A \rightarrow B & \triangleq & [[pi x : A. B]] \qquad \text{where} ~ x \notin \mathrm{FV}(B)
 \end{array}
 \end{equation*}
-\caption{Syntax of \system}
+\caption{Syntax of \name.}
 \label{fig:syntax}
 \end{figure}
+\bruno{Aren't we missing some monotype restrictions? Forall types should have monotype
+  arguments, right? Please double check the restrictions, change the syntax if necessary
+  and double-check the text.}
+\bruno{Be careful with the margins: we are overflowing.}
 
 \subsection{Syntax}
 
-Figure \ref{fig:syntax} presents the syntax of \system, which follows a similar
-syntax to the Calculus of Constructions\cite{CoquandThierry1988Tcoc}, featuring
+Figure \ref{fig:syntax} presents the syntax of \name. The syntax is similar
+syntax to the Calculus of Constructions, featuring
 $[[*]]$ and $[[box]]$ in the kind hierarchy, and unifying the concepts of terms
-and types as expressions. ``Type'', ``term'' and ``expression'' are used
-interchangeably in later sections for whichever makes sense in the contexts.
-And we have following additional language constructs.
+and types as expressions. Due to the unified syntax, types and 
+expressions ($e$, $A$ and $B$) are used
+interchangeably, although we mostly adopt the convention of using $A$ and $B$
+for contexts where the expressions are used as types and $e$ for contexts
+where the expressions represent terms.
+The syntax includes all the constructs of the calculus of constructions:
+variables ($[[x]]$), kinds ($[[k]]$), function applications  ($[[e1 e2]]$),
+lambda expressions ($[[lambda x : A. e]]$), dependent function types ($[[pi x : A. B]]$)
+as well as integer types ($[[int]]$) and integers ($[[n]]$).
+Moreover, there are a number of additional language constructs for
+supporting implicit polymorphism, recursion and explicit type-level computation
+via casts. These constructs are discussed next.
 
 \subsubsection{Implicit Polymorphism}
 
-The $\forall$ type is the generalized version of implicit polymorphism in
-non-dependent languages, whose arguments range over all well-typed expressions
-besides well-formed types. It is implicit in the way that the type arguments are
-deduced during application rather than being explicitly passed.
-We also generalized the concept of ``monotypes'' to
-``mono-expressions'' that excludes the $\forall$ types from expressions.
-
-Also, the idea of ``polymorphic types'' is naturally dependent, so $\forall$
+Forall types $[[forall x : A. B]]$ are used to generalize implicit
+polymorphism in non-dependent languages. In contrast to non-dependent
+universal quantification in conventional functional languages, the
+arguments range over all well-typed expressions besides well-formed
+types (i.e. $x$ can have any type $A$ instead of just $\star$).
+In other words, ``polymorphic types'' are naturally dependent, so $\forall$
 types can be viewed as the implicit counterpart of $\Pi$ types. We also have
-the $\Lambda$ (pronounced as ``bind'') expression as the implicit counterpart of
-$\lambda$ abstractions, which is similar to the design of $\text{ICC}^*$\cite{barras2008implicit}.
+implicit lambda expressions ($[[bind x : A. e]]$), which are the implicit counterpart of
+  $\lambda$ abstractions. The design used in \name
+  is similar to the design of $\text{ICC}^*$~\cite{barras2008implicit}, which
+  employs similar constructs for implicit dependent products. 
+Like conventional universal quantification, the arguments of $\forall$ types are
+deduced during applications rather than being explicitly passed.
+In addition, following designs for predicative higher-ranked polymorphism~\cite{oderskylufer,DK,PJ}, we have also generalized the concept of ``monotypes'' to
+``mono-expressions'', essentially excluding $\forall$ types from expressions.
 
 \subsubsection{Explicit Type-level Computation}
 \label{sec:cast}
-
-\System adopts the iso-types\cite{yang2016unified}, featuring explicit type-level
-computations with cast operators $\castdn$ and $\castup$, which respectively perform one-step
+\System adopts the iso-types~\cite{yang2016unified}, featuring explicit type-level
+computations with cast operators $\castdn$ and $\castup$. These operators
+respectively perform one-step
 type reduction and type expansion based on the operational semantics.
 The reduction in cast operators is deterministic so that the type annotation is
 only needed during type expansions ($\castup$).
 
 \subsubsection{Fixpoint Operator}
 
-We add the fixpoint operator $\mu$ to support general recursion for both term-level
+Finally, we add fixpoints ($[[mu x : A. e]]$)
+to support general recursion for both term-level
 and type-level. Iso-recursive types are supported due to the presence of $\castup$
 and $\castdn$, which correspond to the ``fold'' and ``unfold'' operations when
-working on recursive types. However, we do not support subtyping for recursive
-types in the current system due to the complexity.
+working on recursive types.
+%However, we do not support subtyping for recursive
+%types in the current system due to the complexity.
 
-\begin{figure}
+\subsection{Operational Semantics}
+
+Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
+which mostly follows the call-by-name variant of Pure Iso-Type Systems (PITS)
+\cite{yang2019pure} corresponding to the calculus of constructions.
+Note that the arguments of $\beta$-reduction (\rref{r-beta}) and expressions in
+the \rref{r-cast-elim} are not required to be values.
+Meanwhile we consider $\castup$ terms to be a value,
+and only perform reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unroll
+operation of fixpoint operator is supported by \rref{r-mu}.
+
+\begin{figure}[t]
     \centering
 
     \drules[r]{$[[e1 --> e2]]$}{Operational Semantics}{
         app,beta,inst,mu,castdn,castXXinst,castXXelim}
 
-    \caption{Operational Semantics of \system}
+    \caption{Operational semantics of \name.}
     \label{fig:semantics}
 \end{figure}
+\bruno{Do not use $mono~e$ in the figure.
+  You have the syntax $\tau$ and $\sigma$ to represent
+monotypes, so just use that instead.}
 
-\subsection{Operational Semantics}
-
-Figure \ref{fig:semantics} presents the operational semantics of our system,
-which mostly follows the call-by-name variant of the Pure Iso-type System\cite{yang2019pure},
-where arguments of $\beta$-reduction (\rref{r-beta}) and expressions inside $\castdn \castup$
-are not required to be values (\rref{r-cast-elim}). Meanwhile we consider $\castup$ terms to be a value,
-and only performs reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unroll
-operation of fixpoint operator is supported by \rref{r-mu}.
-
-\subsubsection{indeterministic Implicit Instantiations}
-
-Notably rules involving instantiating implicit parameters of $\Lambda$ terms
-(\rref{r-inst,r-cast-inst}) are not deterministic and even type-safe, which seems to
-contradict our previous claim of deterministic reduction inside cast in section \ref{sec:cast}.
-These issues are resolved by imposing restrictions on type systems such that
-\textbf{a)} said indeterministic reductions are not well-typed inside cast operations
+\subsubsection{Nondeterministic Implicit Instantiations}
+The most interesting rules are those involving instantiation of implicit parameters:
+\rref{R-Inst} and \rref{R-Cast-Inst}. These rules are not deterministic, or even
+(in the general case) type-preserving. The main reason for this is due to the
+guess of $e$, which can be an arbitrary monoexpression.
+These issues are resolved by imposing restrictions on the type system such that
+\textbf{a)} non-deterministic reductions are not well-typed inside cast operations
 \textbf{b)} the instantiation choices of implicit parameters do not affect the
-overall runtime type-safety.
-Details will be explained in the later sections.
+overall runtime type-safety. Details will be explained in the later sections.
 
 \begin{figure}
     \centering
@@ -166,12 +138,12 @@ Details will be explained in the later sections.
 
 \subsection{Unified Subtyping System}
 
-Figure \ref{fig:typing} shows the typing rules of the system. We adopt the design
-of ``Unified Subtyping''\cite{yang2017unifying} where the subtyping rules and
-typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$,
-which elegantly solves the traditional issue of mutual dependency between typing
-and subtyping in a dependent type system.
-The interpretaion of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
+Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt the design
+of Unified Subtyping~\cite{yang2017unifying}, where the subtyping rules and
+typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$. 
+Unified subtyping solves the traditional issue of mutual dependency between typing
+and subtyping in a dependently type system.
+The interpretation of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
 subtype of $[[e2]]$ and they are both of type $[[A]]$''.
 In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
 special case of unified subtyping judgment $[[G |- e <: e : A]]$,
@@ -265,9 +237,3 @@ All the premises highlight in gray are redundant in a way that
 the system without them is proved equivalent to the system in figure \ref{fig:typing}.
 They are there to simplify the mechanized proofs of certain lemmas.
 
-\section{Metatheory}
-
-\bibliographystyle{splncs04}
-\bibliography{reference}
-
-\end{document}
