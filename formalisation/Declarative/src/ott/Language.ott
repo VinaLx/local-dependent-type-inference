@@ -7,7 +7,7 @@ kind, k :: 'k_' ::= {{ com kind }}
   | *   :: :: star {{ com type of type }}
   | box :: :: box  {{ com type of type of type }}
 
-expr, e, A, B, C :: 'e_' ::= {{ com expressions }}
+expr, e, A, B, C, t {{ tex \tau }}, s {{ tex \sigma }} :: 'e_' ::= {{ com expressions }}
   | x       :: :: var  {{ com variable }}
   | k       :: :: kind {{ com type of type }}
   | n       :: :: num  {{ com integer value }}
@@ -29,6 +29,10 @@ context, G {{ tex \Gamma }} :: 'ctx_' ::=
   | nil       :: :: nil  {{ com empty context }}   {{ coq nil }}
   | G , x : A :: :: cons
     {{ com context binding }} {{ coq (([[x]], [[A]]) :: [[G]]) }}
+  | G1 ,, G2  :: S :: app
+    {{ com context concatenation }} {{ coq (app ([[G2]]) ([[G1]])) }} {{ tex [[G1]] , \, [[G2]] }}
+  | [ e / x ] G :: M :: subst
+    {{ com context substitution }} {{ coq (subst_ctx ([[e]]) [[x]] ([[G]])) }}
 
 eexpr, ee {{tex e}}, eA {{tex A}}, eB {{tex B}}, eC {{tex C}} :: 'ee_' ::= {{ com extracted expression }}
   | x   :: :: var
@@ -68,12 +72,12 @@ terminals :: 'terminal_' ::=
   | mu :: :: mu    {{ tex \mu }}
   | in :: :: in    {{ tex \in }}
   | |- :: :: vdash {{ tex \vdash }}
-  | .  :: :: dot   {{ tex .~ }}
+  | .  :: :: dot   {{ tex . ~ }}
   | <: :: :: sub   {{ tex \leq }}
   | #  :: :: fresh {{ tex ~\text{fresh in}~ }}
   | *  :: :: star  {{ tex \star }}
   | box :: :: box  {{ tex \square }}
-  | ,  :: :: comma {{ tex ,~ }}
+  | ,  :: :: comma {{ tex , \, }}
   | elambda :: :: elambda {{ tex \lambda }}
   | epi     :: :: epi     {{ tex \Pi }}
   | eforall :: :: eforall {{ tex \forall }}
@@ -85,7 +89,7 @@ terminals :: 'terminal_' ::=
   | nil  :: :: nil {{ tex \varnothing }}
   | int  :: :: int {{ tex \mathbb{N} }}
   | |=   :: :: vDash {{ tex \vdash_s }}
-  | ]    :: :: rbracket {{ tex ]~ }}
+  | ]    :: :: rbracket {{ tex ] \, }}
   | castup :: :: castup {{ tex \mathrm{cast}_\Uparrow   }}
   | castdn :: :: castdn {{ tex \mathrm{cast}_\Downarrow }}
   | ecastup :: :: ecastup {{ tex \mathrm{cast}_\Uparrow }}
@@ -373,11 +377,11 @@ G , x : A2 |- B1 <: B2 : k2
 ---------------------------------------- :: pi
 G |- pi x : A1. B1 <: pi x : A2. B2 : k2
 
-monotype e
-G |- e : A
+monotype t
+G |- t : A
 G |- e1 <: e2 : pi x : A. B
 ------------------------------- :: app
-G |- e1 e <: e2 e : [e/x]B
+G |- e1 t <: e2 t : [t/x]B
 
 G |- A : k <<
 G , x : A |- B : *
@@ -387,11 +391,11 @@ x # e2*
 ------------------------------------------------------- :: bind
 G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B
 
-monotype mu x : A. e
-G |- A : k <<
-G , x : A |- e : A
+monotype mu x : t. s
+G |- t : k <<
+G , x : t |- s : t
 ------------------------------------ :: mu
-G |- mu x : A. e <: mu x : A. e : A
+G |- mu x : t. s <: mu x : t. s : t
 
 G |- A : k
 A --> B
@@ -405,10 +409,10 @@ G |- e1 <: e2 : A
 --------------------------------------- :: castdn
 G |- castdn e1 <: castdn e2 : B
 
-monotype e
+monotype t
 G |- A : k <<
-G |- e : A
-G |- [e/x] B <: C : *
+G |- t : A
+G |- [t/x] B <: C : *
 G , x : A |- B : *
 ------------------------------- :: forall_l
 G |- forall x : A. B <: C : *

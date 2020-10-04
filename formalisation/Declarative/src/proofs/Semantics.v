@@ -280,14 +280,14 @@ Proof.
         apply abs_principal_inversion in Sub2 as (L3 & Sub2).
         pick fresh x for (L3 `union` L2 `union` fv_expr b `union` fv_expr e0 `union` fv_expr B).
         instantiate_cofinites.
-        rewrite (open_subst_eq b x e), (open_subst_eq e0 x e), (open_subst_eq B x e); auto.
+        rewrite (open_subst_eq b x t), (open_subst_eq e0 x t), (open_subst_eq B x t); auto.
         eauto 4 using substitution_cons, ctx_narrowing_cons.
   - inversion R1; inversion R2; subst.
-    assert (G ⊢ e_mu A e : A) by eauto.
+    assert (G ⊢ e_mu t s : t) by eauto.
     instantiate_cofinites. conclude_freshes. rewrite_open_with_subst.
-    pose (A' := A); assert (A' = A) as E by auto.
-    replace (e_mu A e) with (e_mu A' e) by auto.
-    replace A with ([(e_mu A e) / x] A). rewrite E.
+    pose (t' := t); assert (t' = t) as E by auto.
+    replace (e_mu t s) with (e_mu t' s) by auto.
+    replace t with ([(e_mu t s) / x] t). rewrite E.
     eapply substitution_cons; eauto.
     now apply fresh_subst_eq.
 
@@ -503,14 +503,14 @@ Proof.
     destruct_progressive_for_app;
     eauto 3; (* solves r_app cases *)
     invert_operator_to_nf.
-    + inversion V; subst. exists (H5 ^^ e). eauto.
+    + inversion V; subst. exists (H5 ^^ t). eauto.
     + inversion V. inversion H11. subst.
         pick fresh x. instantiate_cofinites.
-        exists (e_app (H5 ^` x) e). eauto.
-    + inversion V; subst. exists (H6 ^^ e). eauto.
+        exists (e_app (H5 ^` x) t). eauto.
+    + inversion V; subst. exists (H6 ^^ t). eauto.
     + inversion V; inversion H11. subst.
         pick fresh x. instantiate_cofinites.
-        exists (e_app (H6 ^` x) e). eauto.
+        exists (e_app (H6 ^` x) t). eauto.
   - split; right; eauto.
   - split.
     + destruct H2.
@@ -558,22 +558,22 @@ Proof.
     split; right; destruct_progressive_for_app; eauto; (* solve r_app cases *)
       apply evalue_value in V; auto;
         invert_operator_to_nf; simpl.
-    + exists ((extract H4) ⋆^^ (extract e)). constructor.
+    + exists ((extract H4) ⋆^^ (extract t)). constructor.
       replace (ee_abs (extract H4)) with (extract (e_abs H2 H4)) by reflexivity.
       all: eauto using lc_extract_lc.
-    + pick fresh x. exists (ee_app (extract H4 ⋆^` x) (extract e)).
+    + pick fresh x. exists (ee_app (extract H4 ⋆^` x) (extract t)).
       eapply er_elim; eauto 3.
       replace (ee_bind (extract H4)) with (extract (e_bind H2 H4)) by reflexivity.
       eauto using lc_extract_lc.
-    + exists ((extract H5) ⋆^^ (extract e)). constructor.
+    + exists ((extract H5) ⋆^^ (extract t)). constructor.
       replace (ee_abs (extract H5)) with (extract (e_abs H3 H5)) by reflexivity.
       all: eauto using lc_extract_lc.
-    + pick fresh x. exists (ee_app (extract H5 ⋆^` x) (extract e)).
+    + pick fresh x. exists (ee_app (extract H5 ⋆^` x) (extract t)).
       eapply er_elim; eauto 3.
       replace (ee_bind (extract H5)) with (extract (e_bind H3 H5)) by reflexivity.
       eauto using lc_extract_lc.
-  - split; right; exists ((extract e) ⋆^^ ee_mu (extract e));
-      econstructor; replace (ee_mu (extract e)) with (extract (e_mu A e)) by auto;
+  - split; right; exists ((extract s) ⋆^^ ee_mu (extract s));
+      econstructor; replace (ee_mu (extract s)) with (extract (e_mu t s)) by auto;
       eauto using lc_extract_lc.
   (* castdn *)
   - instantiate_trivial_equals.
@@ -613,7 +613,7 @@ Proof.
   - split.
     + solve_progress_evalue.
     + instantiate_trivial_equals.
-      now destruct IHusub3 with (extract (B ^^ e)) (extract C).
+      now destruct IHusub3 with (extract (B ^^ t)) (extract C).
   (* forall_r *)
   - split.
     + instantiate_trivial_equals.
@@ -795,20 +795,20 @@ Proof.
       (* main case for r_app *)
       * destruct IHSub2 with ee2 ee0 as (e1' & e2' & IH); eauto.
         destruct_conjs. subst.
-        exists (e_app e1' e), (e_app e2' e). repeat split; eauto 3.
+        exists (e_app e1' t), (e_app e2' t). repeat split; eauto 3.
       * invert_extractions. invert_sub_hyp. solve_impossible_reduction.
       * invert_extractions. invert_sub_hyp. solve_impossible_reduction.
     + invert_extractions. invert_sub_hyp.
       inversion H1; subst; solve_impossible_reduction.
       (* main case for r_beta *)
-      exists (e0 ^^ e), (b ^^ e).
+      exists (e ^^ t), (b ^^ t).
       autorewrite with reassoc.
       split_all; eauto.
       pose (B' := Sub2). apply abs_pi_principal in B'. destruct_conjs.
       apply pi_sub_inversion in H8 as (k' & L & Sub3).
       apply abs_principal_inversion in H5 as (L' & Sub4).
       pick fresh x for
-           (L `union` L' `union` fv_expr e0 `union` fv_expr b `union` fv_expr B).
+           (L `union` L' `union` fv_expr e `union` fv_expr b `union` fv_expr B).
       instantiate_cofinites. destruct_pairs.
       rewrite_open_with_subst.
       eapply ctx_narrowing_cons in Sub4; eauto 4 using substitution_cons.
@@ -817,7 +817,7 @@ Proof.
       (* main case for r_inst *)
       apply bind_inversion in Sub2 as (F & L1 & Hb). destruct_pairs.
       apply forall_l_sub_inversion in H6 as (m & M & Subm & Sub_inst); auto.
-      exists (e_app (e0 ^^ m) e), (e_app (b ^^ m) e). split_all; simpl.
+      exists (e_app (e ^^ m) t), (e_app (b ^^ m) t). split_all; simpl.
       * pick fresh x'. instantiate_cofinites. find_extract_invariants.
       * pick fresh x'. instantiate_cofinites. find_extract_invariants.
       * eauto.
@@ -825,23 +825,23 @@ Proof.
       * eapply s_app; eauto. apply s_sub with (F ^^ m) k_star; auto.
         pick fresh x' for
              (L `union` L0 `union` L1 `union`
-                fv_expr e0 `union` fv_expr b `union` fv_expr F).
+                fv_expr e `union` fv_expr b `union` fv_expr F).
         rewrite_open_with_subst.
         eauto 3 using substitution_cons.
   - inversion H2; inversion H3; subst.
     (* r_mu *)
-    assert (nil ⊢ e_mu A e : A) by eauto.
-    exists (e ^^ (e_mu A e)), (e ^^ (e_mu A e)). split_all.
+    assert (nil ⊢ e_mu t s : t) by eauto.
+    exists (s ^^ (e_mu t s)), (s ^^ (e_mu t s)). split_all.
     + now rewrite extract_open_distr.
     + now rewrite extract_open_distr.
     + eauto.
     + eauto.
-    + pick fresh x for (L `union` fv_expr A `union` fv_expr e).
+    + pick fresh x for (L `union` fv_expr t `union` fv_expr s).
       instantiate_cofinites.
       conclude_freshes. rewrite_open_with_subst.
-      pose (A' := A). assert (A' = A) as E by auto.
-      replace (e_mu A e) with (e_mu A' e) by auto.
-      replace A with ([(e_mu A e) / x] A) by now apply fresh_subst_eq.
+      pose (t' := t). assert (t' = t) as E by auto.
+      replace (e_mu t s) with (e_mu t' s) by auto.
+      replace t with ([(e_mu t s) / x] t) by now apply fresh_subst_eq.
       rewrite E.
       eapply substitution_cons; eauto 3.
   - inversion H0; subst.

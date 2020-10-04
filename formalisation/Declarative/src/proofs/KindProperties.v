@@ -344,7 +344,7 @@ Proof.
     + pick fresh x. eauto.
   - apply tail_kind_invert_subst_rec in Htk as [Htk | [Htk | E]].
     + auto.
-    + apply tail_box_never_welltype with G e A; auto.
+    + apply tail_box_never_welltype with G t A; auto.
     + subst. now apply box_never_welltype in Hsub1.
   - pick fresh x. eapply H1; eauto.
   - eapply tail_box_never_reduce; eauto.

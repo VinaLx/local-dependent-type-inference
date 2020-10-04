@@ -154,7 +154,7 @@ Proof.
     + apply_substitution_strategy.
   - solve_subst.
   - solve_subst.
-  - apply s_forall_l with (add x L) ([e3 / x] e) k;
+  - apply s_forall_l with (add x L) ([e3 / x] t) k;
       apply_substitution_strategy.
   - solve_subst.
   - solve_subst.
@@ -212,7 +212,7 @@ Proof.
       specialize (H2 x Fr2).
       right. exists k.
       rewrite open_subst_eq with (x := x); auto.
-      replace (e_kind k) with ([e / x] e_kind k) by reflexivity.
+      replace (e_kind k) with ([t / x] e_kind k) by reflexivity.
       eapply substitution_cons; eauto.
     + apply IHusub1 with A k; auto.
       apply kind_sub_inversion_l in H0_0 as (E1 & E2 & E3). now subst.
