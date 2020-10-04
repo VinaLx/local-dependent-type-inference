@@ -160,13 +160,8 @@ overall runtime type-safety. Details will be explained in the later sections.
 \label{sec:type-system}
 
 Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt the design
-<<<<<<< Updated upstream
 of unified subtyping~\cite{yang2017unifying}, where the subtyping rules and
-typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$. 
-=======
-of Unified Subtyping~\cite{yang2017unifying}, where the subtyping rules and
 typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
->>>>>>> Stashed changes
 Unified subtyping solves the traditional issue of mutual dependency between typing
 and subtyping in a dependently type system.
 The interpretation of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
