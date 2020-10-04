@@ -91,6 +91,13 @@ working on recursive types.
 
 \subsection{Operational Semantics}
 
+\bruno{If I understand correctly we need 2 different reductions, one
+  (the non-deterministic one) that is used in the type system; and another
+  one (which erases types) that is deterministic and would be the basis
+  for an actual implementation of reduction at run-time. After reading
+  this subsection, I think we want
+to tell that story here and present the 2 variants of reduction here.}
+
 Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
 which mostly follows the call-by-name variant of Pure Iso-Type Systems (PITS)
 \cite{yang2019pure} corresponding to the calculus of constructions.
@@ -132,14 +139,27 @@ overall runtime type-safety. Details will be explained in the later sections.
     \begin{equation*}
        \text{Syntactic Sugar} \qquad [[G |- e : A]] \triangleq [[G |- e <: e : A]]
     \end{equation*}
-    \caption{(Sub)Typing Rules of \system}
+    \caption{(Sub)Typing Rules of \name.}
     \label{fig:typing}
 \end{figure}
+\bruno{The figure and rules will need a little cosmetic work. Firstly, there are many rules
+  stacking up premises vertically. I think it is better to have multiple rules
+  horizontally (and only upto 2 or 3 vertical stacks of premises).
+  Secondly, we need to look at the layout carefully to use space efficiently.
+  At the moment there are rules like S-ABS that could be paired up with some other
+  rules side-by-side and use less space (at the same time it is nicer
+  if adjancent rules are somehow related: two cast rules; application/abstraction, etc).
+  We must organize the rules in a nicer way. Thirdly, I think that, for binders with
+  annotations, like $\lambda x : A. e$, we may want to use brackets on the arguments
+  to improve readability, as in $\lambda (x : A). e$. It is a bit hard to ``parse''
+  the syntax without a little bit of effort. If this change is implemented it would
+  affect the whole section, starting from syntax.
+}
 
 \subsection{Unified Subtyping System}
 
 Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt the design
-of Unified Subtyping~\cite{yang2017unifying}, where the subtyping rules and
+of unified subtyping~\cite{yang2017unifying}, where the subtyping rules and
 typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$. 
 Unified subtyping solves the traditional issue of mutual dependency between typing
 and subtyping in a dependently type system.
@@ -149,44 +169,52 @@ In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
 special case of unified subtyping judgment $[[G |- e <: e : A]]$,
 and the idea of well-formed types $\Gamma \vdash A$ is expressed by
 $[[G |- A : k]]$ where $k$ is either $[[*]]$ or $[[box]]$.
+\bruno{We should say something about the ``more standard'' rules here.
+  I think we can briefly explain them and point the
+  reader to Linus work for further details, while observing that the rules
+  here are essentially simplified version (due to the absence of bounded quantification)
+of his rules.}
 
-\subsubsection{DK-Style Subtyping}
-
-The subtyping rules for $\forall$ types (\rref{s-forall-l,s-forall-r}) follows
-the spirit of the DK's declarative subtyping rules\cite{DunfieldJoshua2013Caeb},
+\subsubsection{Rules for Universal Quantification}
+The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
+the spirit of the Odersky and L\"aufer declarative subtyping rules~\cite{oderskylaufer,DunfieldJoshua2013Caeb},
 where the subtyping relation is interpreted as a ``more general than'' relation.
-A polymorphic type is more general than another type when its well-typed
-instantiation is more general than that (\rref{s-forall-l}). And a polymorphic
-type is less general when another type is more general with the type parameter of
-the poly-type abstracted out (\rref{s-forall-r}). Also we add \rref{s-forall}
-to axiomize the subtyping relation between two polymorphic types due to the
-issues presented in the formalization.
-We shall discuss it in more detail in later sections.
-
+A polymorphic type $\forall (x:A). B$
+is more general than another type $C$ when its well-typed
+instantiation is more general than $C$ (\rref{s-forall-l}). A polymorphic
+type $\forall (x:B). C$ is less general than a type $A$,
+if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
+is abstracted out (\rref{s-forall-r}). Additionaly, \rref{s-forall}
+axiomatizes the subtyping relation between two polymorphic types.
+The motivation for \rref{s-forall} is discussed in more detail in later sections.
 
 \subsubsection{Mono-expression Restrictions}
-
-As in DK's system, the type arguments for instantiation in \rref{s-forall-l} are
+As in other predicative relations (such as the one by Odersky and L\"aufer),
+the type arguments for instantiation in \rref{s-forall-l} are
 required to be mono-expressions, which has cascading effects on typing rules of
 other expressions. The arguments for applications are required to be
-mono-expressions, and the whole fixpoint expression is required to be mono-expressions. We shall
+mono-expressions, and the whole fixpoint expression is required to be a
+mono-expressions. We shall
 discuss the reason behind the restrictions in later sections.
+\bruno{I feel that we may be deferring a bit too much explanation
+to later sections, but lets come back to this after you write later sections.}
 
-\subsubsection{Kind Restriction for $\forall$ Types}
+\subsubsection{Kind Restriction for Universal Types}
 \label{sec:kind-restriction}
 
 For the kinding of types, we mainly follow the design of the Calculus of
-Constructions\cite{CoquandThierry1988Tcoc}, but specifically restrict the $\forall$
-expressions to only have the kind $[[*]]$, which prevents other types of kind
-$[[*]]$ from having kind $[[forall x : int. *]]$, which significantly complicates
-the metatheory when reasoning about the kind of types.
+Constructions~\cite{CoquandThierry1988Tcoc}. However, we specifically restrict
+the $\forall (x : A). B$
+expressions to only have the kind $[[*]]$. This prevents other types of kind
+$[[*]]$ from having kinds such as $[[forall x : int. *]]$,
+which significantly complicates the metatheory when reasoning about the kind of types.
 This restriction propagates to the introduction rule of $\forall$ types (\rref{s-bind}),
 where $[[B]]$ is required to only have kind $[[*]]$.
 This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
-from type computations. Therefore in cast operators,
-the possibility of indeterministic implicit instantiations is eliminated.
+from type computations. Therefore, in cast operators,
+the possibility of non-deterministic implicit instantiations is eliminated.
 
-\begin{figure}
+\begin{figure}[t]
     \centering
     \begin{equation*}
         \begin{array}{llcl}
