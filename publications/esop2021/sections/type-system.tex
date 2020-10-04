@@ -39,7 +39,7 @@ and reduction for \name.
 Figure \ref{fig:syntax} presents the syntax of \name. The syntax is similar
 syntax to the Calculus of Constructions, featuring
 $[[*]]$ and $[[box]]$ in the kind hierarchy, and unifying the concepts of terms
-and types as expressions. Due to the unified syntax, types and 
+and types as expressions. Due to the unified syntax, types and
 expressions ($e$, $A$ and $B$) are used
 interchangeably, although we mostly adopt the convention of using $A$ and $B$
 for contexts where the expressions are used as types and $e$ for contexts
@@ -64,7 +64,7 @@ types can be viewed as the implicit counterpart of $\Pi$ types. We also have
 implicit lambda expressions ($[[bind x : A. e]]$), which are the implicit counterpart of
   $\lambda$ abstractions. The design used in \name
   is similar to the design of $\text{ICC}^*$~\cite{barras2008implicit}, which
-  employs similar constructs for implicit dependent products. 
+  employs similar constructs for implicit dependent products.
 Like conventional universal quantification, the arguments of $\forall$ types are
 deduced during applications rather than being explicitly passed.
 In addition, following designs for predicative higher-ranked polymorphism~\cite{oderskylufer,DK,PJ}, we have also generalized the concept of ``monotypes'' to
@@ -157,10 +157,16 @@ overall runtime type-safety. Details will be explained in the later sections.
 }
 
 \subsection{Unified Subtyping System}
+\label{sec:type-system}
 
 Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt the design
+<<<<<<< Updated upstream
 of unified subtyping~\cite{yang2017unifying}, where the subtyping rules and
 typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$. 
+=======
+of Unified Subtyping~\cite{yang2017unifying}, where the subtyping rules and
+typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
+>>>>>>> Stashed changes
 Unified subtyping solves the traditional issue of mutual dependency between typing
 and subtyping in a dependently type system.
 The interpretation of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
