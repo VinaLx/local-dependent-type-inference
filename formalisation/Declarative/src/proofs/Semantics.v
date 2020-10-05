@@ -31,6 +31,18 @@ Ltac find_impossible_reduction :=
 
 Ltac solve_impossible_reduction := try find_impossible_reduction.
 
+Lemma dreduce_deterministic : forall e e1 e2,
+    e ⟹ e1 -> e ⟹ e2 -> e1 = e2.
+Proof.
+  intros. generalize dependent e2.
+  induction H; intros.
+  - inversion H1; subst; solve_impossible_reduction.
+    rewrite (IHdreduce e6); auto.
+  - inversion H2; subst; solve_impossible_reduction.
+    auto.
+  - inversion H1; subst; auto.
+Qed.
+
 Ltac conclude_refls H :=
   match type of H with
   | ?G ⊢ ?e1 <: ?e2 : ?A =>
@@ -741,7 +753,7 @@ Qed.
 Tactic Notation "absurd" "by" tactic(t) :=
   assert False by t; contradiction.
 
-Lemma type_reduce_restricted : forall e e',
+Lemma deterministic_type_reduction' : forall e e',
     e ⟶ e' -> forall Γ A n k, Γ ⊢ e : A -> head_kind A k n -> e ⟹ e'.
 Proof.
   intros * R.
@@ -775,6 +787,14 @@ Proof.
     + destruct k; box_reasoning.
       absurd by eauto 3 using expr_of_box_never_be_reduced_2.
     + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
+Qed.
+
+Lemma deterministic_type_reduction : forall Γ e e' k,
+    e ⟶ e' -> Γ ⊢ e : e_kind k -> e ⟹ e'.
+Proof.
+  intros.
+  eapply deterministic_type_reduction'; eauto.
+  Unshelve. exact 0.
 Qed.
 
 Theorem preservation : forall e1 e2 A,
@@ -872,7 +892,7 @@ Proof.
       * exists e, b. repeat split; eauto.
         apply castup_inversion in Sub2 as (C & k' & Sub & R & Sub').
         apply s_sub with C k'. auto.
-        eapply type_preservation; eauto using type_reduce_restricted. Unshelve. all: exact 0.
+        eapply type_preservation; eauto using deterministic_type_reduction. Unshelve. all: exact 0.
   - edestruct IHSub1 as (e1' & e2' & H1); eauto.
     destruct_pairs.
     exists e1', e2'. repeat split; eauto.
