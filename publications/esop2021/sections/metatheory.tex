@@ -340,5 +340,75 @@ measure is the size of the derivation trees.
 
 \subsection{Type Safety}
 
+Since the reduction rules of \name do not have access to typing information, it
+cannot perform valid instantiation of the implicit arguments during application,
+leaving the runtime semantics indeterministic and potentially non-type-preserving.
+We tackle this issue by trying to make the choice of implicit instantiation
+irrelevant at runtime with the restrictions on the introduction
+rule of $\forall$ types (\rref{s-bind}). We define a ``extraction'' function
+that eliminates all the type annotations in the terms
+($\lambda$, $\Lambda$, $mu$ and $\castup$),
+and keep the implicit parameter from occuring in the extracted expressions.
+This way the choices of implicit instantiation only affect the type annotation,
+which should not be relevant for runtime computation.
+
+\begin{figure}
+  \centering
+  \begin{equation*}
+  \begin{array}{lcl}
+      \text{Extracted Value} ~ ev & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
+      & \mid & [[eforall x : eA. eB]] \mid [[ecastup ee]]
+  \end{array}
+  \end{equation*}
+  \drules[er]{$[[ee1 *--> ee2]]$}{Extracted Semantics}
+    {app,beta,elim,mu,castdn,castXXinst,castXXelim}
+  \label{fig:extract-semantics}
+  \caption{Operational Semantics for Extracted Expressions}
+\end{figure}
+
+In this section, we discuss the type safety of \name in the sense that,
+if an expression is well-typed in \name, then the reduction of its extraction
+does not ``go wrong''. Figure \ref{fig:extract-semantics} shows the semantics of
+extracted expression. The extracted semantics mostly mirrors the semantics
+shown in figure \ref{fig:semantics}, except for \rref{er-elim,er-cast-elim}, which
+conveys the idea of irrelevance of implicit instantiation by eliminating the
+parameter directly.
+
+\subsubsection{Progress} We show the \emph{Progress} property in both unextracted
+and extracted expressions.
+
+\begin{theorem}[Progress]
+    If $[[nil |- e : A]]$,
+    then $\exists \, e'. \, e \longrightarrow e'$ or $e$ is a value.
+\end{theorem}
+
+\begin{theorem}[Extracted Progress]
+    If $[[nil |- e : A]]$,
+    then $\exists \, e'. \, \extract{e} \longleftarrow_E e'$ or $\extract{e}$ is an extracted value.
+\end{theorem}
+
+Both theorems are proved by induction on the derivation of $[[nil |- e : A]]$,
+the proof is mostly straightforward except for when the derivation ends with $\castdn$.
+We use the fact that, for a well-typed expression whose type can reduce, that expression
+cannot be a value unless it is a $\castup$ or $\Lambda$ expression.
+
+\begin{lemma}[Reducible Type]
+    If $[[G |- e : A]]$, $[[A --> B]]$ and $e$ is not $\castup$ or $\Lambda$ expressions,
+    then $e$ is not a value.
+\end{lemma}
+
+This lemma is also useful for the proof of \emph{Extracted Progress} since the
+value definitions are very similar.
+
+\begin{lemma}[Extracted Value to Value]
+    If $\extract{e}$ is an extracted value, then $e$ is a value.
+\end{lemma}
+
+\begin{lemma}[Value to Extracted Value]
+    If $e$ is a value, then $\extract{e}$ is an extracted value.
+\end{lemma}
+
+\subsubsection{Preservation}
+
 \subsection{Subsumption of DK's Subtyping}
 
