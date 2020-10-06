@@ -410,5 +410,132 @@ value definitions are very similar.
 
 \subsubsection{Preservation}
 
-\subsection{Subsumption of DK's Subtyping}
+In this section we discuss the preservation theorem tailored by \name.
+Since the direct operational semantics is not generally type-preserving and
+deterministic because of the implicit instantiations, we show the
+``preservation'' the help of the extracted expressions where implicit parameters
+do not matter to the computation. For other reduction rules that do not involve
+such issues, we discuss them as though we are proving a normal preservation
+for brevity.
 
+\begin{theorem}[Extracted Subtype Preservation]
+    If $[[G |- e1 <: e2 : A]]$, $\extract{e_1} \longrightarrow_E E_1'$ and $\extract{e_2} \longrightarrow_E E_2'$,
+    then $\exists\,e_1' \, e_2'.$ $\extract{e_1'} = E_1'$, $\extract{e_2'} = E_2'$, $e_1 \longrightarrow e_1'$, $e_2 \longrightarrow e_2'$ and $\Gamma \vdash e_1' \le e_2' : A$.
+\end{theorem}
+
+\begin{figure}
+    \centering
+    \begin{tikzcd}[row sep=large, column sep=large]
+        e : A \arrow[r] \arrow[dashed]{d}[swap]{\text{Extraction}} & e' : A \\
+        E \arrow[shorten=1mm]{r}[swap, pos=1]{E} & E' \arrow[dashed]{u}[swap]{\text{Annotation}}
+    \end{tikzcd}
+    \caption{Diagram for Extracted Preservation without Subtyping}
+    \label{fig:preservation}
+\end{figure}
+
+Figure \ref{fig:preservation} shows the idea of our preservation lemma without
+the subtyping. Here we use ``annotation'' as the reverse process of extraction.
+If an expression ($e$) is well-typed, and its extraction ($E$)
+reduces to another extracted expression ($E'$), we can find a ``annotated''
+expression of $E'$ ($e'$) that is reduced by $e$ and also preserves the type $A$.
+When no implicit instantiation happens in the reduction, then $e \longrightarrow e'$
+is deterministic, it is just a normal type preservation. When there is an implicit
+instantiation, if the extracted expression can reduce, we show that there must
+be an valid instantiation for $e$ for preserve its type after the reduction, and
+this instantiation only affect the type annotation.
+
+Put it in another way, the runtime semantics of \name can be implemented only in
+extracted expressions, when its annotation is well-typed.
+Because for every step it reduces, we can find a corresponding annotation that
+preserve the type of, and have the reduction relation with the
+annotation of its expansion.
+
+The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
+cases for \rref{r-beta,r-mu} are solved with the substitution theorem,
+cases \rref{r-app,r-castdn} are solved by inductive hypothesis. The interesting
+ones are cases for \rref{r-cast-elim} and the implicit instantiation
+(\rref{r-inst,r-cast-inst}).
+
+\paragraph{Subtype Preservation for Types} The problem of cast elimination
+can be demonstrated by the following derivation:
+
+\begin{mathpar}
+    \hspace{-1.5cm}
+    \inferrule*[Right=s-castdn]
+      {\rulehl{[[B1 --> B2]]} \\ \inferrule*[Right=s-sub]
+        {\rulehl{[[G |- A1 <: B1 : k]]} \\ \inferrule*[Right=s-castup]
+          {\rulehl{[[A1 --> A2]]} \\ [[G]] \vdash [[e]] : \rulehl{A_2}}
+          {[[G |- castup [A1] e : A1]]}}
+        {[[G |- castup [A1] e : B1]]}}
+      {[[G]] \vdash [[castdn castup [A1] e]] : \rulehl{B_2}}
+\end{mathpar}
+
+Here when the typing of the inner $\castdn$ does not directly follow
+\rref{r-castup}, but the subsumption rule instead. We have to show that after
+the cast elimination, expression $e$ has type $B_2$, which means $A_2$ must be
+a subtype of $B_2$. While $[[A1 --> A2]]$, $[[B1 --> B2]]$ and $A_1$ is a subtype
+of $A_2$, this case depends back on the subtyping preservation we currently attempt to prove
+. This problem was also observed by the previous work on Unified Subtyping
+with the cast operators\cite{yang2017unifying}. Unfortunately they solved this
+situation with the help of a lemma that does not hold in our system.
+
+We tackle this problem from another direction, with the observation that the
+demand for subtyping preservation shifts from the ``terms'' to the ``types''.
+With the CoC-like kind hierarchy, we have only limited layers in the of types.
+In fact, we only need to go down one layer in the type hierarchy to be able to
+obtain subtype preservation directly, since there is no subtyping involved at kind level,
+hence no problem for the cast elimination there.
+
+Even better, we show that by going down one level in the type hierarchy, the options
+for the reduction that can be performed by a well-typed term are very limited.
+Implicit abstractions does not occur in type computation due to the kind
+restriction of $forall$ types. Cast operator also does not occur in type computation,
+since we prove that well-typed reduction never occur at kind level.
+
+\begin{figure}
+    \drules[dr]{$[[A1 ==> A2]]$}{Deterministic Reduction}
+      {app,beta,mu}
+    \caption{Deterministic Reduction in the Cast}
+    \label{fig:deterministic-reduction}
+\end{figure}
+
+Figure \ref{fig:deterministic-reduction} shows the effective reduction rules
+inside cast operators.
+
+\begin{lemma}[Deterministic Reduction]
+    If $[[A ==> A1]]$ and $[[A ==> A2]]$,
+    then $A_1 = A_2$.
+\end{lemma}
+
+\begin{lemma}[Deterministic Type Reduction]
+    If $[[G |- A1 : k]]$ and $[[A1 --> A2]]$,
+    then $[[A1 ==> A2]]$.
+\end{lemma}
+
+The cases for implicit abstractions are easy to prove. For the cast operators
+we have the following lemma.
+
+\begin{lemma}[Expressions of $[[box]]$ Never be Reduced]
+    If $[[A --> B]]$ and $[[G |- e : A]]$,
+    then $B$ does not have type $[[box]]$.
+\end{lemma}
+
+And then the subtype preservation of type computation can be easily shown.
+
+\begin{lemma}[Subtype Preservation for Types]
+    If $[[G |- A1 <: B1 : k]]$, $[[A1 ==> A2]]$ and $[[B1 ==> B2]]$,
+    then $[[G |- A2 <: B2 : k]]$.
+\end{lemma}
+
+\paragraph{Implicit Instantiations}
+
+The proof of two cases for implicit instantiations (\rref{r-inst,r-cast-inst})
+are quite similar. They both makes use of the observation that, the implicit
+instantiations are only triggered by \rref{s-forall-l}, which is exactly where
+polymorphic types are instantiated. The implicit arguments are the
+mono-expressions that instantiate the polymorphic types. And the result types of the
+implicit instantiations are exactly the instantiation of the polymorphic types.
+And then the rest of the proofs are finished by standard inversion lemmas,
+with the help of \emph{Substitution} for the instantiation.
+
+\subsection{Subsumption of DK's Subtyping}
