@@ -39,7 +39,7 @@ Proof.
   - dependent induction Hsubr. assumption. eauto 3 using head_kind_sub_r.
   - destruct k.
     + conclude_type_refl Hsub2. inversion H.
-      box_reasoning. assert False by eauto using expr_of_box_never_be_reduced.
+      box_reasoning. assert False by eauto using expr_of_box_never_be_reduced'.
       contradiction.
     + conclude_type_refl Hsub2. inversion H.
       assert False by eauto using box_never_be_reduced.

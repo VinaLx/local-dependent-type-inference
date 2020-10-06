@@ -288,7 +288,7 @@ Qed.
 
 Hint Resolve box_never_be_reduced : box.
 
-Lemma expr_of_box_never_be_reduced : forall e' e,
+Lemma expr_of_box_never_be_reduced' : forall e' e,
     e' ⟶ e -> forall Γ A, Γ ⊢ e : BOX -> forall Γ', Γ' ⊢ e' : A -> False.
 Proof.
   intros * R.
@@ -313,4 +313,4 @@ Proof.
     + eauto 2.
 Qed.
 
-Hint Resolve expr_of_box_never_be_reduced : box.
+Hint Resolve expr_of_box_never_be_reduced' : box.

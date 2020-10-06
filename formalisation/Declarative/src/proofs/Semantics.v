@@ -63,7 +63,7 @@ Proof.
     inversion H2; subst.
     conclude_type_refl H1.
     + inversion H0.
-    + eauto using expr_of_box_never_be_reduced.
+    + eauto using expr_of_box_never_be_reduced'.
   - apply star_sub_inversion_l in H0. subst.
     eapply IHusub1; eauto.
 Qed.
@@ -741,13 +741,13 @@ Proof.
   intros. destruct e; simpl in *; inversion H; eauto.
 Qed.
 
-Lemma expr_of_box_never_be_reduced_2 : forall A B a Γ1 Γ2,
+Lemma expr_of_box_never_be_reduced : forall A B a Γ1 Γ2,
     A ⟶ B -> Γ1 ⊢ a : A -> Γ2 ⊢ B : BOX -> False.
 Proof.
   intros.
   conclude_type_refl H0.
   - inversion H.
-  - eauto using expr_of_box_never_be_reduced.
+  - eauto using expr_of_box_never_be_reduced'.
 Qed.
 
 Tactic Notation "absurd" "by" tactic(t) :=
@@ -775,17 +775,17 @@ Proof.
   (* r_castdn *)
   - dependent induction Sub.
     + destruct k; box_reasoning.
-      absurd by eauto 3 using expr_of_box_never_be_reduced_2.
+      absurd by eauto 3 using expr_of_box_never_be_reduced.
     + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
   (* r_cast_inst *)
   - dependent induction Sub.
     + destruct k; box_reasoning.
-      absurd by eauto 3 using expr_of_box_never_be_reduced_2.
+      absurd by eauto 3 using expr_of_box_never_be_reduced.
     + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
   (* r_cast_elim *)
   - dependent induction Sub.
     + destruct k; box_reasoning.
-      absurd by eauto 3 using expr_of_box_never_be_reduced_2.
+      absurd by eauto 3 using expr_of_box_never_be_reduced.
     + eapply IHSub1; eauto. eapply head_kind_sub_l; eauto.
 Qed.
 
@@ -796,6 +796,16 @@ Proof.
   eapply deterministic_type_reduction'; eauto.
   Unshelve. exact 0.
 Qed.
+
+Lemma deterministic_type_reduction_2 : forall Γ e A A',
+    A ⟶ A' -> Γ ⊢ e : A -> A ⟹ A'.
+Proof.
+  intros.
+  conclude_type_refl H0.
+  - inversion H.
+  - eapply deterministic_type_reduction; eauto.
+Qed.
+
 
 Theorem preservation : forall e1 e2 A,
     nil ⊢ e1 <: e2 : A ->

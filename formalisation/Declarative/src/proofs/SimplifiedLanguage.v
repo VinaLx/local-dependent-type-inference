@@ -17,8 +17,7 @@ Lemma type_reduce_restricted_2 : forall A B Γ e1 e2,
 Proof.
   intros. conclude_type_refl H0.
   + inversion H.
-  + eauto using type_reduce_restricted.
-    Unshelve. exact 0.
+  + eauto using deterministic_type_reduction.
 Qed.
 
 Theorem soundness : forall Γ e1 e2 A,
@@ -28,10 +27,14 @@ Theorem soundness : forall Γ e1 e2 A,
 Proof.
   - intros * Sub. destruct Sub;
     try solve [ clear soundness; constructor; auto
-              | econstructor; eauto 3 using type_reduce_restricted, type_reduce_restricted_2].
+              | econstructor;
+                eauto 3 using
+                      deterministic_type_reduction,
+                      deterministic_type_reduction_2].
   - intros * Wf. destruct Wf.
     + constructor.
     + econstructor; eauto.
+  Show Proof.
 Qed.
 
 
