@@ -20,6 +20,7 @@ And finally we expect the subtyping relation of \name to subsume the DK's
 declarative subtyping.
 
 \subsection{the Adaptation of DK-Style Subtyping}
+\label{sec:adaptation}
 
 DK's declarative subtyping features the following two rules:
 
@@ -539,3 +540,37 @@ And then the rest of the proofs are finished by standard inversion lemmas,
 with the help of \emph{Substitution} for the instantiation.
 
 \subsection{Subsumption of DK's Subtyping}
+
+Finally we show that the subtyping aspect of \name subsumes the DK's declarative
+subtyping\cite{DunfieldJoshua2013Caeb}.
+
+\begin{figure}
+    \begin{mathpar}
+        \lift{x} = x \and \lift{[[int]]} = [[int]] \and
+        \lift{A \rightarrow B} = \lift{A} \rightarrow \lift{B} \and
+        \lift{\forall x. \, A} = \forall x : [[*]]. \, \lift{A} \and
+    \end{mathpar}
+    \begin{mathpar}
+        \lift{[[nil]]} = [[nil]] \and
+        \lift{\Gamma, \, x} = \lift{\Gamma},\, x : [[*]]
+    \end{mathpar}
+    \caption{Lifting Types and Contexts in DK's Sutyping to \name}
+    \label{fig:lift}
+\end{figure}
+
+Figure \ref{fig:lift} shows the transformation from DK's subtyping to \name.
+Then we prove the subsumption in terms type well-formedness and subtyping
+by following the interpretation of Unified Subtyping.
+
+\begin{theorem}[Subsumption of DK's Type Well-formedness]
+    If $\Gamma \vdash A$, then $\lift{\Gamma} \vdash \lift{A} : [[*]]$
+\end{theorem}
+
+\begin{theorem}[Subsumption of DK's Subtyping]
+    If $\Gamma \vdash A \le B$, then $\lift{\Gamma} \vdash \lift{A} \le \lift{B} : [[*]]$
+\end{theorem}
+
+The proof is straightforward by making use of the \emph{Well-formedness} lemma
+in DK's system, mentioned in section \ref{sec:adaptation}, to conclude that
+$A$ itself is a well-formed type in $\Gamma \vdash A \le \forall x.\, B$, and
+$\forall x. A$ is well-formed in $\Gamma \vdash \forall x. \, A \le B$.
