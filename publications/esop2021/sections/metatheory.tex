@@ -69,7 +69,7 @@ is trivial to prove. However its generalization:
 is a much more difficult problem since we are no longer reasoning about
 ``well-formedness'' but also typing and subtyping. In our system the property
 does not hold without the help of diverging programs with fixpoint operator,
-we will come back to this issue in the discussion section.
+we will come back to this issue in the section \ref{sec:instantiation}.
 
 But for now, we add a premise $[[G |- A : *]]$ to \rref{s-forall-r},
 requiring $A$ to be a well-typed type without the help of the fresh variable.
@@ -198,7 +198,7 @@ $[[G1 , x : A ,, G2 |- e1 <: e2 : B]]$ and $[[|- G1 , x : A ,, G2]]$. When the
 derivation ends with \rref{castup,castdn}, the proof
 requires the reduction relation to preserve after the substitution.
 This property should usually hold, but puts an interesting constraint which we
-have to consider when designing the reduction rules (see discussion section).
+have to consider when designing the reduction rules (see section \ref{sec:cast-design}).
 
 \begin{lemma}[Reduction Substitution]
    If $[[A --> B]]$, then $[[ [t / x] A --> [t / x] B ]]$
