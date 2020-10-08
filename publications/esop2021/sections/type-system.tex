@@ -15,11 +15,11 @@ and reduction for \name.
 \begin{equation*}
 \begin{array}{llcl}
     \text{Kinds} & k & ~\Coloneqq ~ & [[*]] \mid [[box]] \\
-    \text{Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[e1 e2]] \mid [[lambda x : A. e]]
-        \mid [[pi x : A. B]] \mid [[bind x : A. e]] \\
-        & & \mid & [[forall x : A. B]] \mid [[mu x : A. e]] \mid [[castup [A] e]] \mid [[castdn e]]   \\
-    \text{Mono-Expressions} ~ & \tau, \sigma & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid \tau_1 ~ \tau_2 \mid \lambda \, x : \tau. ~ \sigma \mid \Pi \, x : \tau. ~ \sigma \mid \Lambda \, x : \tau. ~ \sigma \\
-        & & \mid & \mu \, x : \tau. ~ \sigma \mid \castup \, [\tau]~ \sigma \mid \castdn \, \tau \\
+    \text{Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[e1 e2]] \mid [[lambda x : A. e]] \mid [[pi x : A. B]] \\
+        & & \mid & [[bind x : A. e]] \mid [[forall x : A. B]] \mid [[mu x : A. e]] \\
+        & & \mid & [[castup [A] e]] \mid [[castdn e]]   \\
+    \text{Mono-Expressions} ~ & \tau, \sigma & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid \tau_1 ~ \tau_2 \mid \lambda \, x : \tau. ~ \sigma \mid \Pi \, x : \tau. ~ \sigma \\
+        & & \mid & \Lambda \, x : \tau. ~ \sigma \mid \mu \, x : \tau. ~ \sigma \mid \castup \, [\tau]~ \sigma \mid \castdn \, \tau \\
     \text{Values} & v & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[lambda x : A. e]] \mid [[pi x : A. B]] \mid [[bind x : A. e]] \\
         & & \mid & [[forall x : A. B]] \mid [[castup [A] e]] \\
     \text{Contexts} & \Gamma & ~ \Coloneqq ~ & [[nil]] \mid [[G , x : A]] \\
@@ -29,11 +29,6 @@ and reduction for \name.
 \caption{Syntax of \name.}
 \label{fig:syntax}
 \end{figure}
-\bruno{Aren't we missing some monotype restrictions? Forall types should have monotype
-  arguments, right? Please double check the restrictions, change the syntax if necessary
-  and double-check the text.}
-\bruno{Be careful with the margins: we are overflowing.}
-
 \subsection{Syntax}
 
 Figure \ref{fig:syntax} presents the syntax of \name. The syntax is similar
@@ -86,8 +81,6 @@ to support general recursion for both term-level
 and type-level. Iso-recursive types are supported due to the presence of $\castup$
 and $\castdn$, which correspond to the ``fold'' and ``unfold'' operations when
 working on recursive types.
-%However, we do not support subtyping for recursive
-%types in the current system due to the complexity.
 
 \subsection{Operational Semantics}
 
@@ -132,29 +125,80 @@ overall runtime type-safety. Details will be explained in the later sections.
 
 \begin{figure}
     \centering
-    \drules[wf]{$[[|- G]]$}{Well-formed Context}{nil,cons}
+    \begin{drulepar}[wf]{$[[|- G]]$}{Well-formed Context}
+      \mprset{sep=1.2em}
+      \drule{nil}
+      \drule[width=30em]{cons}
+    \end{drulepar}
 
-    \drules[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}{
-        var,lit,int,star,abs,pi,app,bind,mu,castup,castdn,forallXXl,forallXXr,forall,sub}
+    \begin{drulepar}[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}
+      \mprset{sep=1.3em}
+      \drule{var}
+      \drule{lit}
+      \drule{int}
+      \drule{star}
+      % \drule{abs}
+      \and \ottaltinferrule{abs}{width=20em}
+        {\rulehl{[[G |- A : k1]]} \\ [[G, x : A |- B : k2]] \\ [[G, x : A |- e1 <: e2 : B]]}
+        {[[G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B]]}
+      % \drule{app}
+      \and \ottaltinferrule{s-app}{}
+        {[[G |- t : A]] \\ [[G |- e1 <: e2 : pi x : A. B]]}
+        {[[G |- e1 t <: e2 t : [t / x] B]]}
+      \drule{pi}
+      % \drule{bind}
+      \and \ottaltinferrule{s-mu}{width=20em}
+        {[[G |- t : k]] \\ [[G , x : t |- s : t]]}
+        {[[G |- mu x : t. s <: mu x : t. s : t]]}
+      \and \ottaltinferrule{s-bind}{width=20em}
+        {\rulehl{[[G |- A : k]]} \\ [[G , x : A |- B : *]] \\
+         [[G, x : A |- e1 <: e2 : B]] \\
+         x \notin \mathrm{FV}(\extract{[[e1]]}) \cup \mathrm{FV}(\extract{[[e2]]})}
+        {[[G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B]]}
+      % \drule{mu}
+      \drule{castup}
+      \drule{castdn}
+      % \drule{forallXXl}
+      \and \ottaltinferrule{s-forall-l}{width=20em}
+        {\rulehl{[[G |- A : k]]} \\ [[G |- t : A]] \\
+         [[G , x : A |- B : *]] \\
+         [[G |- [t / x] B <: C : *]]}
+        {[[G |- forall x : A. B <: C : *]]}
+      % \drule{forallXXr}
+      \and \ottaltinferrule{s-forall-r}{width=20em}
+        {\rulehl{[[G |- B : k]]} \\ [[G |- A : *]] \\
+         [[G , x : B |- A <: C : *]]}
+        {[[G |- A <: forall x : B. C : *]]}
+      % \drule{forall}
+      \and \ottaltinferrule{s-forall}{width=20em}
+        {\rulehl{[[G |- A : k]]} \\ [[G , x : A |- B <: C : *]]}
+        {[[G |- forall x : A. B <: forall x : A. C : *]]}
+      \and \ottaltinferrule{s-sub}{width=15em}
+        {[[G |- e1 <: e2 : A]] \\ [[G |- A <: B : k]]}
+        {[[G |- e1 <: e2 : B]]}
+    \end{drulepar}
+
+    % \drules[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}{
+    %     var,lit,int,star,abs,pi,app,bind,mu,castup,castdn,forallXXl,forallXXr,forall,sub}
     \begin{equation*}
        \text{Syntactic Sugar} \qquad [[G |- e : A]] \triangleq [[G |- e <: e : A]]
     \end{equation*}
     \caption{(Sub)Typing Rules of \name.}
     \label{fig:typing}
 \end{figure}
-\bruno{The figure and rules will need a little cosmetic work. Firstly, there are many rules
-  stacking up premises vertically. I think it is better to have multiple rules
-  horizontally (and only upto 2 or 3 vertical stacks of premises).
-  Secondly, we need to look at the layout carefully to use space efficiently.
-  At the moment there are rules like S-ABS that could be paired up with some other
-  rules side-by-side and use less space (at the same time it is nicer
-  if adjancent rules are somehow related: two cast rules; application/abstraction, etc).
-  We must organize the rules in a nicer way. Thirdly, I think that, for binders with
-  annotations, like $\lambda x : A. e$, we may want to use brackets on the arguments
-  to improve readability, as in $\lambda (x : A). e$. It is a bit hard to ``parse''
-  the syntax without a little bit of effort. If this change is implemented it would
-  affect the whole section, starting from syntax.
-}
+% \bruno{The figure and rules will need a little cosmetic work. Firstly, there are many rules
+%   stacking up premises vertically. I think it is better to have multiple rules
+%   horizontally (and only upto 2 or 3 vertical stacks of premises).
+%   Secondly, we need to look at the layout carefully to use space efficiently.
+%   At the moment there are rules like S-ABS that could be paired up with some other
+%   rules side-by-side and use less space (at the same time it is nicer
+%   if adjancent rules are somehow related: two cast rules; application/abstraction, etc).
+%   We must organize the rules in a nicer way. Thirdly, I think that, for binders with
+%   annotations, like $\lambda x : A. e$, we may want to use brackets on the arguments
+%   to improve readability, as in $\lambda (x : A). e$. It is a bit hard to ``parse''
+%   the syntax without a little bit of effort. If this change is implemented it would
+%   affect the whole section, starting from syntax.
+% }
 
 \subsection{Unified Subtyping System}
 \label{sec:type-system}
@@ -219,29 +263,25 @@ the possibility of non-deterministic implicit instantiations is eliminated.
     \centering
     \begin{equation*}
         \begin{array}{llcl}
-            \text{Extracted Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
-            & & \mid & [[eforall x : eA. eB]] \mid [[emu x. ee]] \mid [[ecastup ee]] \mid [[ecastdn ee]]
+            \text{Extracted Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \\
+            & & \mid & [[ebind x. ee]] \mid [[eforall x : eA. eB]] \mid [[emu x. ee]] \mid [[ecastup ee]] \mid [[ecastdn ee]]
         \end{array}
     \end{equation*}
 
-    \begin{equation*}
-    {\setstretch{1.5}
-    \begin{array}{cc}
-        \extract{[[x]]} = [[x]] \qquad
-        \extract{[[n]]} = [[n]] &
-        \extract{[[k]]} = [[k]] \qquad
-        \extract{[[int]]} = [[int]] \\
-        \extract{[[e1 e2]]} = \extract{[[e1]]} ~ \extract{[[e2]]} &
-        \extract{[[mu x : A. e]]} = \mu \, x. ~ \extract{[[e]]} \\
-        \extract{[[lambda x : A. e]]} = \lambda \, x. ~ \extract{[[e]]} &
-        \extract{[[pi x : A. B]]} = \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
-        \extract{[[bind x : A. e]]} = \Lambda \, x. ~ \extract{[[e]]} &
-        \extract{[[forall x : A. B]]} = \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
-        \extract{[[castup [A] e]]} = \castup \, \extract{[[e]]} &
-        \extract{[[castdn e]]} = \castdn \, \extract{[[e]]}
-    \end{array}
-    }
-    \end{equation*}
+    \begin{mathpar}
+      \extract{[[x]]} = [[x]] \and
+      \extract{[[n]]} = [[n]] \and
+      \extract{[[k]]} = [[k]] \and
+      \extract{[[int]]} = [[int]] \\
+      \extract{[[e1 e2]]} = \extract{[[e1]]} ~ \extract{[[e2]]} \and
+      \extract{[[mu x : A. e]]} = \mu \, x. ~ \extract{[[e]]} \\
+      \extract{[[lambda x : A. e]]} = \lambda \, x. ~ \extract{[[e]]} \and
+      \extract{[[pi x : A. B]]} = \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+      \extract{[[bind x : A. e]]} = \Lambda \, x. ~ \extract{[[e]]} \and
+      \extract{[[forall x : A. B]]} = \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+      \extract{[[castup [A] e]]} = \castup \, \extract{[[e]]} \and
+      \extract{[[castdn e]]} = \castdn \, \extract{[[e]]}
+    \end{mathpar}
 
     \caption{Extraction of Expressions}
     \label{fig:extraction}
