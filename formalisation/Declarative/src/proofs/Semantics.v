@@ -806,6 +806,38 @@ Proof.
   - eapply deterministic_type_reduction; eauto.
 Qed.
 
+Lemma deterministic_extracted_reduction : forall e e1 e2,
+    extract e ⋆⟶ e1 -> extract e ⋆⟶ e2 ->
+    forall Γ A, Γ ⊢ e : A -> e1 = e2.
+Proof.
+  induction e; simpl; intros E1 E2 R1 R2 Γ A Sub;
+    solve_impossible_reduction.
+  - inversion R1; inversion R2; subst;
+      invert_extractions; solve_impossible_reduction.
+    + dependent induction Sub.
+      * assert (ee2 = ee5) by (eapply IHe1; eauto 3). now subst.
+      * eauto 2.
+    + now inversion H.
+    + inversion H.
+    + inversion H5.
+    + inversion H. dependent induction Sub; eauto 2.
+      clear IHSub1 IHSub2.
+      apply bind_inversion in Sub2; destruct_conjs.
+      pick fresh x'. instantiate_cofinites. find_extract_invariants.
+  - inversion R1; inversion R2; subst. auto.
+  - inversion R1; inversion R2; subst;
+      invert_extractions; solve_impossible_reduction.
+    + dependent induction Sub.
+      * assert (ee2 = ee3) by (eapply IHe; eauto 3). now subst.
+      * eauto 2.
+    + inversion H. dependent induction Sub; eauto 2.
+      clear IHSub1 IHSub2.
+      apply bind_inversion in Sub2; destruct_conjs.
+      pick fresh x'. instantiate_cofinites. find_extract_invariants.
+    + inversion H3.
+    + inversion H.
+    + now inversion H.
+Qed.
 
 Theorem preservation : forall e1 e2 A,
     nil ⊢ e1 <: e2 : A ->
