@@ -103,15 +103,24 @@ operation of fixpoint operator is supported by \rref{r-mu}.
 \begin{figure}[t]
     \centering
 
-    \drules[r]{$[[e1 --> e2]]$}{Operational Semantics}{
-        app,beta,inst,mu,castdn,castXXinst,castXXelim}
+    \begin{drulepar}[r]{$[[e1 --> e2]]$}{Operational Semantics}
+      \drule{app}
+      \drule{beta}
+      \and \ottaltinferrule{r-inst}{}{ }
+        {[[(bind x : A. e1) e2 --> ([t / x] e1) e2]]}
+      \drule{mu}
+      \drule{castdn}
+      \and \ottaltinferrule{r-cast-inst}{}{ }
+        {[[castdn (bind x : A. e) --> castdn ([t / x] e)]]}
+      \drule{castXXelim}
+    \end{drulepar}
 
     \caption{Operational semantics of \name.}
     \label{fig:semantics}
 \end{figure}
-\bruno{Do not use $mono~e$ in the figure.
-  You have the syntax $\tau$ and $\sigma$ to represent
-monotypes, so just use that instead.}
+% \bruno{Do not use $mono~e$ in the figure.
+%   You have the syntax $\tau$ and $\sigma$ to represent
+% monotypes, so just use that instead.}
 
 \subsubsection{Nondeterministic Implicit Instantiations}
 The most interesting rules are those involving instantiation of implicit parameters:
