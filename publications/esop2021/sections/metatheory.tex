@@ -340,32 +340,18 @@ measure is the size of the derivation trees.
 \emph{Generalized Transitivity} where $A = B$.
 
 \subsection{Type Safety}
+\label{sec:type-safety}
 
 Since the reduction rules of \name do not have access to typing information, it
 cannot perform valid instantiation of the implicit arguments during application,
 leaving the runtime semantics indeterministic and potentially non-type-preserving.
 We tackle this issue by trying to make the choice of implicit instantiation
-irrelevant at runtime with the restrictions on the introduction
-rule of $\forall$ types (\rref{s-bind}). We define a ``extraction'' function
-that eliminates all the type annotations in the terms
-($\lambda$, $\Lambda$, $mu$ and $\castup$),
+irrelevant at runtime with the restrictions in \rref{s-bind}.
+We define a ``extraction'' function that eliminates the type annotations
+in some of the expressions ($\lambda$, $\Lambda$, $mu$ and $\castup$),
 and keep the implicit parameter from occuring in the extracted expressions.
 This way the choices of implicit instantiation only affect the type annotation,
 which should not be relevant for runtime computation.
-
-\begin{figure}
-  \centering
-  \begin{equation*}
-  \begin{array}{lcl}
-      \text{Extracted Value} ~ ev & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
-      & \mid & [[eforall x : eA. eB]] \mid [[ecastup ee]]
-  \end{array}
-  \end{equation*}
-  \drules[er]{$[[ee1 *--> ee2]]$}{Extracted Semantics}
-    {app,beta,elim,mu,castdn,castXXinst,castXXelim}
-  \label{fig:extract-semantics}
-  \caption{Operational Semantics for Extracted Expressions}
-\end{figure}
 
 In this section, we discuss the type safety of \name in the sense that,
 if an expression is well-typed in \name, then the reduction of its extraction

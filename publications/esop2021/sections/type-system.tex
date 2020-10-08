@@ -84,12 +84,12 @@ working on recursive types.
 
 \subsection{Operational Semantics}
 
-\bruno{If I understand correctly we need 2 different reductions, one
-  (the non-deterministic one) that is used in the type system; and another
-  one (which erases types) that is deterministic and would be the basis
-  for an actual implementation of reduction at run-time. After reading
-  this subsection, I think we want
-to tell that story here and present the 2 variants of reduction here.}
+% \bruno{If I understand correctly we need 2 different reductions, one
+%   (the non-deterministic one) that is used in the type system; and another
+%   one (which erases types) that is deterministic and would be the basis
+%   for an actual implementation of reduction at run-time. After reading
+%   this subsection, I think we want
+% to tell that story here and present the 2 variants of reduction here.}
 
 Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
 which mostly follows the call-by-name variant of Pure Iso-Type Systems (PITS)
@@ -122,15 +122,59 @@ operation of fixpoint operator is supported by \rref{r-mu}.
 %   You have the syntax $\tau$ and $\sigma$ to represent
 % monotypes, so just use that instead.}
 
-\subsubsection{Nondeterministic Implicit Instantiations}
-The most interesting rules are those involving instantiation of implicit parameters:
-\rref{R-Inst} and \rref{R-Cast-Inst}. These rules are not deterministic, or even
-(in the general case) type-preserving. The main reason for this is due to the
-guess of $e$, which can be an arbitrary monoexpression.
-These issues are resolved by imposing restrictions on the type system such that
-\textbf{a)} non-deterministic reductions are not well-typed inside cast operations
-\textbf{b)} the instantiation choices of implicit parameters do not affect the
-overall runtime type-safety. Details will be explained in the later sections.
+\subsubsection{Indeterministic Implicit Instantiations}
+
+Due to the presence of instantiation of implicit parameters, the direct operational
+semantics is not deterministic, and potentially not type-preserving because of
+\rref{r-inst,r-cast-inst}. The indeterminacy is caused by the guess of $e$,
+which can be an arbitrary monoexpression, since we do not have access to typing
+information in the dynamic semantics.
+
+\begin{figure}
+  \centering
+  \begin{equation*}
+  \begin{array}{llcl}
+      \text{Extracted Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \\
+      & & \mid & [[ebind x. ee]] \mid [[eforall x : eA. eB]] \mid [[emu x. ee]] \mid [[ecastup ee]] \mid [[ecastdn ee]] \\
+      \text{Extracted Value} & ev & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
+      & & \mid & [[eforall x : eA. eB]] \mid [[ecastup ee]]
+  \end{array}
+  \end{equation*}
+
+  \begin{mathpar}
+    \extract{[[x]]} = [[x]] \and
+    \extract{[[n]]} = [[n]] \and
+    \extract{[[k]]} = [[k]] \and
+    \extract{[[int]]} = [[int]] \\
+    \extract{[[e1 e2]]} = \extract{[[e1]]} ~ \extract{[[e2]]} \and
+    \extract{[[mu x : A. e]]} = \mu \, x. ~ \extract{[[e]]} \\
+    \extract{[[lambda x : A. e]]} = \lambda \, x. ~ \extract{[[e]]} \and
+    \extract{[[pi x : A. B]]} = \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+    \extract{[[bind x : A. e]]} = \Lambda \, x. ~ \extract{[[e]]} \and
+    \extract{[[forall x : A. B]]} = \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+    \extract{[[castup [A] e]]} = \castup \, \extract{[[e]]} \and
+    \extract{[[castdn e]]} = \castdn \, \extract{[[e]]}
+  \end{mathpar}
+
+  \drules[er]{$[[ee1 *--> ee2]]$}{Extracted Semantics}
+    {app,beta,elim,mu,castdn,castXXinst,castXXelim}
+  \label{fig:extraction}
+  \caption{Extracted Expressions and Operational Semantics}
+\end{figure}
+
+\subsubsection{Extraction of Expression}
+
+We tackle the issue of determinancy which sabotages the type-safety of our system
+with a similar design to $\mathrm{ICC}^*$ \cite{barras2008implicit}, the extracted expression.
+Figure \ref{fig:extraction} shows the syntax of the extracted expression and
+the accompanied operational semantics. They essentially mirrors the syntax and semantics
+of unextracted expression except the elimination of type annotations in $\lambda$,
+$\Lambda$, $\mu$ and $\castup$ expressions. Restrictions are imposed in the
+typing rules to forbid the implicit parameter occuring in runtime-relevant part
+of the expression, i.e. the extracted expressions (see section \ref{sec:type-system}).
+So that the implicit parameter can be directly eliminated in \rref{er-elim,er-cast-inst}.
+For a well-typed expression, the reduction of its extraction is deterministic.
+The type safety of our system is built around this idea and is discussed in \ref{sec:type-safety}.
 
 \begin{figure}
     \centering
@@ -237,10 +281,10 @@ $[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
 the spirit of the Odersky and L\"aufer declarative subtyping rules~\cite{oderskylaufer,DunfieldJoshua2013Caeb},
 where the subtyping relation is interpreted as a ``more general than'' relation.
-A polymorphic type $\forall (x:A). B$
+A polymorphic type $[[forall x : A. B]]$
 is more general than another type $C$ when its well-typed
 instantiation is more general than $C$ (\rref{s-forall-l}). A polymorphic
-type $\forall (x:B). C$ is less general than a type $A$,
+type $[[forall x : B. C]]$ is less general than a type $A$,
 if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
 is abstracted out (\rref{s-forall-r}). Additionaly, \rref{s-forall}
 axiomatizes the subtyping relation between two polymorphic types.
@@ -262,7 +306,7 @@ to later sections, but lets come back to this after you write later sections.}
 
 For the kinding of types, we mainly follow the design of the Calculus of
 Constructions~\cite{CoquandThierry1988Tcoc}. However, we specifically restrict
-the $\forall (x : A). B$
+the $[[forall x : A. B]]$
 expressions to only have the kind $[[*]]$. This prevents other types of kind
 $[[*]]$ from having kinds such as $[[forall x : int. *]]$,
 which significantly complicates the metatheory when reasoning about the kind of types.
@@ -272,46 +316,17 @@ This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
 from type computations. Therefore, in cast operators,
 the possibility of non-deterministic implicit instantiations is eliminated.
 
-\begin{figure}[t]
-    \centering
-    \begin{equation*}
-        \begin{array}{llcl}
-            \text{Extracted Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \\
-            & & \mid & [[ebind x. ee]] \mid [[eforall x : eA. eB]] \mid [[emu x. ee]] \mid [[ecastup ee]] \mid [[ecastdn ee]]
-        \end{array}
-    \end{equation*}
-
-    \begin{mathpar}
-      \extract{[[x]]} = [[x]] \and
-      \extract{[[n]]} = [[n]] \and
-      \extract{[[k]]} = [[k]] \and
-      \extract{[[int]]} = [[int]] \\
-      \extract{[[e1 e2]]} = \extract{[[e1]]} ~ \extract{[[e2]]} \and
-      \extract{[[mu x : A. e]]} = \mu \, x. ~ \extract{[[e]]} \\
-      \extract{[[lambda x : A. e]]} = \lambda \, x. ~ \extract{[[e]]} \and
-      \extract{[[pi x : A. B]]} = \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
-      \extract{[[bind x : A. e]]} = \Lambda \, x. ~ \extract{[[e]]} \and
-      \extract{[[forall x : A. B]]} = \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
-      \extract{[[castup [A] e]]} = \castup \, \extract{[[e]]} \and
-      \extract{[[castdn e]]} = \castdn \, \extract{[[e]]}
-    \end{mathpar}
-
-    \caption{Extraction of Expressions}
-    \label{fig:extraction}
-\end{figure}
-
 \subsubsection{Runtime Irrelevance of Implicit Arguments}
 
 Our direct operational semantics choose random mono-expressions to instantiate
-the implicit arguments which potentially breaks type safety. So we adopt a
-restriction that is similar to the Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit}
-to make the choice of implicit argument irrelevant to the computation, by only
-allowing the implicit parameters to occur in type annotations in the body of
-implicit abstraction. Figure \ref{fig:extraction} shows the extraction function
-that gets rid of all the type annotations in expressions, and enforcing the
-freshness of implicit parameter in the extracted expression. The type safety of
-the direct operational semantics is proved indirectly with the help of
-the extraction of expressions, which we will come back to in later sections.
+the implicit arguments which potentially breaks type safety, so we adopt a
+restriction in \rref{s-bind} that is similar to the
+Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit}.
+We only allowing the implicit parameters to occur in type annotations in the
+body of implicit abstraction, so that the choices of implicit parameters is not
+relevant at runtime. The type safety of the direct operational semantics is
+proved indirectly in section \ref{sec:type-safety} with the help of the
+extraction of expressions.
 
 \subsubsection{Redundant Premises}
 
