@@ -1,5 +1,20 @@
 \section{The Metatheory of \name}
 
+This section presents the methatheory of \name, and discusses several challenges
+that arized in the design of the rules to ensure the desired properties.
+
+The three main results of the metatheory are:
+\emph{transitivity of unified subtyping}, \emph{type-soundness} and 
+\emph{completeness with respect to Odersky and L\"aufer's} polymorphic
+subtyping. Transitivity of subtyping is a general challenge for dependent type systems due
+to the mutual dependency of typing and subtyping, and the Odersky and L\"aufer style
+subtyping brings new issues to the table. For type-soundness the key challenge
+is the non-deterministic and non type-preserving nature of the reduction relation.
+To address this issue, we employ a type soundness proof technique
+that uses the erased reduction relation shown in Section~\ref{}.
+
+
+\begin{comment}
 In this section, we introduce the design choices of \name to handle to challenge
 brought by the dependent generalization of DK's declarative subtyping rules.
 We also present the desired properties for \name to hold, which contribute to
@@ -18,29 +33,30 @@ So we choose a indirect path to show the type safety of \name.
 
 And finally we expect the subtyping relation of \name to subsume the DK's
 declarative subtyping.
+\end{comment}
 
-\subsection{the Adaptation of DK-Style Subtyping}
+\subsection{Polymorphic Subtyping in a Dependently Typed Setting}
 \label{sec:adaptation}
-
-DK's declarative subtyping features the following two rules:
+\bruno{I'm not entirely sure if this text belongs here or in a previous section.}
+The polymorphic subtyping by Odersky and L\"aufer features the following two rules:
 
 \begin{mathpar}
-    \inferrule*[lab=$\le\forall L$]
+    \inferrule*[right=$\le\forall L$]
       {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
       {\Gamma \vdash \forall x.\, A \le B}
     \and
-    \inferrule*[lab=$\le\forall R$]
+    \inferrule*[right=$\le\forall R$]
       {\Gamma ,\, x \vdash A \le B}
       {\Gamma \vdash A \le \forall x.\, B}
 \end{mathpar}
 
-In order for the \emph{Well-formedness}\cite{dunfield2013lemmas} property
+In order for the \emph{well-formedness}~\cite{dunfield2013lemmas} property
 (\emph{If $\Gamma \vdash A \le B$, then $\Gamma \vdash A$ and $\Gamma \vdash B$})
-to hold in DK's system, these two rules relies on certain properties that
+to hold in L\"aufer and Odersky's system, these two rules rely on certain properties that
 potentially do not hold in our generalization. We make several adjustments
 in our adaptation to combat these issues.
 
-\subsubsection{Reverse Substitution of Well-formedness}
+\subsubsection{Reverse Substitution of Well-Formedness.}
 
 Rule $\le\forall L$ relies on the ``Reverse Substitution'' property, which is:
 \emph{If $\Gamma \vdash [B / x] \, A$ and $\Gamma \vdash B$, then $\Gamma,\, x \vdash A$}.
@@ -60,11 +76,12 @@ $42$ in order for the type of argument $a$ to match the parameter type.
 So we add a premise $[[G , x : A |- B : *]]$ in \rref{s-forall-l} to directly
 ensure the well-formedness of types in the conclusion.
 
-\subsubsection{Strengthening of Contexts}
+\subsubsection{Strengthening of Contexts.}
 
-Rule $\le\forall R$ however, relies on a simpler-looking lemma:
+Rule $\le\forall R$ relies on a standard strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{is fresh in}~ A$, then $\Gamma \vdash A$}, which
-is trivial to prove. However its generalization:
+is trivial to prove. 
+However its generalization:
 \emph{if $[[G, x : B |- A : *]]$ and $x ~\text{is fresh in}~ A$},
 is a much more difficult problem since we are no longer reasoning about
 ``well-formedness'' but also typing and subtyping. In our system the property
