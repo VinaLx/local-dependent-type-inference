@@ -16,6 +16,8 @@ CoqMakefile*
 *.log
 *.fdb*
 *.bbl
+*.vtc
 
 # ott filtered tex source
 *.filt.tex
+*.ott.tex

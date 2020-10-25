@@ -1,4 +1,4 @@
-\documentclass{llncs}
+\documentclass{lipics-v2019}
 
 \usepackage[T1]{fontenc}
 \usepackage{ottalt}
@@ -31,15 +31,30 @@
 \newcommand{\bruno}[1]{\an{bruno}{blue}{#1}}
 \newcommand{\alvin}[1]{\an{yaozhu}{red}{#1}}
 
-\begin{document}
-
 \title{A Dependently Typed Calculus with Polymorphic Subtyping}
 
-\author{Mingqi Xue \and Bruno C. d. S. Oliveira}
-\institute{
-    The University of Hong Kong \\
-    \email{\{mqxue,bruno\}@cs.hku.hk}
-}
+% \titlerunning{Dependently Typed Polymorphic Subtyping}
+
+\author{Mingqi Xue}{The University of Hong Kong}{mqxue@cs.hku.hk}{}{}
+
+\author{Bruno C. d. S. Oliveria}{The University of Hong Kong}{bruno@cs.hku.hk}{}{}
+
+\authorrunning{M. Xue and B. C. d. S. Oliveria}
+
+% \author{Mingqi Xue \and Bruno C. d. S. Oliveira}
+% \institute{
+%     The University of Hong Kong \\
+%     \email{\{mqxue,bruno\}@cs.hku.hk}
+% }
+
+\Copyright{Mingqi Xue and Bruno C. d. S. Oliveira}
+
+\ccsdesc{Theory of computation~Type theory}
+\ccsdesc{Software and its engineering~Functional languages}
+
+\keywords{Type System, Dependent Type, Subtyping, Polymorphism}
+
+\begin{document}
 
 \maketitle
 
@@ -72,7 +87,7 @@
 \input{metatheory.filt}
 \input{discussion.filt}
 
-\bibliographystyle{splncs04}
+\bibliographystyle{plainurl}
 \bibliography{reference}
 
 \end{document}
