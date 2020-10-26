@@ -49,7 +49,7 @@ via casts. These constructs are discussed next.
 
 \subsubsection{Implicit Polymorphism.}
 In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
-polymorphism in non-dependent. 
+polymorphism in non-dependent.
 In contrast to universal quantification in conventional functional languages, the
 argument $x$ ranges over all well-typed expressions besides well-formed
 types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
@@ -132,6 +132,7 @@ which can be an arbitrary monoexpression, since we do not have access to typing
 information in the dynamic semantics.
 
 \begin{figure}
+  \label{fig:extraction}
   \centering
   \begin{equation*}
   \begin{array}{llcl}
@@ -142,27 +143,33 @@ information in the dynamic semantics.
   \end{array}
   \end{equation*}
 
-  \begin{mathpar}
-    \extract{[[x]]} = [[x]] \and
-    \extract{[[n]]} = [[n]] \and
-    \extract{[[k]]} = [[k]] \and
-    \extract{[[int]]} = [[int]] \\
-    \extract{[[e1 e2]]} = \extract{[[e1]]} ~ \extract{[[e2]]} \and
-    \extract{[[mu x : A. e]]} = \mu \, x. ~ \extract{[[e]]} \\
-    \extract{[[lambda x : A. e]]} = \lambda \, x. ~ \extract{[[e]]} \and
-    \extract{[[pi x : A. B]]} = \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
-    \extract{[[bind x : A. e]]} = \Lambda \, x. ~ \extract{[[e]]} \and
-    \extract{[[forall x : A. B]]} = \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
-    \extract{[[castup [A] e]]} = \castup \, \extract{[[e]]} \and
-    \extract{[[castdn e]]} = \castdn \, \extract{[[e]]}
-  \end{mathpar}
+  % The behavior of gather and align under this lipics template is extremely
+  % weird, this is the best I can do :(
+  \begin{gather*}
+    \quad \begin{align*}
+    \extract{[[x]]} &= [[x]] &
+    \extract{[[n]]} &= [[n]] &
+    \extract{[[k]]} &= [[k]] &
+    \extract{[[int]]} &= [[int]]
+    \end{align*} \\
+    \begin{align*}
+     \qquad \extract{[[e1 e2]]} &= \extract{[[e1]]} ~ \extract{[[e2]]} & % \\ % \and
+      \qquad \extract{[[mu x : A. e]]} &= \mu \, x. ~ \extract{[[e]]} \\
+     \qquad \extract{[[lambda x : A. e]]} &= \lambda \, x. ~ \extract{[[e]]} & % \\ % \and
+      \qquad \extract{[[pi x : A. B]]} &= \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+     \qquad \extract{[[bind x : A. e]]} &= \Lambda \, x. ~ \extract{[[e]]} & % \\ % \and
+      \qquad \extract{[[forall x : A. B]]} &= \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+     \qquad \extract{[[castup [A] e]]} &= \castup \, \extract{[[e]]} & % \\ % \and
+      \qquad \extract{[[castdn e]]} &= \castdn \, \extract{[[e]]}
+    \end{align*}
+  \end{gather*}
 
   \drules[er]{$[[ee1 *--> ee2]]$}{Extracted Semantics}
     {app,beta,elim,mu,castdn,castXXinst,castXXelim}
-  \label{fig:extraction}
   \caption{Extracted Expressions and Operational Semantics}
-\end{figure}\bruno{You need to use something like a latex table/tabular,
-to neatly align the erasure function.}
+\end{figure}
+% \bruno{You need to use something like a latex table/tabular,
+% to neatly align the erasure function.}
 
 \subsubsection{Deterministic Reduction}
 We address the issue of determinancy of the dynamic semantics with
@@ -275,7 +282,7 @@ The interpretation of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
 subtype of $[[e2]]$ and they are both of type $[[A]]$''.
 In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
 special case of unified subtyping judgment $[[G |- e <: e : A]]$,
-and the idea of well-formed types $\Gamma \vdash A$ is expressed by
+and the well-formedness of types $\Gamma \vdash A$ is expressed by
 $[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
 % \bruno{We should say something about the ``more standard'' rules here.
 %   I think we can briefly explain them and point the
@@ -285,16 +292,20 @@ $[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
 
 \subsubsection{Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
-the spirit of the Odersky and L\"aufer declarative subtyping rules~\cite{oderskylaufer,DunfieldJoshua2013Caeb},
+the spirit of the Odersky and L\"aufer's polymorphic subtyping~\cite{odersky1996putting,DunfieldJoshua2013Caeb},
 where the subtyping relation is interpreted as a ``more general than'' relation.
 A polymorphic type $[[forall x : A. B]]$
 is more general than another type $C$ when its well-typed
 instantiation is more general than $C$ (\rref{s-forall-l}). A polymorphic
 type $[[forall x : B. C]]$ is less general than a type $A$,
 if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
-is abstracted out (\rref{s-forall-r}). Additionaly, \rref{s-forall}
-axiomatizes the subtyping relation between two polymorphic types.
-The motivation for \rref{s-forall} is discussed in more detail in later sections.
+is abstracted out (\rref{s-forall-r}).
+
+Notably our formalization is not a direct generalization of the polymorphic subtyping,
+\rref{s-forall} axiomatizes the subtyping relation between two polymorphic types.
+And additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
+ones we previously mentioned in section \label{sec:polymorphic-subtyping}
+The motivations for these changes are discussed in more detail in section \ref{sec:adaptation}.
 
 \subsubsection{Mono-expression Restrictions}
 As in other predicative relations (such as the one by Odersky and L\"aufer),

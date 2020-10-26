@@ -22,10 +22,10 @@ case when $A$ in an arbitrary uninhabited types (without the help of a fixpoint)
 This situation also assign a special role to variables in the context,
 for example:
 
-\begin{multline*}
-    A : [[*]],\, F : A \rightarrow [[*]],\, \rulehl{a : A} \vdash \\
-    \forall x : A.\, (F~x \rightarrow F~x) \rightarrow [[int]] \le (\forall x : A.\, F~x \rightarrow F~x) \rightarrow [[int]] : [[*]]
-\end{multline*}
+\begin{equation*}
+    A : [[*]],\, F : A \rightarrow [[*]],\, \rulehl{a : A} \vdash
+    \forall x : A.\, (F~x \rightarrow [[int]]) \le (\forall x : A.\, F~x) \rightarrow [[int]] : [[*]]
+\end{equation*}
 
 Without the help of the fixpoint, this subtyping relation is only derivable
 with the presence of the highlighted variable in the context. The relation has to
@@ -72,7 +72,7 @@ for example:
 
 \begin{gather*}
     \castdn \, \castup \, [A] \, f ~ x \longrightarrow f ~ x \\
-    [\lambda x : B. \, x / f] \castdn \, \castup \, [A] \, f ~ x \longrightarrow \castdn \, \castup \, [A] x
+    [\lambda x : B. \, x / f] \, \castdn \, \castup \, [A] \, f ~ x \longrightarrow \castdn \, \castup \, [A] \, x
 \end{gather*}
 
 So we stick with the Call-by-Name style semantics around cast operators and

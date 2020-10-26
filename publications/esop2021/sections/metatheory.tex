@@ -1,10 +1,11 @@
 \section{The Metatheory of \name}
+\label{sec:metatheory}
 
 This section presents the methatheory of \name, and discusses several challenges
-that arized in the design of the rules to ensure the desired properties.
+that arised in the design of the rules to ensure the desired properties.
 
 The three main results of the metatheory are:
-\emph{transitivity of unified subtyping}, \emph{type-soundness} and 
+\emph{transitivity of unified subtyping}, \emph{type-soundness} and
 \emph{completeness with respect to Odersky and L\"aufer's} polymorphic
 subtyping. Transitivity of subtyping is a general challenge for dependent type systems due
 to the mutual dependency of typing and subtyping, and the Odersky and L\"aufer style
@@ -38,6 +39,7 @@ declarative subtyping.
 \subsection{Polymorphic Subtyping in a Dependently Typed Setting}
 \label{sec:adaptation}
 \bruno{I'm not entirely sure if this text belongs here or in a previous section.}
+
 The polymorphic subtyping by Odersky and L\"aufer features the following two rules:
 
 \begin{mathpar}
@@ -52,9 +54,10 @@ The polymorphic subtyping by Odersky and L\"aufer features the following two rul
 
 In order for the \emph{well-formedness}~\cite{dunfield2013lemmas} property
 (\emph{If $\Gamma \vdash A \le B$, then $\Gamma \vdash A$ and $\Gamma \vdash B$})
-to hold in L\"aufer and Odersky's system, these two rules rely on certain properties that
-potentially do not hold in our generalization. We make several adjustments
-in our adaptation to combat these issues.
+to hold in L\"aufer and Odersky's system, these two rules rely on certain properties
+that do not hold in our generalization. So we make several adjustments
+in our adaptation to combat these issues, which resulted in the difference between
+our current system and a direct generalization.
 
 \subsubsection{Reverse Substitution of Well-Formedness.}
 
@@ -66,8 +69,8 @@ Since in a dependently-typed setting, the values of expressions also matter duri
 besides the types of expressions, a counter-example of the property could be:
 
 \begin{align*}
-& F : [[int]] \rightarrow [[*]],\, a : F~42 \vdash (\lambda y : F~\rulehl{42}.\, [[int]]) ~ a : [[*]] \\
-& F : [[int]] \rightarrow [[*]],\, a : F~42\rulehl{,\, x : [[int]]} \vdash (\lambda y : F~\rulehl{x}.\, [[int]]) ~ a : [[*]]
+& F : [[int]] \rightarrow [[*]],\, a : F~42  \vdash (\lambda y : F~\rulehl{42}.\, [[int]]) ~ a : [[*]] \\
+& F : [[int]] \rightarrow [[*]],\, a : F~42  \rulehl{,\, x : [[int]]} \vdash (\lambda y : F~\rulehl{x}.\, [[int]]) ~ a : [[*]]
 \end{align*}
 
 We cannot ``reverse substitute'' the $42$ in the type annotation to a variable
@@ -80,7 +83,7 @@ ensure the well-formedness of types in the conclusion.
 
 Rule $\le\forall R$ relies on a standard strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{is fresh in}~ A$, then $\Gamma \vdash A$}, which
-is trivial to prove. 
+is trivial to prove.
 However its generalization:
 \emph{if $[[G, x : B |- A : *]]$ and $x ~\text{is fresh in}~ A$},
 is a much more difficult problem since we are no longer reasoning about

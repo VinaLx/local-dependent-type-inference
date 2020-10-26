@@ -1,14 +1,138 @@
 \section{Overview}
 
+In this section we go through the motivation and main features of \name. We
+try to express the subtyping of (implicit) polymorphic types in a dependently-typed
+system. And we adopt a newly-studied techniques to solve the inherent dependency
+between typing and subtyping. And then we focus on a series of examples to show
+the power of our language. A formal illustration of \name will be discussed in
+section \ref{sec:matatheory}
+
+\subsection{Lifting the Polymorphic Subtyping}
+\label{sec:polymorphic-subtyping}
+
+The subtyping relation for polymorphic types by Odersky and L\"aufer\cite{odersky1996putting}
+captures a \emph{more-general-than} relation between polymorphic and monomorphic
+types. It features the following two subtyping rules:
+
+\begin{mathpar}
+  \inferrule*[right=$\le\forall L$]
+    {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
+    {\Gamma \vdash \forall x.\, A \le B}
+  \and
+  \inferrule*[right=$\le\forall R$]
+    {\Gamma ,\, x \vdash A \le B}
+    {\Gamma \vdash A \le \forall x.\, B}
+\end{mathpar}
+
+And based on this idea, we try to generalize the subtyping relation to handle
+dependent types. The parameters of polymorphic types can only be types in
+polymorphic subtyping, in \name, the paramters can be can be ``values'' as well.
+So ideally a direct generalization would be:
+
+\begin{mathpar}
+  \inferrule*[right=$\le\forall'$]
+    {\Gamma \vdash \tau \rulehl{: A} \\ \Gamma \vdash [\tau / x]\, B \le C}
+    {\Gamma \vdash \forall x \rulehl{: A}.\, B \le C}
+  \and
+  \inferrule*[right=$\ge\forall'$]
+    {\Gamma ,\, x \rulehl{: B} \vdash A \le C}
+    {\Gamma \vdash A \le \forall x \rulehl{: B}.\,C}
+\end{mathpar}
+
+Here the parameter for polymorphic types can be well-typed values besides types,
+hence instead of requiring the instantiation to be only well-formed in rule
+$\le\forall$, it should be required to be well-typed. Similarly, the context
+for the subtyping rule should include typing information for the abstract variable
+in the adaptation of $\ge\forall$.
+
+\subsection{Unified Subtyping}
+
+But the notorious mutual dependency between typing and subtyping
+\cite{aspinall1996subtyping, hutchins2010pure} presents itself in the direct
+generalization,
+due to the usual presence of subsumption rule in the typing rules:
+
+\begin{mathpar}
+  \inferrule*[right=t-sub]
+    {\Gamma \vdash e : A \\ \Gamma \vdash A \le B}
+    {\Gamma \vdash e : B}
+\end{mathpar}
+
+To tackle this issue, we adopt the technique developed by Yang called the
+Unified Subtyping\cite{yang2017unifying}, which merges the typing relation and
+subtyping relation into a single relation to avoid the mutual dependency:
+
+\begin{mathpar}
+  \Gamma \vdash e_1 \le e_2 : A
+\end{mathpar}
+
+The interpretation of this judgement is: under context $\Gamma$, $e_1$ is a sub-``type''
+of $e_2$ and they both are of type $A$. And the judgements of subtyping and typing
+are both special form of unified subtyping with the involvement of kinds $[[*]]$:
+
+\begin{mathpar}
+  \Gamma \vdash A \le B \triangleq \Gamma \vdash A \le B : [[*]]
+  \and
+  \Gamma \vdash e : A \triangleq \Gamma \vdash e \le e : A
+\end{mathpar}
+
+The technique simplifies the formalization and especially the proof of
+transitivity in the original work. Ideally after applying the technique,
+the generalization of the polymorphic subtyping should be:
+
+\begin{mathpar}
+  \inferrule*[right=$\le\forall''$]
+    {\Gamma \vdash \tau : A \\ \Gamma \vdash [\tau / x]\, B \le C \rulehl{: [[*]]}}
+    {\Gamma \vdash \forall x : A.\, B \le C \rulehl{: [[*]]}}
+  \and
+  \inferrule*[right=$\ge\forall''$]
+    {\Gamma ,\, x : B \vdash A \le C \rulehl{: [[*]]}}
+    {\Gamma \vdash A \le \forall x : B.\,C \rulehl{: [[*]]}}
+\end{mathpar}
+
+However the formalization is not exactly like this due to various issues, the
+details will be discussed in section \ref{sec:type-system}.
+
+\subsection{``Explicit'' Implicit Instantiation}
+
+Another feature of the polymorphic subtyping is that the instantiation of type
+parameter is done implicitly instead of being manually applied. Normally the
+type parameters only stay at type-level so terms are not involved in the
+implicit instantiation, for example:
+
+\begin{mathpar}
+  (\lambda x.\, x)~42 \longrightarrow 42
+\end{mathpar}
+
+Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$. The implicit
+instantiation is not reflected anywhere at term level. However for
+language with type annotations on parameters of binders
+(for example lambda abstractions), in order
+for the polymorphic variable to be well-scoped at type annotations of terms,
+another binder $\Lambda$ is added for terms, however instantiations are still
+implicit as shown in the following examples:
+
+\begin{mathpar}
+  (\Lambda A : [[*]].\, \lambda x : A.\, x) ~ 42 \longrightarrow 42 \\
+  (\Lambda A : [[*]].\, \lambda x : A.\, \lambda y : A.\, x) \longrightarrow \lambda y : [[int]].\, 42
+\end{mathpar}
+
+Here $\Lambda A : [[*]].\, \lambda x : A.\, x$ has type $\forall A : \star. \, A \rightarrow A$,
+the polymorphic parameter $A$ is explicitly stated in the polymorphic
+terms. However as the reduction show, the instantiations are still implicit.
+
 \subsection{A Tour of \name}
 
-5 examples:
+In this section we show some relevant examples to illustrate the expressiveness
+of \name.
+
+5 (4) examples:
 
 \begin{itemize}
-\item polymorphic identity
+\item polymorphic identity (already explained above)
 \item map on lists (recursive types)
 \item Functor and fmap (higher kinds)
 \item Ptree (dependent types)
 \item Higher-ranked subtyping (to illustrate difference to ICC):
-  $(Int -> Int) -> Int <: (\forall a . a -> a) -> Int$
+  $(Int \rightarrow Int) \rightarrow Int <: (\forall a . a \rightarrow a) \rightarrow Int$
 \end{itemize}
