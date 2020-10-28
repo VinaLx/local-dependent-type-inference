@@ -1,13 +1,159 @@
 \section{Overview}
 
-In this section we go through the motivation and main features of \name. We
-try to express the subtyping of (implicit) polymorphic types in a dependently-typed
-system. And we adopt a newly-studied techniques to solve the inherent dependency
-between typing and subtyping. And then we focus on a series of examples to show
-the power of our language. A formal illustration of \name will be discussed in
-section \ref{sec:matatheory}
+In this section we start by introducing the flavor of \name by going through
+some interesting examples to show the expressiveness and major features of our
+language. And then we briefly summarize what we show in the example with
+some motivation and rationale of our design. The formal system of \name will be
+discussed in section \ref{sec:type-system} and \ref{sec:matatheory}.
 
-\subsection{Lifting the Polymorphic Subtyping}
+\subsection{A Tour of \name}
+\label{sec:examples}
+
+The \name calculus features a extended capability of expressing implicit
+polymorphism with the power of dependent types. We start with the simple
+examples like
+
+\subsubsection{Polymorphic Id Function}
+
+Like most of the functional languages, we support parametric polymorphisms with
+the parameter being a types. A go-to example is the polymorphic identity
+function as shown below.
+
+\begin{align*}
+\mathrm{id} &:: \forall A : \star.\, A \rightarrow A \\
+\mathrm{id} &= \lambda x : A.\, x
+\end{align*}
+\begin{align*}
+\mathrm{answer} &:: \mathbb{N} \\
+\mathrm{answer} &= \mathrm{id} ~ 42
+\end{align*}
+
+The polymorphic parameter \verb|A| is annotated with its type,
+in this case we feature $\star$ to be the type of types, which is also known as
+\emph{kind}. In our language, the parameters of lambda abstractions are annotated
+with their types, and the \verb|A| in the definition refers back to the
+polymorphic parameter. And similar to implicit polymorphism in other languages,
+the polymorphic parameters of the $\forall$ types are implicitly instantiated
+during applications.
+
+\subsubsection{Dependent Inductive Data Types}
+
+Our language encodes inductive data type with Scott Encoding, and supports
+recursive types by the fixpoint operator with explicit type level computation.
+In this section we show the encoding an ``Index Annotated List'' and the ``map''
+operation over it.
+
+\newcommand{\Nat}[0]{\mathbb{N}}
+\newcommand{\Succ}[0]{\mathrm{S}}
+\newcommand{\Zero}[0]{\mathrm{Z}}
+\newcommand{\List}[0]{\mathrm{List}}
+\newcommand{\Nil}[0]{\mathrm{Nil}}
+\newcommand{\Cons}[0]{\mathrm{Cons}}
+\newcommand{\map}[0]{\mathrm{map}}
+
+\begin{align*}
+  & \mathbf{data} ~ \Nat = \Zero ~|~ \Succ~\Nat \\
+  & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n))
+\end{align*}
+
+We can encode the $\mathrm{List}$ with the fixpoint operator (we omit the encoding of $\Nat$):
+
+\begin{equation*}
+\setlength{\arraycolsep}{1.5pt}
+\setstretch{1.2}
+\begin{array}{lcl}
+\List &::& \star \rightarrow \Nat \rightarrow \star \\
+\List &=& \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \forall r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r \\
+\Nil &::& \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n \\
+\Nil &=& \castup \castup (\lambda z : r.\, \lambda c : (a \rightarrow \List~a~n \rightarrow r). ~ z) \\
+\Cons &::& \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n \\
+\Cons &=& \lambda x : a.\, \lambda xs : \List~a~(\Succ ~ n).\, \castup \castup (\lambda z : r.\, (\lambda c : a \rightarrow \List~a~(\Succ ~ n) \rightarrow r). ~ c ~ x ~ xs)
+\end{array}
+\end{equation*}
+
+And then we can define recursive operation over the $\mathrm{List}$:
+
+\begin{align*}
+  & \map ' :: \forall a : \star.\, \forall b : \star. (a \rightarrow b) \rightarrow \Pi n : \Nat.\, (\List~a~n) \rightarrow (\List~b~n) \\
+  & \map ' = \lambda f : a \rightarrow b.\, \mu ~ rec : (\Pi n : \Nat.\, \List~a~n \rightarrow \List~b~n).\, \lambda xs : \List~a~n. \\
+  & \quad\qquad (\castdn \castdn \, xs) ~ \Nil ~ (\lambda x : a.\, \lambda xs' : \List~a~(\Succ~n).\, \Cons ~ (f ~ x) ~ (rec ~ (\Succ~n)~xs')) \\
+  \\
+  & \map :: \forall a : \star.\, \forall b : \star.\, \forall n : \Nat : \star.\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n \\
+  & \map = \lambda f : a \rightarrow b.\, \lambda xs : \List ~ a ~ n.\, \map '~f~n~xs
+\end{align*}
+
+There are a few points we want to highlight:
+
+\paragraph{Type Parameters and Implicit Instantiation}
+
+The parameter of $\List$ can not only be types, also values of other data types
+(in this case, $\Nat$). So our language is able to directly encode the behavior of
+``Datatype Promotion'' of GHC haskell. The type parameters of $\List$ at most
+positions can be implicit parameter and instantiated during application.
+
+\paragraph{Fixpoint Operators}
+In our language, fixpoint operators ($\mu$) serves a dual purposes of defining
+recursive data type and recursive functions. However we put restrictions on
+fixpoint that its type can not be poly-type. So there is an awkward indirection
+in the definition of $\map$ to make all of the type parameters implicit. The rationale
+of this restriction is discussed in later sections.
+
+\paragraph{Explicit Type-Level Computations}
+The type-level computations of our language do not happen implicitly, they happen
+explicitly when $\mathrm{cast}$ operators are used. $\castdn$ and $\castup$
+generalize the ``unfold'' and ``fold'' of Iso-Recursive Types and invoke
+one-step reduction or expansion respectively at type-level.
+They also serve a role of wrapping and unwrapping the abstraction of data types.
+
+\subsubsection{Implicit Higher-Kinded Types}
+
+The implicit capabilities also extends to the realm of higher-kind. For example
+we can define ``Functor'' as the following:
+
+\newcommand{\Functor}[0]{\mathrm{Functor}}
+\newcommand{\MkFunctor}[0]{\mathrm{MkFunctor}}
+\newcommand{\Id}[0]{\mathrm{Id}}
+\newcommand{\MkId}[0]{\mathrm{MkId}}
+
+\begin{equation*}
+  \mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~(\forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b)
+\end{equation*}
+
+Data constructor $\MkFunctor$ has type $\forall F : \star \rightarrow \star.\, \dots \rightarrow \Functor~F$ where the dots is the type of the field.
+Then we can omit the implicit argument $F$ when defining instances of functor over higher-kinded types:
+
+\begin{align*}
+  & \mathbf{data}~\mathrm{Id}~a=\mathrm{MkId}~a \\
+  \\
+  & \mathrm{idFunctor} :: \Functor~\Id \\
+  & \mathrm{idFunctor} = \MkFunctor~(\lambda f : a \rightarrow b.\, \lambda (\MkId~x) : \Id~a.\, \MkId~(f~x))
+\end{align*}
+
+\subsubsection{Reasoning of Higher-Ranked Polymorphism}
+\label{sec:higher-ranked-poly}
+
+Our language reasons about the subtyping relation between polymorphic types at
+higher-ranked positions. For example the following program type checks:
+
+\begin{align*}
+& \mathrm{callcc}' :: \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a
+\\
+& \mathrm{callcc} :: \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a
+& \mathrm{callcc} = \mathrm{callcc}'
+\end{align*}
+
+The type $\forall b : \star.\, a \rightarrow b$ appears at the positive position
+of the whole signature, and it is a more general signature than $a \rightarrow b$
+for an arbitrary choice of $b$. Our language capture this subtyping relation so that
+ we can assign $\mathrm{callcc}'$ to $\mathrm{callcc}$ instead of the other way around.
+
+\subsection{Key Features}
+
+In this section, we briefly discuss the major features of \name itself and
+its formalization. A more formal and technical discussion will be left to
+section \ref{sec:system} and \ref{sec:metatheory}.
+
+\subsubsection{Lifting the Polymorphic Subtyping}
 \label{sec:polymorphic-subtyping}
 
 The subtyping relation for polymorphic types by Odersky and L\"aufer\cite{odersky1996putting}
@@ -15,11 +161,11 @@ captures a \emph{more-general-than} relation between polymorphic and monomorphic
 types. It features the following two subtyping rules:
 
 \begin{mathpar}
-  \inferrule*[right=$\le\forall L$]
+  \inferrule*[lab=$\le\forall L$]
     {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
     {\Gamma \vdash \forall x.\, A \le B}
   \and
-  \inferrule*[right=$\le\forall R$]
+  \inferrule*[lab=$\le\forall R$]
     {\Gamma ,\, x \vdash A \le B}
     {\Gamma \vdash A \le \forall x.\, B}
 \end{mathpar}
@@ -30,11 +176,11 @@ polymorphic subtyping, in \name, the paramters can be can be ``values'' as well.
 So ideally a direct generalization would be:
 
 \begin{mathpar}
-  \inferrule*[right=$\le\forall'$]
+  \inferrule*[lab=$\le\forall L'$]
     {\Gamma \vdash \tau \rulehl{: A} \\ \Gamma \vdash [\tau / x]\, B \le C}
     {\Gamma \vdash \forall x \rulehl{: A}.\, B \le C}
   \and
-  \inferrule*[right=$\ge\forall'$]
+  \inferrule*[lab=$\le\forall R'$]
     {\Gamma ,\, x \rulehl{: B} \vdash A \le C}
     {\Gamma \vdash A \le \forall x \rulehl{: B}.\,C}
 \end{mathpar}
@@ -45,12 +191,37 @@ $\le\forall$, it should be required to be well-typed. Similarly, the context
 for the subtyping rule should include typing information for the abstract variable
 in the adaptation of $\ge\forall$.
 
-\subsection{Unified Subtyping}
+\subsubsection{Higher-Ranked Polymorphic Subtyping}
 
-But the notorious mutual dependency between typing and subtyping
-\cite{aspinall1996subtyping, hutchins2010pure} presents itself in the direct
-generalization,
-due to the usual presence of subsumption rule in the typing rules:
+As the example in section \ref{sec:higher-ranked-poly} shows, these subtyping
+rules based on polymorphic subtyping, combining with the normal subtyping rules
+are able to handle the subtyping relations that occur at not only top-level,
+but also higher-ranked level. This feature distinguish \name from the Implicit
+Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
+implicit polymorphism on dependent type language, which features these two rules:
+
+\begin{mathpar}
+  \inferrule*[lab=inst]
+    {[[G |- e : forall x : A. B]] \\ [[G |- e1 : A]]}
+    {[[G |- e : [e1 / x] B]]}
+  \and
+  \inferrule*[lab=gen]
+    {[[G, x : A |- e : B]] \\ [[G |- forall x : A. B : k]]}
+    {[[G |- e : forall x : A. B]]}
+\end{mathpar}
+
+Without an explicit subtyping relation, ICC is not always able to handle subtyping
+relation at higher-rank position. So from another perspective,
+rule $\le\forall L'$ and $\le\forall R'$ generalize these two rules from ICC
+that talks about implicit polymorphism.
+
+\subsubsection{Unified Subtyping}
+
+However, the notorious mutual dependency between typing and subtyping
+\cite{aspinall1996subtyping, hutchins2010pure} presents itself on our way to the direct
+generalization of polymorphic subtyping,
+due to rule $\le\forall L$ mentions typing relation, and the subsumption rule of
+typing relation (shown as below) mentions the subtyping relation.
 
 \begin{mathpar}
   \inferrule*[right=t-sub]
@@ -93,7 +264,7 @@ the generalization of the polymorphic subtyping should be:
 However the formalization is not exactly like this due to various issues, the
 details will be discussed in section \ref{sec:type-system}.
 
-\subsection{``Explicit'' Implicit Instantiation}
+\subsubsection{``Explicit'' Implicit Instantiation}
 
 Another feature of the polymorphic subtyping is that the instantiation of type
 parameter is done implicitly instead of being manually applied. Normally the
@@ -120,19 +291,27 @@ implicit as shown in the following examples:
 Here $\Lambda A : [[*]].\, \lambda x : A.\, x$ has type $\forall A : \star. \, A \rightarrow A$,
 the polymorphic parameter $A$ is explicitly stated in the polymorphic
 terms. However as the reduction show, the instantiations are still implicit.
+We purposely omit the explicit binders for implicit parameters for all the examples
+in section \ref{sec:examples} for clarity, but for most of the cases where
+the polymorphic parameters are used, our language provide a binder to ensure
+the parameters are well-scoped at term-level.
 
-\subsection{A Tour of \name}
+\subsubsection{Type-level Computation and Casts}
 
-In this section we show some relevant examples to illustrate the expressiveness
-of \name.
+Since our language features a fixpoint that supports general recursion at both
+type and term level. In order to avoid diverging computations at type checking,
+we do not provide the congruence rule like other dependent
+type system such as the Calculus of Constructions \cite{CoquandThierry1988Tcoc}
+to support implicit type-level reduction.
 
-5 (4) examples:
+\begin{mathpar}
+  \inferrule*[lab=Cong]
+    {[[G |- e : A]] \\ A =_\beta B}
+    {[[G |- e : B]]}
+\end{mathpar}
 
-\begin{itemize}
-\item polymorphic identity (already explained above)
-\item map on lists (recursive types)
-\item Functor and fmap (higher kinds)
-\item Ptree (dependent types)
-\item Higher-ranked subtyping (to illustrate difference to ICC):
-  $(Int \rightarrow Int) \rightarrow Int <: (\forall a . a \rightarrow a) \rightarrow Int$
-\end{itemize}
+
+Instead, we partially adopt the
+call-by-name design of ``Pure Iso-Type System''\cite{yang2016unified,yang2019pure} and provide
+operators $\castdn$ and $\castup$ to explicitly trigger one-step
+type reductions or expansions.
