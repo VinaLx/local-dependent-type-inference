@@ -153,12 +153,31 @@ In this section, we briefly discuss the major features of \name itself and
 its formalization. A more formal and technical discussion will be left to
 section \ref{sec:system} and \ref{sec:metatheory}.
 
-\subsubsection{Lifting the Polymorphic Subtyping}
-\label{sec:polymorphic-subtyping}
+\subsection{The Polymorphic Subtyping Relation}
+% \bruno{Have a figure and introduce the original relation here, before you move to
+% giving an overview of the dependently typed version.}
+Odersky and L\"aufer captures a \emph{more-general-than} relation between
+polymorphic and monomophic types as a subtyping relation in their polymorphic
+subtyping\cite{odersky1996putting}. They feature two rules in their
+subtyping relation as shown in figure \ref{fig:polymorphic-subtyping}.
 
-The subtyping relation for polymorphic types by Odersky and L\"aufer\cite{odersky1996putting}
-captures a \emph{more-general-than} relation between polymorphic and monomorphic
-types. It features the following two subtyping rules:
+Their subtyping system expresses the following idea:
+
+\begin{itemize}
+  \item A poly-type ($[[forall x. A]]$) is considered \emph{more-general}
+        than another type ($B$), when we can find an arbitrary mono-type ($\tau$)
+        so that the instantiation is more general than $B$.
+  \item A type ($A$) is considerred more general than a poly-type ($\forall x. B$)
+        when it is still more general than the head of poly-type, with the type
+        parameter instantiated by an abstract variable $x$.
+\end{itemize}
+
+This semantics of subtyping relation sets a scene for our work, which attempt
+to generalize this relation to dependent type version.
+
+\begin{figure}
+\label{fig:polymorphic-subtyping}
+\centering
 
 \begin{mathpar}
   \inferrule*[lab=$\le\forall L$]
@@ -170,10 +189,16 @@ types. It features the following two subtyping rules:
     {\Gamma \vdash A \le \forall x.\, B}
 \end{mathpar}
 
-And based on this idea, we try to generalize the subtyping relation to handle
-dependent types. The parameters of polymorphic types can only be types in
-polymorphic subtyping, in \name, the paramters can be can be ``values'' as well.
-So ideally a direct generalization would be:
+\caption{Polymorphic Subtyping}
+\end{figure}
+
+
+\subsubsection{Lifting the Polymorphic Subtyping}
+\label{sec:polymorphic-subtyping}
+
+The parameters of polymorphic types can only be types in the polymorphic
+subtyping. In \name, we generalize the polymorphic parameters so that they can
+be can be ``values'' as well. So ideally a direct generalization would be:
 
 \begin{mathpar}
   \inferrule*[lab=$\le\forall L'$]
@@ -186,10 +211,10 @@ So ideally a direct generalization would be:
 \end{mathpar}
 
 Here the parameter for polymorphic types can be well-typed values besides types,
-hence instead of requiring the instantiation to be only well-formed in rule
-$\le\forall$, it should be required to be well-typed. Similarly, the context
-for the subtyping rule should include typing information for the abstract variable
-in the adaptation of $\ge\forall$.
+hence instead of requiring the instantiation to be a well-formed type in rule
+$\le\forall$, it is required to be well-typed regarding the type of the parameter.
+Similarly, the context for the subtyping rule should include typing information
+for the abstract variable in the adaptation of $\ge\forall$.
 
 \subsubsection{Higher-Ranked Polymorphic Subtyping}
 
