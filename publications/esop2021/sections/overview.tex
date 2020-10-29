@@ -78,7 +78,7 @@ for our formulation of indexed lists:
 
 In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
 show the definition for \verb|List|, and the types for the constructors (implementation ommitted)
-next:
+next.
 
 
 \begin{equation*}
@@ -105,9 +105,14 @@ next:
 %  & \map = \lambda f : a \rightarrow b.\, \lambda xs : \List ~ a ~ n.\, \map '~f~n~xs
 \end{align*}
 
-\bruno{You are missing the most important/interesting portion of the code: i.e. show a call to
-  the map function and discuss how implicit polymorphism avoids having to specify 3 extra arguments
-to the function.}
+An example of application of \verb|map| could goes like \texttt{map S (Cons 1 (Cons 2 Nil))}.
+Note that since the type parameters for \verb|map|, \verb|Cons| and \verb|Nil|
+are all implicit, they can be all omitted
+and the arguments are instantiated implicitly.
+
+% \bruno{You are missing the most important/interesting portion of the code: i.e. show a call to
+%   the map function and discuss how implicit polymorphism avoids having to specify 3 extra arguments
+% to the function.}
 
 There are a few final points worth mentioning about the example.
 Firstly, \verb|List| is an example of a dependently typed function, since it is parametrized
@@ -194,12 +199,13 @@ section \ref{sec:system} and \ref{sec:metatheory}.
 Odersky and L\"aufer captures a \emph{more-general-than} relation between
 polymorphic and monomophic types as a subtyping relation in their polymorphic
 subtyping\cite{odersky1996putting}. They feature two rules in their
-subtyping relation as shown in figure \ref{fig:polymorphic-subtyping}.
+subtyping relation as shown in figure \ref{fig:polymorphic-subtyping},
+Rule $\le\forall L$ and $\le\forall R$.
 
 Their subtyping system expresses the following idea:
 
 \begin{itemize}
-  \item A poly-type ($[[forall x. A]]$) is considered \emph{more-general}
+  \item A poly-type ($\forall x.\, A$) is considered \emph{more-general}
         than another type ($B$), when we can find an arbitrary mono-type ($\tau$)
         so that the instantiation is more general than $B$.
   \item A type ($A$) is considerred more general than a poly-type ($\forall x. B$)
@@ -214,7 +220,15 @@ to generalize this relation to dependent type version.
 \label{fig:polymorphic-subtyping}
 \centering
 
-\begin{mathpar}
+\begin{drulepar}{$\Gamma \vdash A \le B$}{Polymorphic Subtyping}
+  \inferrule*[lab=$\tau$]
+    { }
+    {\Gamma \vdash \tau \le \tau}
+  \and
+  \inferrule*[lab=$\rightarrow$]
+    {\Gamma \vdash B_1 \le A_1 \\ \Gamma \vdash A_2 \le B_2}
+    {\Gamma \vdash A_1 \rightarrow A_2 \le B_1 \rightarrow B_2}
+  \\
   \inferrule*[lab=$\le\forall L$]
     {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
     {\Gamma \vdash \forall x.\, A \le B}
@@ -222,10 +236,11 @@ to generalize this relation to dependent type version.
   \inferrule*[lab=$\le\forall R$]
     {\Gamma ,\, x \vdash A \le B}
     {\Gamma \vdash A \le \forall x.\, B}
-\end{mathpar}
+\end{drulepar}
 
 \caption{Polymorphic Subtyping}
-\end{figure}\bruno{Do not just show a few rules; show the complete relation (and the rule form).}
+\end{figure}
+% \bruno{Do not just show a few rules; show the complete relation (and the rule form).}
 
 
 \subsubsection{Lifting the Polymorphic Subtyping}
