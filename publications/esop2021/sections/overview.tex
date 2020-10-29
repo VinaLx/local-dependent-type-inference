@@ -1,47 +1,68 @@
 \section{Overview}
 
-In this section we start by introducing the flavor of \name by going through
-some interesting examples to show the expressiveness and major features of our
-language. And then we briefly summarize what we show in the example with
-some motivation and rationale of our design. The formal system of \name will be
+In this section we introduce \name by going through
+some interesting examples to show the expressiveness and major features of the calculus.
+Then we discuss some motivation, rationale of our design and challenges.
+The formal system of \name will be
 discussed in section \ref{sec:type-system} and \ref{sec:matatheory}.
 
 \subsection{A Tour of \name}
 \label{sec:examples}
 
-The \name calculus features a extended capability of expressing implicit
-polymorphism with the power of dependent types. We start with the simple
-examples like
+The \name calculus features a extended capability of expressing \emph{implicit
+  polymorphism} with the power of dependent types. Thus the main feature of \name
+is the ability to implicitly infer universally quantified arguments.  
 
-\subsubsection{Polymorphic Id Function}
-
-Like most of the functional languages, we support parametric polymorphisms with
-the parameter being a types. A go-to example is the polymorphic identity
-function as shown below.
+\subsubsection{A First Example of Implicit Polymorphism}
+Like most of functional languages, \name supports (implicit) parametric polymorphism.
+A first simple example is the polymorphic identity
+function:
 
 \begin{align*}
-\mathrm{id} &:: \forall A : \star.\, A \rightarrow A \\
-\mathrm{id} &= \lambda x : A.\, x
+\mathrm{id} &: \forall (A : \star).\, A \rightarrow A \\
+\mathrm{id} &= \lambda (x : A).\, x
 \end{align*}
 \begin{align*}
-\mathrm{answer} &:: \mathbb{N} \\
-\mathrm{answer} &= \mathrm{id} ~ 42
+\mathrm{answer} &: \mathbb{N} \\
+\mathrm{answer} &= \mathrm{id} ~ 42  \quad\quad\quad\quad    \text{-- No type argument needed at the call of $\mathrm{id}$}
 \end{align*}
 
-The polymorphic parameter \verb|A| is annotated with its type,
-in this case we feature $\star$ to be the type of types, which is also known as
-\emph{kind}. In our language, the parameters of lambda abstractions are annotated
+\noindent The polymorphic parameter \verb|A| is annotated with its type,
+which is $\star$. The type $\star$ is the type of types (also known as
+\emph{kind}). In \name, the parameters of lambda abstractions are annotated
 with their types, and the \verb|A| in the definition refers back to the
-polymorphic parameter. And similar to implicit polymorphism in other languages,
+polymorphic parameter. Similarly to implicit polymorphism in other languages,
 the polymorphic parameters of the $\forall$ types are implicitly instantiated
-during applications.
+during applications. Thus, in the call of the identity function, we
+do not need to specify the argument used for instantiation. In contrast,
+in an explicitly polymorphic language (such as System F) we would need
+to call $id$ with an extra argument that specifies the instantiation of $A$:
+$\mathrm{id}~\mathbb{N}~ 42$. 
 
-\subsubsection{Dependent Inductive Data Types}
 
-Our language encodes inductive data type with Scott Encoding, and supports
-recursive types by the fixpoint operator with explicit type level computation.
-In this section we show the encoding an ``Index Annotated List'' and the ``map''
-operation over it.
+\subsubsection{Recursion and Dependent Types}
+
+\name is dependently typed, and universal quantification is not limited to work
+on arguments of type $\star$, but it allows arguments of other types. This is
+a key difference compared to much of the work on type-inference for higher-ranked
+polymorphism~\cite{}\bruno{reference to many (i.e. 5+) papers on that topic}, which has focused on System F-like
+languages where universal quantification can only have arguments of type $\star$.
+Furthermore \name supports general recursion at both the term and the type-level. 
+Using these features we can encode an indexed list, a \verb|map| operation over it
+and illustrate how implicit instantiation allows us to use the \verb|map| function
+conveniently.
+However, because \name is just a core calculus there is no built-in support
+yet for algebraic datatypes and pattern matching.
+We expect that a source language would provide a more convinient
+way to define the \verb|map| function using pattern matching and other useful source-level
+constructs. To model algebraic datatypes and pattern matching in \name we
+use an encoding by Yang and Oliveira~\cite{pits}, which is based on Scott encodings~\cite{}.
+Since the details of that encoding are not relevant for this paper,
+here we omit the code for most definitions and show only their types.
+
+In a dependently typed language a programmer could write the following definition
+for our formulation of indexed lists:
+
 
 \newcommand{\Nat}[0]{\mathbb{N}}
 \newcommand{\Succ}[0]{\mathrm{S}}
@@ -56,37 +77,52 @@ operation over it.
   & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n))
 \end{align*}
 
-We can encode the $\mathrm{List}$ with the fixpoint operator (we omit the encoding of $\Nat$):
+In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
+show the definition for \verb|List|, and the types for the constructors (implementation ommitted)
+next:
+
 
 \begin{equation*}
 \setlength{\arraycolsep}{1.5pt}
 \setstretch{1.2}
 \begin{array}{lcl}
-\List &::& \star \rightarrow \Nat \rightarrow \star \\
+\List &:& \star \rightarrow \Nat \rightarrow \star \\
 \List &=& \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \forall r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r \\
-\Nil &::& \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n \\
-\Nil &=& \castup \castup (\lambda z : r.\, \lambda c : (a \rightarrow \List~a~n \rightarrow r). ~ z) \\
-\Cons &::& \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n \\
-\Cons &=& \lambda x : a.\, \lambda xs : \List~a~(\Succ ~ n).\, \castup \castup (\lambda z : r.\, (\lambda c : a \rightarrow \List~a~(\Succ ~ n) \rightarrow r). ~ c ~ x ~ xs)
+\Nil &:& \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n \\
+%\Nil &=& \castup \castup (\lambda z : r.\, \lambda c : (a \rightarrow \List~a~n \rightarrow r). ~ z) \\
+\Cons &:& \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n \\
+%\Cons &=& \lambda x : a.\, \lambda xs : \List~a~(\Succ ~ n).\, \castup \castup (\lambda z : r.\, (\lambda c : a \rightarrow \List~a~(\Succ ~ n) \rightarrow r). ~ c ~ x ~ xs)
 \end{array}
 \end{equation*}
 
-And then we can define recursive operation over the $\mathrm{List}$:
+\noindent Then we can define a \verb|map| function over \verb|List| with the type:
 
 \begin{align*}
-  & \map ' :: \forall a : \star.\, \forall b : \star. (a \rightarrow b) \rightarrow \Pi n : \Nat.\, (\List~a~n) \rightarrow (\List~b~n) \\
-  & \map ' = \lambda f : a \rightarrow b.\, \mu ~ rec : (\Pi n : \Nat.\, \List~a~n \rightarrow \List~b~n).\, \lambda xs : \List~a~n. \\
-  & \quad\qquad (\castdn \castdn \, xs) ~ \Nil ~ (\lambda x : a.\, \lambda xs' : \List~a~(\Succ~n).\, \Cons ~ (f ~ x) ~ (rec ~ (\Succ~n)~xs')) \\
+%  & \map ' :: \forall a : \star.\, \forall b : \star. (a \rightarrow b) \rightarrow \Pi n : \Nat.\, (\List~a~n) \rightarrow (\List~b~n) \\
+%  & \map ' = \lambda f : a \rightarrow b.\, \mu ~ rec : (\Pi n : \Nat.\, \List~a~n \rightarrow \List~b~n).\, \lambda xs : \List~a~n. \\
+%  & \quad\qquad (\castdn \castdn \, xs) ~ \Nil ~ (\lambda x : a.\, \lambda xs' : \List~a~(\Succ~n).\, \Cons ~ (f ~ x) ~ (rec ~ (\Succ~n)~xs')) \\
   \\
-  & \map :: \forall a : \star.\, \forall b : \star.\, \forall n : \Nat : \star.\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n \\
-  & \map = \lambda f : a \rightarrow b.\, \lambda xs : \List ~ a ~ n.\, \map '~f~n~xs
+  & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat : \star.\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n \\
+%  & \map = \lambda f : a \rightarrow b.\, \lambda xs : \List ~ a ~ n.\, \map '~f~n~xs
 \end{align*}
 
-There are a few points we want to highlight:
+\bruno{You are missing the most important/interesting portion of the code: i.e. show a call to
+  the map function and discuss how implicit polymorphism avoids having to specify 3 extra arguments
+to the function.}
 
-\paragraph{Type Parameters and Implicit Instantiation}
+There are a few final points worth mentioning about the example.
+Firstly, \verb|List| is an example of a dependently typed function, since it is parametrized
+by a natural value. Secondly, in \name (following the design of PITS),
+fixpoint operators ($\mu$) serve a dual purposes of defining recursive types and recursive
+functions. In \verb|List| the fixpoint operator is used to define a recursive type, whereas
+in the definition of \verb|map| the fixpoint operator is used to define term-level recursion.
+Moreover recursion is unrestricted and there is no termination checking, much like approaches
+such as Dependently Typed Haskell~\cite{}, and unlike various other dependently typed languages
+such as Agda~\cite{} or Idris~\cite{}.
 
-The parameter of $\List$ can not only be types, also values of other data types
+
+\begin{comment}
+  can not only be types, also values of other data types
 (in this case, $\Nat$). So our language is able to directly encode the behavior of
 ``Datatype Promotion'' of GHC haskell. The type parameters of $\List$ at most
 positions can be implicit parameter and instantiated during application.
@@ -104,11 +140,12 @@ explicitly when $\mathrm{cast}$ operators are used. $\castdn$ and $\castup$
 generalize the ``unfold'' and ``fold'' of Iso-Recursive Types and invoke
 one-step reduction or expansion respectively at type-level.
 They also serve a role of wrapping and unwrapping the abstraction of data types.
+\end{comment}
 
 \subsubsection{Implicit Higher-Kinded Types}
 
-The implicit capabilities also extends to the realm of higher-kind. For example
-we can define ``Functor'' as the following:
+The implicit capabilities also extend to the realm of higher-kinded types~\cite{}. For example
+we can define a \verb|Functor| datatype as:
 
 \newcommand{\Functor}[0]{\mathrm{Functor}}
 \newcommand{\MkFunctor}[0]{\mathrm{MkFunctor}}
@@ -119,13 +156,13 @@ we can define ``Functor'' as the following:
   \mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~(\forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b)
 \end{equation*}
 
-Data constructor $\MkFunctor$ has type $\forall F : \star \rightarrow \star.\, \dots \rightarrow \Functor~F$ where the dots is the type of the field.
+The data constructor $\MkFunctor$ has type $\forall F : \star \rightarrow \star.\, \dots \rightarrow \Functor~F$ where the dots is the type of the field.
 Then we can omit the implicit argument $F$ when defining instances of functor over higher-kinded types:
 
 \begin{align*}
   & \mathbf{data}~\mathrm{Id}~a=\mathrm{MkId}~a \\
   \\
-  & \mathrm{idFunctor} :: \Functor~\Id \\
+  & \mathrm{idFunctor} : \Functor~\Id \\
   & \mathrm{idFunctor} = \MkFunctor~(\lambda f : a \rightarrow b.\, \lambda (\MkId~x) : \Id~a.\, \MkId~(f~x))
 \end{align*}
 
@@ -190,7 +227,7 @@ to generalize this relation to dependent type version.
 \end{mathpar}
 
 \caption{Polymorphic Subtyping}
-\end{figure}
+\end{figure}\bruno{Do not just show a few rules; show the complete relation (and the rule form).}
 
 
 \subsubsection{Lifting the Polymorphic Subtyping}
