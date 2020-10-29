@@ -137,9 +137,9 @@ information in the dynamic semantics.
   \centering
   \begin{equation*}
   \begin{array}{llcl}
-      \text{Extracted Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \\
+      \text{Erased Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \\
       & & \mid & [[ebind x. ee]] \mid [[eforall x : eA. eB]] \mid [[emu x. ee]] \mid [[ecastup ee]] \mid [[ecastdn ee]] \\
-      \text{Extracted Value} & ev & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
+      \text{Erased Value} & ev & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
       & & \mid & [[eforall x : eA. eB]] \mid [[ecastup ee]]
   \end{array}
   \end{equation*}
@@ -165,9 +165,9 @@ information in the dynamic semantics.
     \end{align*}
   \end{gather*}
 
-  \drules[er]{$[[ee1 *--> ee2]]$}{Extracted Semantics}
+  \drules[er]{$[[ee1 *--> ee2]]$}{Erased Semantics}
     {app,beta,elim,mu,castdn,castXXinst,castXXelim}
-  \caption{Extracted Expressions and Operational Semantics}
+  \caption{Erased Expressions and Operational Semantics}
 \end{figure}
 % \bruno{You need to use something like a latex table/tabular,
 % to neatly align the erasure function.}
@@ -182,10 +182,10 @@ $\Lambda$, $\mu$ and $\castup$ expressions.
 Figure \ref{fig:extraction} shows the syntax of the erased expressions and
 the companion operational semantics. Note that restrictions are imposed in the
 typing rules to forbid the implicit parameter occuring in runtime-relevant part
-of the expression, i.e. the extracted expressions (see section \ref{sec:type-system}).
+of the expression, i.e. the erased expressions (see section \ref{sec:type-system}).
 With such restriction, implicit parameters can be directly eliminated in
 \rref{er-elim,er-cast-inst}. For a well-typed expression, the reduction of
-its extraction is deterministic. The type safety of our system is built around
+its erasure is deterministic. The type safety of our system is built around
 this idea and is discussed in \ref{sec:type-safety}.
 
 \begin{figure}
@@ -350,7 +350,7 @@ We only allowing the implicit parameters to occur in type annotations in the
 body of implicit abstraction, so that the choices of implicit parameters is not
 relevant at runtime. The type safety of the direct operational semantics is
 proved indirectly in section \ref{sec:type-safety} with the help of the
-extraction of expressions.
+erasure of expressions.
 
 \subsubsection{Redundant Premises}
 

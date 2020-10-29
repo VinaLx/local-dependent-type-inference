@@ -265,7 +265,7 @@ property:
 
 \noindent where the types of the premises are potentially different.
 To prove this property we employ sizes for the inductive argument. Moreover we rely on
-a subtle property of uniqueness of kinds. 
+a subtle property of uniqueness of kinds.
 
 \begin{comment}
 Usually \emph{transitivity} in a dependently-typed subtyping system is axiomized
@@ -322,8 +322,8 @@ $$
 
 \noindent where $\#\forall$ counts the number of $\forall$s in the expression, $\mathbf{size}$ measures
 the size of the syntax tree of the expression, $\mathcal{D}_1$ and $\mathcal{D}_2$ denote
-the sizes of the derivation trees of the first and the second premises respectively. The proof
-is mainly motivated by DK's transitivity proof of their subtyping system of
+the sizes of the derivation trees of the first and the second premises respectively.
+The proof is mainly motivated by DK's transitivity proof of their subtyping system of
 induction on the pair of $\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$\cite{dunfield2013lemmas},
 with adjustments to fit in our system.
 
@@ -388,9 +388,9 @@ measure is the size of the derivation trees.
 
 \subsection{Type Safety}
 \label{sec:type-safety}
-\bruno{You have been using the terminology extracted, whereas I think erased is more standard.
-  I've been trying to replace the terminology, but if you find more ``extracted'' occurrences, please
-replace those yourself.}
+% \bruno{You have been using the terminology extracted, whereas I think erased is more standard.
+%   I've been trying to replace the terminology, but if you find more ``extracted'' occurrences, please
+% replace those yourself.}
 
 Since the reduction rules of \name do not have access to typing information, they
 cannot perform valid instantiations of the implicit arguments during application,
@@ -401,12 +401,12 @@ irrelevant at runtime with the restrictions in \rref{s-bind}.
 We define an erasure function\bruno{This is the function that is shown earlier, right?
   If so add a back reference to the figure here.} that eliminates the type annotations
 in some of the expressions ($\lambda$, $\Lambda$, $mu$ and $\castup$),
-and keep the implicit parameter from occuring in the extracted expressions.
+and keep the implicit parameter from occuring in the erased expressions.
 This way the choices of implicit instantiation only affect the type annotation,
 which should not be relevant for runtime computation.
 
 We show that \name is type safe the sense that,
-if an expression is well-typed, then the reduction of its erased version 
+if an expression is well-typed, then the reduction of its erased version
 does not ``go wrong''. Figure \ref{fig:extract-semantics} shows the semantics of
 erased expressions. The erasure semantics mostly mirrors the semantics
 shown in Figure \ref{fig:semantics}, except for \rref{er-elim,er-cast-elim}, which
@@ -423,8 +423,9 @@ and erased expressions.
 
 \begin{theorem}[Progress on erased expressions]
     If $[[nil |- e : A]]$,
-    then $\exists \, e'. \, \extract{e} \longleftarrow_E e'$ or $\extract{e}$ is an erased value.
-\end{theorem}\bruno{You mean a rightarrow above instead of a left arrow, right?}
+    then $\exists \, e'. \, \extract{e} \longrightarrow_E e'$ or $\extract{e}$ is an erased value.
+\end{theorem}
+% \bruno{You mean a rightarrow above instead of a left arrow, right?}
 
 \noindent Both theorems are proved by induction on the derivation of $[[nil |- e : A]]$,
 the proof is mostly straightforward except when the derivation ends with $\castdn$.
@@ -440,11 +441,11 @@ This lemma is also useful for the proof of progress for erased expressions, sinc
 value definitions are very similar.
 
 \begin{lemma}[Erased Value to Value]
-    If $\extract{e}$ is an extracted value, then $e$ is a value.
+    If $\extract{e}$ is an erased value, then $e$ is a value.
 \end{lemma}
 
 \begin{lemma}[Value to Erased Value]
-    If $e$ is a value, then $\extract{e}$ is an extracted value.
+    If $e$ is a value, then $\extract{e}$ is an erased value.
 \end{lemma}
 
 
@@ -472,25 +473,25 @@ for brevity.
     \caption{Diagram for Erased Preservation without Subtyping}
     \label{fig:preservation}
 \end{figure}
-\bruno{In the diagram you use ``E'' to denote erased expressions, but earlier when you define
-  the syntax for erased expressions and in earlier texts you use ``e''. You should be
-  consistent and I think using ``E'' everywhere for erased expressions is best.}
+% \bruno{In the diagram you use ``E'' to denote erased expressions, but earlier when you define
+%   the syntax for erased expressions and in earlier texts you use ``e''. You should be
+%   consistent and I think using ``E'' everywhere for erased expressions is best.}
 
 
 \noindent Figure \ref{fig:preservation} shows the idea of our preservation lemma without
 considering the subtyping aspect\bruno{Are you trying to show a simplified version of the lemma here?
 Is this actually valid, or you're just trying to give an overview of the idea?}.
-Here we use \emph{annotation} as the reverse process of extraction.
-If an expression ($e$) is well-typed, and its extraction ($E$)
-reduces to another extracted expression ($E'$), we can find a ``annotated''
+Here we use \emph{annotation} as the reverse process of erasure.
+If an expression ($e$) is well-typed, and its erasure ($E$)
+reduces to another erased expression ($E'$), we can find a ``annotated''
 expression of $E'$ ($e'$) that is reduced by $e$ and also preserves the type $A$.
 When no implicit instantiation happens in the reduction, then $e \longrightarrow e'$
 is deterministic: i.e. it is just normal type preservation. When there is implicit
-instantiation, if the extracted expression can reduce, we show that there must
+instantiation, if the erased expression can reduce, we show that there must
 exist a valid instantiation for $e$ that preserves its type after the reduction, and
 this instantiation only affects the type annotation.
 In other words, the runtime semantics of \name can be implemented only with
-extracted expressions, when its annotation is well-typed.
+erased expressions, when its annotation is well-typed.
 Because for every step it reduces, we can find a corresponding annotation that
 preserve the type of, and have the reduction relation with the
 annotation of its expansion.
@@ -612,7 +613,7 @@ subtyping~\cite{??}.
     \label{fig:lift}
 \end{figure}
 
-Figure \ref{fig:lift} shows the transformation from DK's subtyping to \name.
+Figure \ref{fig:lift} shows the transformation from polymorphic subtyping to \name.
 Then we prove the subsumption in terms type well-formedness and subtyping
 by following the interpretation of unified subtyping.
 

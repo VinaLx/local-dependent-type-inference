@@ -34,7 +34,7 @@ context, G {{ tex \Gamma }} :: 'ctx_' ::=
   | [ e / x ] G :: M :: subst
     {{ com context substitution }} {{ coq (subst_ctx ([[e]]) [[x]] ([[G]])) }}
 
-eexpr, ee {{tex e}}, eA {{tex A}}, eB {{tex B}}, eC {{tex C}} :: 'ee_' ::= {{ com extracted expression }}
+eexpr, ee {{tex E}}, eA {{tex A}}, eB {{tex B}}, eC {{tex C}} :: 'ee_' ::= {{ com extracted expression }}
   | x   :: :: var
   | k   :: :: kind
   | n   :: :: num
