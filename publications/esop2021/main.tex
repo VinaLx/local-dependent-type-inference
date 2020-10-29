@@ -1,4 +1,4 @@
-\documentclass[english]{lipics-v2019}
+\documentclass{elsarticle}
 
 \usepackage[T1]{fontenc}
 \usepackage{ottalt}
@@ -33,15 +33,23 @@
 \newcommand{\bruno}[1]{\an{bruno}{blue}{#1}}
 \newcommand{\alvin}[1]{\an{alvin}{red}{#1}}
 
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
 \title{A Dependently Typed Calculus with Polymorphic Subtyping}
 
 % \titlerunning{Dependently Typed Polymorphic Subtyping}
 
-\author{Mingqi Xue}{The University of Hong Kong}{mqxue@cs.hku.hk}{}{}
+\author{Mingqi Xue}
+\ead{mqxue@cs.hku.hk}
+\address{The University of Hong Kong}
 
-\author{Bruno C. d. S. Oliveira}{The University of Hong Kong}{bruno@cs.hku.hk}{}{}
+\author{Bruno C. d. S. Oliveira}
+\ead{bruno@cs.hku.hk}
+\address{The University of Hong Kong}
 
-\authorrunning{M. Xue and B. C. d. S. Oliveira}
+% \authorrunning{M. Xue and B. C. d. S. Oliveira}
 
 % \author{Mingqi Xue \and Bruno C. d. S. Oliveira}
 % \institute{
@@ -49,16 +57,14 @@
 %     \email{\{mqxue,bruno\}@cs.hku.hk}
 % }
 
-\Copyright{Mingqi Xue and Bruno C. d. S. Oliveira}
+% \Copyright{Mingqi Xue and Bruno C. d. S. Oliveira}
 
-\ccsdesc{Theory of computation~Type theory}
-\ccsdesc{Software and its engineering~Functional languages}
+% \ccsdesc{Theory of computation~Type theory}
+% \ccsdesc{Software and its engineering~Functional languages}
 
-\keywords{Type System, Dependent Type, Subtyping, Polymorphism}
+
 
 \begin{document}
-
-\maketitle
 
 \begin{abstract}
   A \emph{polymorphic subtyping} relation, which relates more general types
@@ -83,6 +89,14 @@
 %A complication that arizes in the type-soundness proof
 %is that a direct semantics is non-deterministic due
 \end{abstract}
+
+
+\begin{keyword}
+  Type System \sep Dependent Type \sep Subtyping \sep Polymorphism
+\end{keyword}
+% \keywords{Type System, Dependent Type, Subtyping, Polymorphism}
+
+\maketitle
 
 \input{overview.filt}
 \input{type-system.filt}
