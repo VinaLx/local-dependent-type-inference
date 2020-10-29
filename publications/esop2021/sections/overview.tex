@@ -11,7 +11,7 @@ discussed in section \ref{sec:type-system} and \ref{sec:matatheory}.
 
 The \name calculus features a extended capability of expressing \emph{implicit
   polymorphism} with the power of dependent types. Thus the main feature of \name
-is the ability to implicitly infer universally quantified arguments.  
+is the ability to implicitly infer universally quantified arguments.
 
 \subsubsection{A First Example of Implicit Polymorphism}
 Like most of functional languages, \name supports (implicit) parametric polymorphism.
@@ -19,12 +19,11 @@ A first simple example is the polymorphic identity
 function:
 
 \begin{align*}
-\mathrm{id} &: \forall (A : \star).\, A \rightarrow A \\
-\mathrm{id} &= \lambda (x : A).\, x
-\end{align*}
-\begin{align*}
-\mathrm{answer} &: \mathbb{N} \\
-\mathrm{answer} &= \mathrm{id} ~ 42  \quad\quad\quad\quad    \text{-- No type argument needed at the call of $\mathrm{id}$}
+&\mathrm{id} : \forall (A : \star).\, A \rightarrow A \\
+&\mathrm{id} = \lambda (x : A).\, x \\
+\\
+&\mathrm{answer} : \mathbb{N} \\
+&\mathrm{answer} = \mathrm{id} ~ 42  \quad\quad\quad\quad    \text{-- No type argument needed at the call of $\mathrm{id}$}
 \end{align*}
 
 \noindent The polymorphic parameter \verb|A| is annotated with its type,
@@ -37,7 +36,7 @@ during applications. Thus, in the call of the identity function, we
 do not need to specify the argument used for instantiation. In contrast,
 in an explicitly polymorphic language (such as System F) we would need
 to call $id$ with an extra argument that specifies the instantiation of $A$:
-$\mathrm{id}~\mathbb{N}~ 42$. 
+$\mathrm{id}~\mathbb{N}~ 42$.
 
 
 \subsubsection{Recursion and Dependent Types}
@@ -47,7 +46,7 @@ on arguments of type $\star$, but it allows arguments of other types. This is
 a key difference compared to much of the work on type-inference for higher-ranked
 polymorphism~\cite{}\bruno{reference to many (i.e. 5+) papers on that topic}, which has focused on System F-like
 languages where universal quantification can only have arguments of type $\star$.
-Furthermore \name supports general recursion at both the term and the type-level. 
+Furthermore \name supports general recursion at both the term and the type-level.
 Using these features we can encode an indexed list, a \verb|map| operation over it
 and illustrate how implicit instantiation allows us to use the \verb|map| function
 conveniently.
@@ -173,9 +172,8 @@ Our language reasons about the subtyping relation between polymorphic types at
 higher-ranked positions. For example the following program type checks:
 
 \begin{align*}
-& \mathrm{callcc}' :: \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a
-\\
-& \mathrm{callcc} :: \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a
+& \mathrm{callcc}' :: \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a \\
+& \mathrm{callcc} :: \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a \\
 & \mathrm{callcc} = \mathrm{callcc}'
 \end{align*}
 

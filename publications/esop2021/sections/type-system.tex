@@ -147,21 +147,21 @@ information in the dynamic semantics.
   % The behavior of gather and align under this lipics template is extremely
   % weird, this is the best I can do :(
   \begin{gather*}
-    \quad \begin{align*}
+    \begin{align*}
     \extract{[[x]]} &= [[x]] &
     \extract{[[n]]} &= [[n]] &
     \extract{[[k]]} &= [[k]] &
     \extract{[[int]]} &= [[int]]
     \end{align*} \\
     \begin{align*}
-     \qquad \extract{[[e1 e2]]} &= \extract{[[e1]]} ~ \extract{[[e2]]} & % \\ % \and
-      \qquad \extract{[[mu x : A. e]]} &= \mu \, x. ~ \extract{[[e]]} \\
-     \qquad \extract{[[lambda x : A. e]]} &= \lambda \, x. ~ \extract{[[e]]} & % \\ % \and
-      \qquad \extract{[[pi x : A. B]]} &= \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
-     \qquad \extract{[[bind x : A. e]]} &= \Lambda \, x. ~ \extract{[[e]]} & % \\ % \and
-      \qquad \extract{[[forall x : A. B]]} &= \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
-     \qquad \extract{[[castup [A] e]]} &= \castup \, \extract{[[e]]} & % \\ % \and
-      \qquad \extract{[[castdn e]]} &= \castdn \, \extract{[[e]]}
+     \extract{[[e1 e2]]} &= \extract{[[e1]]} ~ \extract{[[e2]]} & % \\ % \and
+      \extract{[[mu x : A. e]]} &= \mu \, x. ~ \extract{[[e]]} \\
+     \extract{[[lambda x : A. e]]} &= \lambda \, x. ~ \extract{[[e]]} & % \\ % \and
+      \extract{[[pi x : A. B]]} &= \Pi \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+     \extract{[[bind x : A. e]]} &= \Lambda \, x. ~ \extract{[[e]]} & % \\ % \and
+      \extract{[[forall x : A. B]]} &= \forall \, x : \extract{[[A]]}. ~ \extract{[[B]]} \\
+     \extract{[[castup [A] e]]} &= \castup \, \extract{[[e]]} & % \\ % \and
+      \extract{[[castdn e]]} &= \castdn \, \extract{[[e]]}
     \end{align*}
   \end{gather*}
 
