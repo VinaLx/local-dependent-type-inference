@@ -13,8 +13,8 @@ subtyping brings new issues to the table. For type-soundness the key challenge
 is the non-deterministic and non type-preserving nature of the reduction relation.
 To address this issue, we employ a type soundness proof technique
 that uses the erased reduction relation shown in Section~\ref{}.
-\bruno{Check that the completeness lemma with respect to DK is discussed, and that the lemma
-that shows that redundant premises are indeed redundant are discussed as well.}
+% \bruno{Check that the completeness lemma with respect to DK is discussed, and that the lemma
+% that shows that redundant premises are indeed redundant are discussed as well.}
 
 
 \begin{comment}
@@ -199,11 +199,15 @@ instantiation and \rref{s-app} requires the argument of both sides to be
 syntactically the same.
 
 Worth mentioning is that while poly-expressions breaks the subtyping aspect of the
-\emph{substitution}, a ``typing'' version of it
+\emph{substitution}, a special case of the substitution theorem that discusses
+the typing of one expression
 (If $[[G1 , x : A ,, G2 |- e : B]]$ and $[[G1 |- e1 : A]]$,
-then $[[G1 ,, [e1 / x] G2 |- [e1 / x] e : [e1 / x] B]]$) does not escape the issue above\bruno{Hummm is this text correctly
-  written? The way I read it is that both subtyping and typing aspects break the lemma, but I suppose
-that what you want to say is that one aspect breaks but the other does not. Please rephrase more carefully.}.
+then $[[G1 ,, [e1 / x] G2 |- [e1 / x] e : [e1 / x] B]]$)
+does not hold for similar reasons.
+% \bruno{Hummm is this text correctly
+%   written? The way I read it is that both subtyping and typing aspects break the lemma, but I suppose
+% that what you want to say is that one aspect breaks but the other does not. Please rephrase more carefully.}.
+% \Alvin{Yup, the seemingly only-typing version of the substitution doesn't hold}
 Because in dependently-typed languages, substitutions are also involved in the types of
 expressions as well. Due to the presence of \rref{s-sub}, we still have to
 maintain the potential subtyping relation of the types of expressions after substitution,
@@ -398,8 +402,10 @@ leaving the runtime semantics nondeterministic and potentially non-type-preservi
 
 We tackle this issue by making the choice of implicit instantiation
 irrelevant at runtime with the restrictions in \rref{s-bind}.
-We define an erasure function\bruno{This is the function that is shown earlier, right?
-  If so add a back reference to the figure here.} that eliminates the type annotations
+We define an erasure function (shown in figure \ref{fig:extraction})
+% \bruno{This is the function that is shown earlier, right?
+%   If so add a back reference to the figure here.}
+that eliminates the type annotations
 in some of the expressions ($\lambda$, $\Lambda$, $mu$ and $\castup$),
 and keep the implicit parameter from occuring in the erased expressions.
 This way the choices of implicit instantiation only affect the type annotation,
@@ -479,8 +485,11 @@ for brevity.
 
 
 \noindent Figure \ref{fig:preservation} shows the idea of our preservation lemma without
-considering the subtyping aspect\bruno{Are you trying to show a simplified version of the lemma here?
-Is this actually valid, or you're just trying to give an overview of the idea?}.
+considering the subtyping aspect
+% \bruno{Are you trying to show a simplified version of the lemma here?
+% Is this actually valid, or you're just trying to give an overview of the idea?}.
+% \Alvin{The figure only talks about preservation of typing, the lemma shows the
+% preservation of subtyping, they both hold, but only typing is clearer}
 Here we use \emph{annotation} as the reverse process of erasure.
 If an expression ($e$) is well-typed, and its erasure ($E$)
 reduces to another erased expression ($E'$), we can find a ``annotated''
@@ -502,11 +511,12 @@ cases \rref{r-app,r-castdn} are solved by inductive hypothesis. The interesting
 ones are cases for \rref{r-cast-elim} and the implicit instantiation
 (\rref{r-inst,r-cast-inst}).
 
-\paragraph{Subtype Preservation for Types} The problem of cast elimination
-can be demonstrated by the following derivation:\bruno{Do you mention this problem before to
-  start the paragraph with this text? What is the relationship between Subtype Preservation for Types
-  and cast elimination? You should connect these better, and also motivate why a separate lemma
-for Subtype preservation of types is needed. }
+\paragraph{Cast Elimination}
+The main problem of cast elimination can be demonstrated by the following derivation:
+% \bruno{Do you mention this problem before to
+%   start the paragraph with this text? What is the relationship between Subtype Preservation for Types
+%   and cast elimination? You should connect these better, and also motivate why a separate lemma
+% for Subtype preservation of types is needed. }
 
 \begin{mathpar}
     \hspace{-1.5cm}
@@ -520,15 +530,22 @@ for Subtype preservation of types is needed. }
 \end{mathpar}
 
 Here the typing of the inner $\castdn$ does not directly follow
-\rref{r-castup}, but the subsumption rule instead. We have to show that after
-the cast elimination, expression $e$ has type $B_2$, which means $A_2$ must be
-a subtype of $B_2$. While $[[A1 --> A2]]$, $[[B1 --> B2]]$ and $A_1$ is a subtype
-of $A_2$, this case depends back on the subtyping preservation we currently attempt to prove
-\bruno{I don't follow this last sentence}.
+\rref{r-castup}, but the subsumption rule instead. We want to show that after
+the cast elimination (following \rref{r-cast-elim}), expression $e$ has type $B_2$,
+while in reality it has type $A_2$. So we want to prove $\Gamma \vdash A_2 \le B_2$
+with the information that $\Gamma \vdash A_1 \le B_1$, $[[A1 --> A2]]$
+and $[[B1 --> B2]]$, which goes back to what we want to prove initially --
+the subtype preservation, causing a circular dependency of proof.
+% \bruno{I don't follow this last sentence}.
 This problem was also observed by the previous work on unified subtyping
-with the cast operators\cite{yang2017unifying}. Unfortunately they solved this
-situation with the help of a lemma that does not hold in our system.
-\bruno{What lemma? briefly explain.}
+with the cast operators\cite{yang2017unifying}. They solved this situation
+by a delicate approach with the help of an essential lemma
+\emph{Reduction Exists in the Middle} (If $[[G |- e1 <: e2 : A]]$, $[[G |- e2 <: e3 : A]]$
+and $e_1 \longrightarrow e_1'$, $e_3 \longrightarrow e_3'$, there exists $e_2'$
+such that $e_2 \longrightarrow e_2'$). Unfortunately this lemma does not hold
+in our system since universal types, which is not reducible, can appear in the middle of
+two reducible types, so we cannot adopt their proof.
+% \bruno{What lemma? briefly explain.}
 
 We tackle this problem from another direction, with the observation that the
 demand for subtyping preservation shifts from the ``terms'' to the ``types''.
@@ -594,6 +611,23 @@ implicit instantiations are exactly the instantiation of the polymorphic types.
 Then the rest of the proofs are finished by standard inversion lemmas,
 with the help of the substitution lemma for the instantiations.
 
+\subsection{Equivalence of a Simplified Language}
+
+We mention in section \ref{sec:type-system} that some of the premises in the
+typing rules are redundant. They helps in the formalization, but the system
+is equivalent to the system without them. We define system
+$[[G |= e1 <: e2 : A]]$, whose rules are the same as the typing rules of \name
+, but with all redundant premises eliminated. Also, \rref{s-castdn,s-castup}
+are also simplified to use deterministic reduction ($A \longrightarrow_D B$)
+instead of the reduction rule $A \longrightarrow B$.
+
+We prove the two system equivalent.
+
+\begin{theorem}[Equivalence of \name and the Simplification]
+  If $[[G |- e1 <: e2 : A]]$ then $[[G |= e1 <: e2 : A]]$.
+  If $[[G |= e1 <: e2 : A]]$ then $[[G |- e1 <: e2 : A]]$.
+\end{theorem}
+
 \subsection{Subsumption of Polymorphic Subtyping}
 
 Finally we show that the subtyping aspect of \name subsumes the Odersky and L\"aufer's declarative
@@ -630,7 +664,7 @@ in Odersky and L\"aufer system, mentioned in section \ref{sec:adaptation}, to co
 $A$ itself is a well-formed type in $\Gamma \vdash A \le \forall x.\, B$, and
 $\forall x. A$ is well-formed in $\Gamma \vdash \forall x. \, A \le B$.
 
-\bruno{The lemma that shows that the redundant premises are indeed redundant is not shown, right?
-  I think it should appear somewhere in Section 3.2.}
+% \bruno{The lemma that shows that the redundant premises are indeed redundant is not shown, right?
+%   I think it should appear somewhere in Section 3.2.}
 
 \bruno{After reading this section, I feel that the text in Section 3.1 should come in Section 2 instead.}
