@@ -271,20 +271,26 @@ this idea and is discussed in \ref{sec:type-safety}.
 Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt a
 simplified design of unified subtyping~\cite{yang2017unifying}, where the subtyping rules and
 typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
-The originals design lean towards object-oriented features,
-supporting generalized top type and bounded quantification,
-while our work focus on the subtyping relation between polymorphic types.
-\bruno{The previous sentence is something to be mentioned in related work, not here.}
+% The originals design lean towards object-oriented features,
+% supporting generalized top type and bounded quantification,
+% while our work focus on the subtyping relation between polymorphic types.
+% \bruno{The previous sentence is something to be mentioned in related work, not here.}
 
 Unified subtyping solves the challenging issue of mutual dependency between typing
-and subtyping in a dependently type system.\bruno{Make sure that the overview discusses
-this issue.}
+and subtyping in a dependently type system.
+% \bruno{Make sure that the overview discusses this issue.}
 The interpretation of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
 subtype of $[[e2]]$ and they are both of type $[[A]]$''.
 In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
 special case of unified subtyping judgment $[[G |- e <: e : A]]$,
 and the well-formedness of types $\Gamma \vdash A$ is expressed by
 $[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
+
+Although unified, the typing rules can still be viewed as two parts, the ``typing'' part
+(\rref{s-abs,s-app,s-bind,s-mu,s-castup,s-castdn,s-sub}) and the ``subtyping'' part
+(\rref{s-pi,s-forall,s-forall-l,s-forall-r}). We follow a usual design for
+typing rules for lambda abstraction and application, and the subtyping rule of
+dependent function types ($\Pi$ type).
 % \bruno{We should say something about the ``more standard'' rules here.
 %   I think we can briefly explain them and point the
 %   reader to Linus work for further details, while observing that the rules
