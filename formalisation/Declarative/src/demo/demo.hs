@@ -62,7 +62,7 @@ showE' prec = \case
   EInt -> return "Int"
   ELit n -> return $ show n
   EApp e1 e2 -> enclose 10 $
-    return (printf "(%s) %s") <*> showE' 10 e1 <*> showE' 9 e2
+    return (printf "%s %s") <*> showE' 9 e1 <*> showE' 10 e2
   EAbs  a b -> showBinder "lambda" a b
   EPi   a b -> showBinder "pi"     a b
   EAll  a b -> showBinder "forall" a b
@@ -74,11 +74,11 @@ showE' prec = \case
     return (printf "castdn %s") <*> showE' 10 a
   where
     showBinder :: String -> Expr -> (Expr -> Expr) -> State Int String
-    showBinder symbol a b = enclose 10 $ get >>= \n -> do
+    showBinder symbol a b = enclose 9 $ get >>= \n -> do
       modify (+1)
-      sa <- showE' 10 a
+      sa <- showE' 9 a
       let sv = intToVar n
-      sb <- showE' 9 (b (Var n))
+      sb <- showE' 8 (b (Var n))
       return $ printf "%s %s : %s. %s" symbol sv sa sb
     enclose :: Int -> State Int String -> State Int String
     enclose p m = if p > prec then m else printf "(%s)" <$> m
@@ -312,12 +312,13 @@ betaReduce = \case
 data InferError
   = EmptyStack
   | TypeError
+  | KindConflict Kind Kind
   | SubtypeError Expr Expr
   | OutOfScopeVar Int
   | OccurenceError Int Expr
   | NoInstantiation Expr
   | IrreducibleExpr Expr
-  deriving Show
+  deriving (Show, Eq)
 
 
 newtype RuleLog = RuleLog [String]
@@ -479,7 +480,7 @@ substWorkListNoScope ex v = \case
     recurse = substWorkListNoScope ex v
 
 substWorkListK' :: Int -> Kind -> [Int] -> [Work] -> [Work]
-substWorkListK' ex k replaces = \case
+substWorkListK' ex k replaces = if k == KEx ex then id else \case
   [] -> []
   w : ws -> case w of
     WVar n e ->
@@ -503,6 +504,13 @@ substWorkListK' ex k replaces = \case
       WUnifyL n (subst e) : recurse ws
     WUnifyR e n ->
       WUnifyR (subst e) n : recurse ws
+    WUnifyK n (KEx k') | n == ex ->
+      WUnifyK k' k : recurse ws
+    WUnifyK n k' | n == ex -> case k of
+      KEx k'' -> WUnifyK k'' k' : recurse ws
+      _ -> if k /= k'
+        then WFail (KindConflict k k') : recurse ws
+        else recurse ws
     WUnifyK n k' ->
       WUnifyK n (substK' ex k' k) : recurse ws
     WReduce e k ->
@@ -531,6 +539,14 @@ infer c = curry $ \case
       Just e  -> return $ c e
       Nothing -> throwError (OutOfScopeVar n1)
   (EKind KStar, EKind KStar) -> return $ c $ EKind KBox
+  (EKind KStar, EKind (KEx n)) -> return $
+    WUnifyK n KStar : c (EKind KBox)
+  (EKind (KEx n), EKind KStar) -> return $
+    WUnifyK n KStar : c (EKind KBox)
+  (EKind (KEx n1), EKind (KEx n2)) | n1 == n2 -> return $
+    WUnifyK n1 KStar : c (EKind KBox)
+  (EKind (KEx n1), EKind (KEx n2)) -> return $
+    WUnifyK n1 KStar : WUnifyK n2 KStar : c (EKind KBox)
   (EInt, EInt) -> return $ c $ EKind KStar
   (ELit m, ELit n) | m == n -> return $ c EInt
   (EApp f1 a1, EApp f2 a2) | a1 == a2 && isMono a1 -> do
@@ -552,7 +568,7 @@ infer c = curry $ \case
     v2 <- freshVarOf a2
     return $
       [ WCheck a2 a1 (EKind k1)
-      , WCheck (b1 v1) (b1 v1) (EKind k1)
+      -- , WCheck (b1 v1) (b1 v1) (EKind k2)
       , WCheck (b1 v2) (b2 v2) (EKind k2)]
       ++ c (EKind k2)
   (EBind a1 b1, EBind a2 b2) | a1 == a2 -> do
@@ -579,8 +595,8 @@ infer c = curry $ \case
   (ECastUp a1 b1, ECastUp a2 b2) | a1 == a2 -> do
     k <- freshKind
     return $ return $ WInfer b1 b2 $ \e -> case betaReduce a1 of
-      Nothing -> return $ WFail $ IrreducibleExpr a1
-      Just a' -> return $ WCheck e a' (EKind k)
+      Nothing -> WFail (IrreducibleExpr a2) : c a1
+      Just a' -> WCheck e a' (EKind k) : c a1
   (ECastDn a1, ECastDn a2) -> return $ return $ WInfer a1 a2 $ \e ->
      return $ WReduce e $ \e' -> c e'
 
@@ -631,8 +647,9 @@ check e1 e2 t = do
     case (t, t') of
       (EKind KBox, EKind KBox) -> []
       (EKind (KEx k1), EKind (KEx k2)) | k1 == k2 -> []
-      (EKind k1, EKind (KEx kex)) -> return $ WUnifyK kex k1
-      (EKind (KEx kex), EKind k2) -> return $ WUnifyK kex k2
+      (EKind (KEx k1), EKind (KEx k2)) -> return $ WUnifyK k1 (KEx k2)
+      (EKind KBox, EKind (KEx kex)) -> return $ WUnifyK kex KBox
+      (EKind (KEx kex), EKind KBox) -> return $ WUnifyK kex KBox
       _ -> return $ WCheck t' t (EKind k)
 
 inferApp
@@ -782,4 +799,64 @@ runInfer e =
    let (r, RuleLog logs) =
          runWriter $ runExceptT $ evalStateT
          wlStepImpl (InferState 0 [WInfer e e $ \e' -> return $ WDone e'])
-   in forM_ logs putStrLn >> return r
+   in do
+     forM_ (take 5 logs) putStrLn
+     return r
+
+tNat :: Expr
+tNat = eStar
+
+eNat :: Expr
+eNat = EMu tNat $ \n ->
+  EAll eStar $ \r ->
+    eArrow r (eArrow (eArrow n r) r)
+
+tList :: Expr
+tList = eArrow eStar (eArrow eNat eStar)
+
+eList :: Expr
+eList = EMu tList $ \l ->
+  EAbs eStar $ \a ->
+    EAbs eNat $ \n ->
+      EAll eStar $ \r ->
+        eArrow r (eArrow (eArrow a (eArrow (EApp (EApp l a) n) r)) r)
+
+eList' :: Expr
+eList' = case eList of EMu _ f -> f eList
+
+tNil :: Expr
+tNil = EAll eStar $ \a ->
+  EAll eNat $ \n ->
+    EApp (EApp eList a) n
+
+eNil :: Expr
+eNil = EBind eStar $ \a -> EBind eNat $ \n ->
+  ECastUp (EApp (EApp eList a) n) $
+    ECastUp (EApp (EApp eList' a) n) $
+      ECastUp (EApp (absBinder a) n) $
+        EBind eStar $ \r ->
+          EAbs r $ \z ->
+            EAbs (eArrow a (eArrow (EApp (EApp eList a) n) r)) (const z)
+  where
+    absBinder :: Expr -> Expr
+    absBinder = case eList' of EAbs _ b -> b
+
+tCons :: Expr
+tCons = EAll eStar $ \a ->
+  EAll eNat $ \n ->
+    eArrow a (eArrow (EApp (EApp eList a) n) (EApp (EApp eList a) n))
+
+eCons :: Expr
+eCons = EBind eStar $ \a -> EBind eNat $ \n ->
+  EAbs a $ \x ->
+    EAbs (EApp (EApp eList a) n) $ \xs ->
+      ECastUp (EApp (EApp eList a) n) $
+        ECastUp (EApp (EApp eList' a) n) $
+          ECastUp (EApp (absBinder a) n) $
+            EBind eStar $ \r ->
+              EAbs r $ \_ ->
+                EAbs (eArrow a (eArrow (EApp (EApp eList a) n) r)) $ \c ->
+                  EApp (EApp c x) xs
+  where
+    absBinder :: Expr -> Expr
+    absBinder = case eList' of EAbs _ b -> b
