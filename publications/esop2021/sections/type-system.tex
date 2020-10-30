@@ -48,7 +48,7 @@ Moreover, there are a number of additional language constructs for
 supporting implicit polymorphism, recursion and explicit type-level computation
 via casts. These constructs are discussed next.
 
-\subsubsection{Implicit Polymorphism.}
+\paragraph{Implicit Polymorphism.}
 In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
 polymorphism in non-dependent.
 In contrast to universal quantification in conventional functional languages, the
@@ -65,7 +65,7 @@ deduced during applications rather than being explicitly passed.
 In addition, following designs for predicative higher-ranked polymorphism~\cite{oderskylufer,DK,PJ}, we have also generalized the concept of \emph{monotypes} to
 \emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
 
-\subsubsection{Recursion and Explicit Type-level Computation.}
+\paragraph{Recursion and Explicit Type-level Computation.}
 \label{sec:cast}
 The \name calculus adopts \emph{iso-types}~\cite{yang2016unified,yang2019pure},
 featuring explicit type-level computation with cast operators
@@ -93,7 +93,7 @@ it is used at the type-level to allow type conversions induced
 by the cast operators. The second reduction relation is deterministic and
 is employed to give the run-time semantics of expressions.
 
-\subsubsection{Nondeterministic Reduction.}
+\paragraph{Nondeterministic Reduction.}
 Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
 which mostly follows the call-by-name variant of \emph{Pure Iso-Type Systems} (PITS)
 \cite{yang2019pure} corresponding to the calculus of constructions.
@@ -172,7 +172,7 @@ information in the dynamic semantics.
 % \bruno{You need to use something like a latex table/tabular,
 % to neatly align the erasure function.}
 
-\subsubsection{Deterministic Reduction}
+\paragraph{Deterministic Reduction}
 We address the issue of determinancy of the dynamic semantics with
 a design similar to $\mathrm{ICC}^*$ \cite{barras2008implicit},
 employing type-erased expressions. The erased expressions
@@ -297,7 +297,7 @@ dependent function types ($\Pi$ type).
 %   here are essentially simplified version (due to the absence of bounded quantification)
 % of his rules.}
 
-\subsubsection{Rules for Universal Quantification}
+\paragraph{Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
 the spirit of the Odersky and L\"aufer's polymorphic subtyping~\cite{odersky1996putting,DunfieldJoshua2013Caeb},
 where the subtyping relation is interpreted as a ``more general than'' relation.
@@ -314,7 +314,7 @@ And additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
 ones we previously mentioned in section \label{sec:polymorphic-subtyping}
 The motivations for these changes are discussed in more detail in section \ref{sec:adaptation}.
 
-\subsubsection{Mono-expression Restrictions}
+\paragraph{Mono-expression Restrictions}
 As in other predicative relations (such as the one by Odersky and L\"aufer),
 the type arguments for instantiation in \rref{s-forall-l} are
 required to be mono-expressions, which has cascading effects on typing rules of
@@ -325,7 +325,7 @@ discuss the reason behind the restrictions in later sections.
 \bruno{I feel that we may be deferring a bit too much explanation
 to later sections, but lets come back to this after you write later sections.}
 
-\subsubsection{Kind Restriction for Universal Types}
+\paragraph{Kind Restriction for Universal Types}
 \label{sec:kind-restriction}
 
 For the kinding of types, we mainly follow the design of the Calculus of
@@ -340,7 +340,7 @@ This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
 from type computations. Therefore, in cast operators,
 the possibility of non-deterministic implicit instantiations is eliminated.
 
-\subsubsection{Runtime Irrelevance of Implicit Arguments}
+\paragraph{Runtime Irrelevance of Implicit Arguments}
 
 Our direct operational semantics choose random mono-expressions to instantiate
 the implicit arguments which potentially breaks type safety, so we adopt a
@@ -352,7 +352,7 @@ relevant at runtime. The type safety of the direct operational semantics is
 proved indirectly in section \ref{sec:type-safety} with the help of the
 erasure of expressions.
 
-\subsubsection{Redundant Premises}
+\paragraph{Redundant Premises}
 
 All the premises highlight in gray are redundant in a way that
 the system without them is proved equivalent to the system in figure \ref{fig:typing}.

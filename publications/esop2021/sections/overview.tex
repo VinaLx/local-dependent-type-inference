@@ -13,7 +13,7 @@ The \name calculus features a extended capability of expressing \emph{implicit
   polymorphism} with the power of dependent types. Thus the main feature of \name
 is the ability to implicitly infer universally quantified arguments.
 
-\subsubsection{A First Example of Implicit Polymorphism}
+\paragraph{A First Example of Implicit Polymorphism}
 Like most of functional languages, \name supports (implicit) parametric polymorphism.
 A first simple example is the polymorphic identity
 function:
@@ -39,7 +39,7 @@ to call $id$ with an extra argument that specifies the instantiation of $A$:
 $\mathrm{id}~\mathbb{N}~ 42$.
 
 
-\subsubsection{Recursion and Dependent Types}
+\paragraph{Recursion and Dependent Types}
 
 \name is dependently typed, and universal quantification is not limited to work
 on arguments of type $\star$, but it allows arguments of other types. This is
@@ -146,7 +146,7 @@ one-step reduction or expansion respectively at type-level.
 They also serve a role of wrapping and unwrapping the abstraction of data types.
 \end{comment}
 
-\subsubsection{Implicit Higher-Kinded Types}
+\paragraph{Implicit Higher-Kinded Types}
 
 The implicit capabilities also extend to the realm of higher-kinded types~\cite{}. For example
 we can define a \verb|Functor| datatype as:
@@ -170,7 +170,7 @@ Then we can omit the implicit argument $F$ when defining instances of functor ov
   & \mathrm{idFunctor} = \MkFunctor~(\lambda f : a \rightarrow b.\, \lambda (\MkId~x) : \Id~a.\, \MkId~(f~x))
 \end{align*}
 
-\subsubsection{Reasoning of Higher-Ranked Polymorphism}
+\paragraph{Reasoning of Higher-Ranked Polymorphism}
 \label{sec:higher-ranked-poly}
 
 Our language reasons about the subtyping relation between polymorphic types at
@@ -193,7 +193,7 @@ In this section, we briefly discuss the major features of \name itself and
 its formalization. A more formal and technical discussion will be left to
 section \ref{sec:system} and \ref{sec:metatheory}.
 
-\subsection{The Polymorphic Subtyping Relation}
+\paragraph{The Polymorphic Subtyping Relation}
 % \bruno{Have a figure and introduce the original relation here, before you move to
 % giving an overview of the dependently typed version.}
 Odersky and L\"aufer captures a \emph{more-general-than} relation between
@@ -243,7 +243,7 @@ to generalize this relation to dependent type version.
 % \bruno{Do not just show a few rules; show the complete relation (and the rule form).}
 
 
-\subsubsection{Lifting the Polymorphic Subtyping}
+\paragraph{Lifting the Polymorphic Subtyping}
 \label{sec:polymorphic-subtyping}
 
 The parameters of polymorphic types can only be types in the polymorphic
@@ -266,7 +266,7 @@ $\le\forall$, it is required to be well-typed regarding the type of the paramete
 Similarly, the context for the subtyping rule should include typing information
 for the abstract variable in the adaptation of $\ge\forall$.
 
-\subsubsection{Higher-Ranked Polymorphic Subtyping}
+\paragraph{Higher-Ranked Polymorphic Subtyping}
 
 As the example in section \ref{sec:higher-ranked-poly} shows, these subtyping
 rules based on polymorphic subtyping, combining with the normal subtyping rules
@@ -290,7 +290,7 @@ relation at higher-rank position. So from another perspective,
 rule $\le\forall L'$ and $\le\forall R'$ generalize these two rules from ICC
 that talks about implicit polymorphism.
 
-\subsubsection{Unified Subtyping}
+\paragraph{Unified Subtyping}
 
 However, the notorious mutual dependency between typing and subtyping
 \cite{aspinall1996subtyping, hutchins2010pure} presents itself on our way to the direct
@@ -339,7 +339,7 @@ the generalization of the polymorphic subtyping should be:
 However the formalization is not exactly like this due to various issues, the
 details will be discussed in section \ref{sec:type-system}.
 
-\subsubsection{``Explicit'' Implicit Instantiation}
+\paragraph{``Explicit'' Implicit Instantiation}
 
 Another feature of the polymorphic subtyping is that the instantiation of type
 parameter is done implicitly instead of being manually applied. Normally the
@@ -371,7 +371,7 @@ in section \ref{sec:examples} for clarity, but for most of the cases where
 the polymorphic parameters are used, our language provide a binder to ensure
 the parameters are well-scoped at term-level.
 
-\subsubsection{Type-level Computation and Casts}
+\paragraph{Type-level Computation and Casts}
 
 Since our language features a fixpoint that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,

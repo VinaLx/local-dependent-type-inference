@@ -87,11 +87,11 @@ So we add a premise $[[G , x : A |- B : *]]$ in \rref{s-forall-l} to directly
 ensure the well-formedness of types in the conclusion.
 
 \subsubsection{Strengthening of Contexts.}
-\bruno{As far as I understand the discussion here + in Section 4.1 the strenghtening
-  lemma does not hold even when considering that fixpoints are added to the language.
-  Thus I think you should just show a counter-example here, avoid mentioning fixpoints
-  at this point, and mention only fixpoints in Section~\ref{sec:instantiation}. Please rewrite
-accordingly.}
+% \bruno{As far as I understand the discussion here + in Section 4.1 the strenghtening
+%   lemma does not hold even when considering that fixpoints are added to the language.
+%   Thus I think you should just show a counter-example here, avoid mentioning fixpoints
+%   at this point, and mention only fixpoints in Section~\ref{sec:instantiation}. Please rewrite
+% accordingly.}
 
 Rule $\le\forall R$ relies on a standard strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{is fresh in}~ A$, then $\Gamma \vdash A$}, which
@@ -294,7 +294,7 @@ syntactically different. Then the ``restricted'' version of transitivity follows
 \end{comment}
 
 
-\subsubsection{Uniqueness of Kinds.} Assuming that the derivation of the second
+\paragraph{Uniqueness of Kinds} Assuming that the derivation of the second
 premise of generalized transitivity ends with \rref{s-forall-r}, then we face the following problem:
 
 \begin{mathpar}
@@ -324,7 +324,7 @@ assembling various lemmas of kinding to solve different cases.
 With the help of \emph{Kind Uniqueness},
 we ensure the equivalence of $A$ and $[[*]]$ on this and other similar situations.
 
-\subsubsection{The Induction}
+\paragraph{The Induction}
 
 \emph{Generalized Transitivity} is proved by induction on the 3-tuple:
 
@@ -515,6 +515,11 @@ Because for every step it reduces, we can find a corresponding annotation that
 preserve the type of, and have the reduction relation with the
 annotation of its expansion.
 
+Aside from the erased aspect of our preservation lemma, we also consider a
+generalized version of preservation in our unified subtyping system, the
+``subtype preservation'': reductions not only preserves the type of expression,
+the subtyping relation between expressions are preserved as well.
+
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
 cases for \rref{r-beta,r-mu} are solved with the substitution theorem,
 cases \rref{r-app,r-castdn} are solved by inductive hypothesis. The interesting
@@ -542,7 +547,7 @@ The main problem of cast elimination can be demonstrated by the following deriva
 Here the typing of the inner $\castdn$ does not directly follow
 \rref{r-castup}, but the subsumption rule instead. We want to show that after
 the cast elimination (following \rref{r-cast-elim}), expression $e$ has type $B_2$,
-while in reality it has type $A_2$. So we want to prove $\Gamma \vdash A_2 \le B_2$
+while in reality it has type $A_2$. So we want to show $\Gamma \vdash A_2 \le B_2$
 with the information that $\Gamma \vdash A_1 \le B_1$, $[[A1 --> A2]]$
 and $[[B1 --> B2]]$, which goes back to what we want to prove initially --
 the subtype preservation, causing a circular dependency of proof.
