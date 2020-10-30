@@ -97,13 +97,23 @@ Rule $\le\forall R$ relies on a standard strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{is fresh in}~ A$, then $\Gamma \vdash A$}, which
 is trivial to prove.
 However its generalization:
-\emph{if $[[G, x : B |- A : *]]$ and $x ~\text{is fresh in}~ A$},
-is a much more difficult problem since we are no longer reasoning about
-``well-formedness'' but also typing and subtyping. In our system the property
-does not hold without the help of diverging programs with fixpoint operator,
-we will come back to this issue in the section \ref{sec:instantiation}.
+\emph{if $[[G, x : B |- A : *]]$ and $x ~\text{is fresh in}~ A$, then $[[G |- A : *]]$},
+does not hold in our system, while we can construct the following example:
 
-But for now, we add a premise $[[G |- A : *]]$ to \rref{s-forall-r},
+\begin{equation*}
+    F : [[int]] \rightarrow [[*]],\, A : [[*]],\, \rulehl{a : A} \vdash F ~ ([[(bind x : A. lambda y : int. y)]]~ 42) : [[*]]
+\end{equation*}
+
+The variable $a$ does not appear in any expression, but contribute a
+crucial role when considering the subtyping relation $\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$.
+In this case we cannot apply \rref{s-forall-l} while we are not able to find a
+well-typed instance for the polymorphic parameter, so the variable in the context
+is needed even though it does not occur anywhere. Note that although in this
+case we could pick a diverging program $\mu x : A.\, x$ as an instance. But
+since we require fixpoint to be mono-expression to be well-typed, the workaround
+does not work if we replace $A$ with an poly-type.
+
+So we add a premise $[[G |- A : *]]$ to \rref{s-forall-r},
 requiring $A$ to be a well-typed type without the help of the fresh variable.
 A consequence of adding this premise is that we will encounter a circular proof
 while trying to prove $[[G |- forall x : A. B <: forall x : A . B : *]]$ for
