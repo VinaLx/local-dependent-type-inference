@@ -1,1 +1,226 @@
 \section{Related Work}
+
+\paragraph{Type-inference and unification with dependent types}
+\bruno{This paragraph should be improved and expanded. }
+There has been little work on formalizing type inference for calculi
+with dependent types, although essentially all implementations of
+theorem provers or dependently typed languages perform some form of
+type-inference. 
+One important challenge is that type inference for
+many systems with dependent types requires \emph{higher-order unification},
+which is known to be undecidable
+~\cite{goldfarb1981undecidability}. The \textit{pattern}
+fragment~\cite{miller1991unification} is a well-known decidable
+fragment. Much literature on unification for dependent
+types~\cite{reed2009higher,abel2011higher, gundry2013tutorial, Cockx:2016:UEP:2951913.2951917, ziliani2015unification, coen2004mathematical} is
+built upon the pattern fragment. Algorithms for type-inference used in Agda and
+(Dependent) Haskell have been described and formalized to some degree 
+in various theses~\cite{norell,gundry,dh}. However as far as we know
+there is not a clear specification and complete metatheory (let alone 
+mechanized) for such algorithms. In the \emph{implicit calculus of
+ constructions}~\cite{Miquel01} an elegant (but purely declarative) curry-style
+version of the calculus of constructions is presented. As the author 
+suggests type-inference for this calculus without annotations is undecidable.
+
+\paragraph{Type-inference for higher-ranked polymorphism}
+Type-inference for \emph{higher-ranked polymorphism}
+(HRP)~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical,Serrano2018, odersky1996putting}
+extends the classic Hindley-Milner algorithm~\cite{hindley1969principal,milner1978theory,damas1982principal},
+removing the restriction of top-level (let) polymorphism only. Type
+inference for HRP aims at providing inference for System F-like
+languages. In particular existing HRP approaches allow \emph{synthesis of type arguments} 
+and use type annotations to aid 
+inference, since type-inference for full System F is
+well-known to be undecidable~\cite{wells1999typability}.
+
+The work on HRP is divided into two strands: \emph{predicative} HRP~\cite{dunfield2013complete,jones2007practical,odersky1996putting,dunfield2019sound}
+and \emph{impredicative} HRP~\cite{le2003ml,leijen2008hmf,vytiniotis2008fph,Serrano2018}.
+In predicative HRP instantiations can
+only synthesize monotypes, whereas in impredicative HRP there's no
+such restriction. However impredicative HRP is quite complex because
+the polymorphic subtyping relation for impredicative HRP is undecidable~\cite{tiuryn1996subtyping}.
+Thus reasonable restrictions that work well in practice are still
+a hot topic in research.
+The monotype restriction on
+predicative instantiation is considered reasonable and practical for most
+programs. It is
+currently in use by languages such as (GHC) Haskell, Unison~\cite{Unison}
+and PureScript~\cite{PureScript}. \bruno{mention Odersky and Laufer here before moving on to DK}
+Also relevant is Dunfield and Krishnaswami's
+(DK)~\cite{dunfield2013complete} 
+algorithm for predicative HRP type inference. DK's algorithm was
+manually proved to be sound, complete and decidable.
+With a more complex declarative system~\cite{dunfield2019sound}, DK
+extended their original work with new features.\bruno{For the last paper, I think it supports
+  some interesting features that are closer to dependent types, so we should
+summarize that in a few sentences.}
+
+\begin{comment}
+Impredicative type inference for HRP is challenging.
+Unfortunately the subtyping relation that enables impredicative
+polymorphism has been shown to be undecidable~\cite{tiuryn1996subtyping}.
+Works on partial impredicative type-inference algorithms~\cite{le2003ml,leijen2008hmf,vytiniotis2008fph}
+navigate a variety of design tradeoffs for a decidable algorithm.
+As a result, such algorithms tend to be more complicated, and thus less adopted in practice.
+Recent work proposed \emph{Guarded Impredicative Polymorphism}~\cite{Serrano2018},
+as an improvement on GHC's type inference algorithm with impredicative instantiation.
+They make use of local information in $n$-ary applications to
+infer polymorphic instantiations with a relatively simple specification and unification algorithm.
+Although not all impredicative instantiations can be handled well,
+their algorithm is already quite useful in practice.
+\end{comment}
+
+\paragraph{MLSub} A recent breakthrough in the area of (global) type-inference
+for type systems with subtyping is MLSub~\cite{dolan17polymorphism}. MLSub extends the Hindley-Milner
+type system with support for subtyping. A key innovation
+of MLSub is that it has compact principal types, which had been a challenge
+in previous research on type-inference in the presence of subtyping~\cite{eifrig95inference,Trifonov96subtyping,pottier1998inference}.
+MLSub is significantly more ambitious than local type-inference, and requires
+no annotations (in the tradition of Hindley-Milner). However MLSub does not
+account for HRP and its algorithms and metatheory have not been mechanically
+formalized.
+
+
+
+\paragraph{Dependent Types and Subtyping}
+In essence the big difficulty is that the introduction of dependent
+types makes typing and subtyping depend on each other. This causes
+several difficulties in developing the metatheory for calculi that
+combine dependent types and subtyping. Practically all previous
+work~\cite{subdep,ptssub,chen1,cocsub,Chen03coc} attempts to address such problem by somehow
+\emph{untangling} typing and subtyping, which has the benefit that the
+metatheory for subtyping can be developed before the metatheory of
+typing. Nevertheless, several results and features prove to be
+challenging. For example, many calculi~\cite{subdep,ptssub}
+drop the support of \emph{top types}, which are essential in OOP
+programs to model the universal base class. Transitivity is difficult
+to prove as it may be entangled with other properties such as
+subject reduction and strong normalization.
+Several studies~\cite{subdep,chen1} have
+to use sophisticated techniques to show that transitivity
+holds. Hutchins \emph{Pure
+  Subtype Systems}~\cite{hutchins} take a different approach, by
+eliminating typing and making subtyping the essential notion in the
+calculus.  While this simplifies the syntax and typing rules, the metatheory is complex. Hutchins failed
+to prove transitivity elimination and left
+important lemmas that depend on transitivity, such as
+subject reduction as
+conjectures instead. 
+None of these calculi manages to subsume
+System \fsub~\cite{fsub}, together with its desirable properties (for
+example transitivity elimination and subject reduction). System
+\fsub is a standard polymorphic calculus with subtyping, often
+identified as a canonical calculus capturing 
+essential OOP features (and especially bounded quantification). 
+Given the importance of System \fsub as a foundational 
+model for OOP, it seems highly desirable that a dependently 
+typed OOP calculus subsumes it.
+
+Our work builds on the work done on Pure Iso-Type Systems (PITS)~\cite{???}, and
+\emph{unified subtyping}~\cite{full}. PITS is a variant of pure type systems (PTSs),
+which captures a family of calculi with \emph{iso-types}. Iso-types generalize \emph{iso-recursive
+types}~\cite{tapl}, and provide a simple form of
+type casts to address the combination of recursion and
+dependent types. 
+Yang and Oliveira~\cite{full} introduces \name, which extends 
+\lami with support for OOP features such as
+\emph{higher-order subtyping}~\cite{fsubo}, \emph{bounded quantification} and
+\emph{top types}. 
+To address the challenges posed by
+the combination of dependent types and subtyping, \name
+employs \emph{unified subtyping}: a novel technique that unifies
+\emph{typing}, \emph{subtyping} and \emph{well-formedness} into one
+relation. Therefore, \name takes a significantly different
+approach compared to previous work, which
+attempts to fight the entanglement between typing and subtyping. In
+contrast, \name embraces such
+tangling by collapsing the typing and subtyping
+relations into the same relation.  This approach is different from
+Hutchins' technique, which eliminates types and typing. \name
+retains types. \bruno{Text summarizing differences from our work}
+
+
+\begin{comment}
+\paragraph{Stratified Syntax with High-Order Subtyping and Dependent Types}
+% System Fw<=: different proofs
+System \fsubo~\cite{fsubo} is a lambda calculus with stratified syntax by extending
+System \fw~\cite{fw} with higher-order subtyping. To simplify the
+metatheory, early formalizations of System
+\fsubo~\cite{fsubo,fsubo:thesis} do not allow a bounded type
+operator. Compagnoni and Goguen later proposed a technique called
+typed operational semantics~\cite{fsubo:typed} to fully enable bounded
+quantification in System \fsubo. But its metatheory becomes quite
+complicated and relies on strong normalization, making it hard to
+apply such technique to systems with general recursion.
+
+% System \P<=: the subtyping dependent types paper; OO languages: DOL, vobj, DOT
+System $\lambda P_\leq$~\cite{subdep} is a stratified system with
+dependent types and higher-order subtyping. The metatheory becomes
+more complex than System \fsubo~due to the circular dependency of
+typing, kinding and subtyping. A novel proof technique that splits
+beta reduction on terms and types is proposed to break such
+dependency. However, System $\lambda P_\leq$ does not support
+polymorphism (i.e. abstraction over types), bounded
+quantification or top types.
+System $\lambda \Pi_\leq$~\cite{chen1,chen2} is an improvement of
+$\lambda P_\leq$. It has the property of type-level transitivity
+elimination, while System $\lambda P_\leq$ has transitivity
+elimination only for normalized types. However, $\lambda \Pi_\leq$ is
+proved to be equivalent to $\lambda P_\leq$ in typing and subtyping,
+meaning that it has no increased expressiveness.
+
+
+\paragraph{Scala and DOT}
+%Finally, it is worthwhile mentioning that we view the work on the DOT
+%calculus as complementary to our own. 
+Both the DOT calculus~\cite{dot:sound} and the earlier
+$\nu\mathit{Obj}$ calculus~\cite{vobj} are aimed at capturing the essence of Scala.
+Those calculi
+have path-dependent types, which are a restricted variant of dependent
+types. 
+Path-dependent types allow 
+a special kind of types, called paths, which are type selections on variables, i.e., $x.L$. 
+Compared to traditional dependent types,
+it is difficult to use path-dependent types to model dependency on
+non-path values, e.g., $\Pi n:\mathit{Int}.~\mathit{Vec}~n$. 
+An interesting feature of DOT is a
+rich notion of bounds, where 
+type variables can be quantified by both lower
+bounds and upper bounds. In contrast bounded quantification
+traditionally found in calculi such as System \fsub only allows upper
+bounds.
+The metatheory of DOT is well-developed~\cite{dot:sound}, though the soundness proof requires many non-standard techniques. Transitivity of subtyping needs to be treated as an axiom and
+transitivity elimination is not
+possible~\cite{dot:sound}.
+Neither DOT nor $\nu\mathit{Obj}$ use unified syntax: they are both stratified calculi which
+distinguish between types and terms.
+\end{comment}
+
+\begin{comment}
+\paragraph{Subtyping with Restricted Dependent Types}
+There has been some work focusing on exploring subtyping with
+\emph{restricted} forms of dependent types but not \emph{full} dependent
+types in the context of object-oriented (OO)
+programming. The \emph{Dependent Object-Oriented Language}~\cite{dol}
+(DOL) is an imperative OO programming language with subtyping and \emph{index
+refinements}, a restricted notion of dependent types originated from
+Dependent ML~\cite{dml}, which allows types to depend on static indices of
+natural numbers. DOL supports the verification of mutable objects and
+unrestricted use of shared objects. The type checking of DOL is
+decidable. However, the metatheory of DOL is not fully developed
+yet.
+\end{comment}
+
+\paragraph{Dependent Types with Explicit Casts} Previously 
+discussed work is about the interaction between dependent types and 
+subtyping. However, the other problem is the
+interaction between dependent types and recursion. For this
+problem, a general solution that has recently emerged is the use 
+of type casts to control type-level computation. In such an approach explicit casts
+are used for performing type-level computation. A motivation for
+using type casts is to decouple strong normalization from the
+proofs of metatheory, which also makes it possible to allow general
+recursion. There have been several studies~\cite{guru,sjoberg:msfp12,
+  kimmel:plpv, zombie:popl15, fc:kind, Doorn:2013hq,isotype} working
+on using explicit casts instead of conversion rule in a dependently
+typed system. \bruno{We should probably add some more detail here.}

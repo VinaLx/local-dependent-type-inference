@@ -27,6 +27,11 @@
 \newcommand{\system}[0]{the dependent implicitly polymorphic calculus\xspace}
 \newcommand{\System}[0]{The dependent implicitly polymorphic calculus\xspace}
 
+\newcommand{\fsub}[0]{$F_{<:}$}
+\newcommand{\fsubo}[0]{$???$}
+\newcommand{\lami}[0]{$\lambda_{I}$\xspace}
+\newcommand{\fw}[0]{$F_{\omega}$\xspace}
+
 \newcommand{\name}[0]{$\lambda_{I}^{\forall}$\xspace}
 
 \newcommand{\an}[3]{{\color{#2} \textsc{#1}:#3}}
@@ -76,7 +81,7 @@
   with polymorphic subtyping. The subtyping relation in \name
   generalizes the well-known polymorphic subtyping relation by
   Odersky and L\"aufer (1996). Because \name is dependently typed,
-  integrating subtyping to the calculus is non-trivial. To overcome
+  integrating subtyping in the calculus is non-trivial. To overcome
   many of the issues arizing from integrating subtyping with dependent
   types, the calculus employs \emph{unified subtyping}, which is a technique
   that unifies typing and subtyping into a single relation. Moreover, \name
@@ -98,13 +103,15 @@
 
 \maketitle
 
+\input{sections/introduction.tex}
 \input{overview.filt}
 \input{type-system.filt}
 \input{metatheory.filt}
 \input{discussion.filt}
+\input{sections/related-work.tex}
 
 % \bibliographystyle{plainurl}
 \bibliographystyle{elsarticle-num}
-\bibliography{reference}
+\bibliography{reference,RW,RW2}
 
 \end{document}
