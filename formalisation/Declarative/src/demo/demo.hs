@@ -53,10 +53,12 @@ data Expr
   | EMu Expr (Expr -> Expr)
   | ECastUp Expr Expr
   | ECastDn Expr
+  | SVar Int
 
 showE' :: Int -> Expr -> State Int String
 showE' prec = \case
   Var x   -> return $ intToVar x
+  SVar x  -> return $ intToVar x
   ExVar x -> return $ '^' : intToVar x
   EKind k -> return $ show k
   EInt -> return "Int"
@@ -78,7 +80,7 @@ showE' prec = \case
       modify (+1)
       sa <- showE' 9 a
       let sv = intToVar n
-      sb <- showE' 8 (b (Var n))
+      sb <- showE' 8 (b (SVar n))
       return $ printf "%s %s : %s. %s" symbol sv sa sb
     enclose :: Int -> State Int String -> State Int String
     enclose p m = if p > prec then m else printf "(%s)" <$> m
@@ -87,7 +89,7 @@ showE :: Int -> Expr -> String
 showE n = flip evalState n . (showE' 0)
 
 instance Show Expr where
-  show = showE 0
+  show = showE 100
 
 eArrow :: Expr -> Expr -> Expr
 eArrow a b = EPi a (const b)
@@ -101,21 +103,22 @@ eBox = EKind KBox
 eqExpr :: Int -> Expr -> Expr -> Bool
 eqExpr n = curry $ \case
   (Var  n1, Var  n2) -> n1 == n2
+  (SVar n1, SVar n2) -> n1 == n2
   (ExVar n1, ExVar n2) -> n1 == n2
   (EKind k1, EKind k2) -> k1 == k2
   (ELit  n1, ELit  n2) -> n1 == n2
   (EInt, EInt) -> True
   (EApp f1 a1, EApp f2 a2) -> eqExpr n f1 f2 && eqExpr n a1 a2
   (EAbs a1 b1, EAbs a2 b2) ->
-    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (Var n)) (b2 (Var n))
+    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (SVar n)) (b2 (SVar n))
   (EPi a1 b1, EPi a2 b2) ->
-    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (Var n)) (b2 (Var n))
+    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (SVar n)) (b2 (SVar n))
   (EAll a1 b1, EAll a2 b2) ->
-    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (Var n)) (b2 (Var n))
+    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (SVar n)) (b2 (SVar n))
   (EBind a1 b1, EBind a2 b2) ->
-    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (Var n)) (b2 (Var n))
+    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (SVar n)) (b2 (SVar n))
   (EMu a1 b1, EMu a2 b2) ->
-    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (Var n)) (b2 (Var n))
+    eqExpr n a1 a2 && eqExpr (n + 1) (b1 (SVar n)) (b2 (SVar n))
   (ECastUp a1 b1, ECastUp a2 b2) -> eqExpr n a1 a2 && eqExpr n b1 b2
   (ECastDn a1, ECastDn a2) -> eqExpr n a1 a2
   _ -> False
@@ -293,7 +296,7 @@ assocV m (_ : ws)       = assocV m ws
 assocE :: Int -> WorkList -> Maybe Expr
 assocE _ []               = Nothing
 assocE m (WExVar n e : _) | m == n = Just e
-assocE m (_ : ws)         = assocV m ws
+assocE m (_ : ws)         = assocE m ws
 
 data InferState
   = InferState
@@ -549,7 +552,7 @@ infer c = curry $ \case
     WUnifyK n1 KStar : WUnifyK n2 KStar : c (EKind KBox)
   (EInt, EInt) -> return $ c $ EKind KStar
   (ELit m, ELit n) | m == n -> return $ c EInt
-  (EApp f1 a1, EApp f2 a2) | a1 == a2 && isMono a1 -> do
+  (EApp f1 a1, EApp f2 a2) | a1 == a2 {- && isMono a1 -} -> do
     return [WInfer f1 f2 $ \tf -> [WInferApp tf a1 c]]
   (EAbs a1 b1, EAbs a2 b2) | a1 == a2 -> do
     k1 <- freshKind
@@ -577,7 +580,7 @@ infer c = curry $ \case
     return $
       [ WCheck a1 a2 (EKind k)
       , WInfer (b1 x) (b2 x) $ \tb ->
-          WCheck tb tb eStar :
+          traceShow tb $ WCheck tb tb eStar :
           c (EAll a1 (\e -> substV (varNum x) tb e))
       ]
   (e1@(EMu a1 b1), e2@(EMu a2 b2)) | a1 == a2 -> do
@@ -783,7 +786,7 @@ wlStep = logWorkList >> popWork >>= \case
   WInfer e1 e2 k -> infer k e1 e2 >>= prependWorks >> wlStep
   WInferApp tf a k -> inferApp k tf a >>= prependWorks >> wlStep
   WCheck e1 e2 a -> check e1 e2 a >>= prependWorks >> wlStep
-  WUnifyL n e -> findLessThan e >>= doWorkListSubst n >> wlStep
+  WUnifyL n e -> findLessThan e >>= doWorkListSubst n . traceShowId >> wlStep
   WUnifyR e n -> findGreaterThan e >>= doWorkListSubst n >> wlStep
   WUnifyK n k -> modifyWork (substWorkListK n k) >> wlStep
   WReduce e k -> generalReduce k e >>= prependWorks >> wlStep
@@ -800,7 +803,7 @@ runInfer e =
          runWriter $ runExceptT $ evalStateT
          wlStepImpl (InferState 0 [WInfer e e $ \e' -> return $ WDone e'])
    in do
-     forM_ (take 5 logs) putStrLn
+     forM_ ((: []) $ last logs) putStrLn
      return r
 
 tNat :: Expr
@@ -860,3 +863,85 @@ eCons = EBind eStar $ \a -> EBind eNat $ \n ->
   where
     absBinder :: Expr -> Expr
     absBinder = case eList' of EAbs _ b -> b
+
+tId :: Expr
+tId = eArrow eStar eStar
+
+eId :: Expr
+eId = EAbs eStar $ \a ->
+  EAll eStar $ \r -> eArrow (eArrow a r) r
+
+tMkId :: Expr
+tMkId = EAll eStar $ \a -> eArrow a (EApp eId a)
+
+eMkId :: Expr
+eMkId = EBind eStar $ \a -> EAbs a $ \e ->
+  ECastUp (EApp eId a) $ EBind eStar $ \r ->
+    EAbs (eArrow a r) $ \f -> EApp f e
+
+tFunctor :: Expr
+tFunctor = eArrow (eArrow eStar eStar) eStar
+
+eFunctor :: Expr
+eFunctor = EAbs (eArrow eStar eStar) $ \f ->
+  EAll eStar $ \r -> eArrow
+    (eArrow
+      (EAll eStar $ \a -> EAll eStar $ \b ->
+        eArrow (eArrow a b) (eArrow (EApp f a) (EApp f b))) r) r
+
+tMkFunctor :: Expr
+tMkFunctor = EAll (eArrow eStar eStar) $ \f ->
+  eArrow
+    (EAll eStar $ \a -> EAll eStar $ \b ->
+      eArrow (eArrow a b) (eArrow (EApp f a) (EApp f b)))
+    (EApp eFunctor f)
+
+eMkFunctor :: Expr
+eMkFunctor = EBind (eArrow eStar eStar) $ \t ->
+  EAbs
+    (EAll eStar $ \a -> EAll eStar $ \b ->
+      eArrow (eArrow a b) (eArrow (EApp t a) (EApp t b))) $
+    \f ->
+      ECastUp (EApp eFunctor t) $ EBind eStar $ \r ->
+        EAbs (eArrow
+          (EAll eStar $ \a -> EAll eStar $ \b ->
+            eArrow (eArrow a b) (eArrow (EApp t a) (EApp t b)))
+          r) $ \k -> EApp k f
+
+tIdFunctor :: Expr
+tIdFunctor = EApp eFunctor eId
+
+eIdFunctor :: Expr
+eIdFunctor = EApp eMkFunctor $ EBind eStar $ \tA -> EBind eStar $ \tB ->
+  EAbs (eArrow tA tB) $ \f -> EAbs (EApp eId tA) $ \idA ->
+    EApp (ECastDn idA) $ EAbs tA $ \a -> EApp eMkId (EApp f a)
+
+eIdMap :: Expr
+eIdMap = EBind eStar $ \tA -> EBind eStar $ \tB ->
+  EAbs (eArrow tA tB) $ \f -> EAbs (EApp eId tA) $ \idA ->
+    EApp (ECastDn idA) $ EAbs tA $ \a -> EApp eMkId (EApp f a)
+
+checkWellType :: IO Bool
+checkWellType
+  = checks
+  [ (eNat, tNat, "Nat")
+  , (eList, tList, "List")
+  , (eNil, tNil, "Nil")
+  , (eCons, tCons, "Cons")
+  , (eId, tId, "Id")
+  , (eMkId, tMkId, "MkId")
+  , (eFunctor, tFunctor, "Functor")
+  , (eMkFunctor, tMkFunctor, "MkFunctor")
+  ]
+  where
+    hasType :: Expr -> Expr -> IO Bool
+    hasType e t = (== Right t) <$> runInfer e
+
+    check :: (Expr, Expr, String) -> IO Bool
+    check (e, t, s) = do
+      b <- e `hasType` t
+      printf "%s: %s\n" s $ if b then "pass" else "fail"
+      return b
+
+    checks :: [(Expr, Expr, String)] -> IO Bool
+    checks cases = and <$> (sequence $ check <$> cases)
