@@ -1,31 +1,29 @@
 \section{Overview}
+\bruno{Please fill in missing references.}
 
 In this section we introduce \name by going through
 some interesting examples to show the expressiveness and major features of the calculus.
-Then we discuss some motivation, rationale of our design and challenges.
+Then we discuss motivation, rationale of our design and challenges.
 The formal system of \name will be
-discussed in section \ref{sec:type-system} and \ref{sec:matatheory}.
+discussed in Sections \ref{sec:system} and \ref{sec:metatheory}.
 
 \subsection{A Tour of \name}
 \label{sec:examples}
 
-The \name calculus features a extended capability of expressing \emph{implicit
-  polymorphism} with the power of dependent types. Thus the main feature of \name
+The \name calculus features a form of \emph{implicit
+  higher-ranked polymorphism} with the power of dependent types. Thus the main feature of \name
 is the ability to implicitly infer universally quantified arguments.
 
 \paragraph{A First Example of Implicit Polymorphism}
 Like most of functional languages, \name supports (implicit) parametric polymorphism.
 A first simple example is the polymorphic identity
 function:
-
 \begin{align*}
 &\mathrm{id} : \forall (A : \star).\, A \rightarrow A \\
 &\mathrm{id} = \lambda (x : A).\, x \\
-\\
 &\mathrm{answer} : \mathbb{N} \\
 &\mathrm{answer} = \mathrm{id} ~ 42  \quad\quad\quad\quad    \text{-- No type argument needed at the call of $\mathrm{id}$}
 \end{align*}
-
 \noindent The polymorphic parameter \verb|A| is annotated with its type,
 which is $\star$. The type $\star$ is the type of types (also known as
 \emph{kind}). In \name, the parameters of lambda abstractions are annotated
@@ -47,6 +45,7 @@ a key difference compared to much of the work on type-inference for higher-ranke
 polymorphism~\cite{}\bruno{reference to many (i.e. 5+) papers on that topic}, which has focused on System F-like
 languages where universal quantification can only have arguments of type $\star$.
 Furthermore \name supports general recursion at both the term and the type-level.
+
 Using these features we can encode an indexed list, a \verb|map| operation over it
 and illustrate how implicit instantiation allows us to use the \verb|map| function
 conveniently.
@@ -61,8 +60,6 @@ here we omit the code for most definitions and show only their types.
 
 In a dependently typed language a programmer could write the following definition
 for our formulation of indexed lists:
-
-
 \newcommand{\Nat}[0]{\mathbb{N}}
 \newcommand{\Succ}[0]{\mathrm{S}}
 \newcommand{\Zero}[0]{\mathrm{Z}}
@@ -70,17 +67,14 @@ for our formulation of indexed lists:
 \newcommand{\Nil}[0]{\mathrm{Nil}}
 \newcommand{\Cons}[0]{\mathrm{Cons}}
 \newcommand{\map}[0]{\mathrm{map}}
-
 \begin{align*}
   & \mathbf{data} ~ \Nat = \Zero ~|~ \Succ~\Nat \\
   & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n))
 \end{align*}
-
 In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
 show the definition for \verb|List|, and the types for the constructors (implementation ommitted)
-next.
-
-
+next. In later subsequent examples we will just assume some Haskell-style
+syntactic sugar for datatype definitions and constructors.
 \begin{equation*}
 \setlength{\arraycolsep}{1.5pt}
 \setstretch{1.2}
@@ -93,30 +87,41 @@ next.
 %\Cons &=& \lambda x : a.\, \lambda xs : \List~a~(\Succ ~ n).\, \castup \castup (\lambda z : r.\, (\lambda c : a \rightarrow \List~a~(\Succ ~ n) \rightarrow r). ~ c ~ x ~ xs)
 \end{array}
 \end{equation*}
-
 \noindent Then we can define a \verb|map| function over \verb|List| with the type:
-
 \begin{align*}
 %  & \map ' :: \forall a : \star.\, \forall b : \star. (a \rightarrow b) \rightarrow \Pi n : \Nat.\, (\List~a~n) \rightarrow (\List~b~n) \\
 %  & \map ' = \lambda f : a \rightarrow b.\, \mu ~ rec : (\Pi n : \Nat.\, \List~a~n \rightarrow \List~b~n).\, \lambda xs : \List~a~n. \\
 %  & \quad\qquad (\castdn \castdn \, xs) ~ \Nil ~ (\lambda x : a.\, \lambda xs' : \List~a~(\Succ~n).\, \Cons ~ (f ~ x) ~ (rec ~ (\Succ~n)~xs')) \\
-  \\
-  & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat : \star.\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n \\
+%  \\
+  & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n 
 %  & \map = \lambda f : a \rightarrow b.\, \lambda xs : \List ~ a ~ n.\, \map '~f~n~xs
 \end{align*}
+An example of application of \verb|map| is:
+\bruno{You should make sure that code is formatted consistently (for instance centered or left
+  aligned) and using the same font. This isn't the case at the moment.
+  In this page alone there are at least 3 different variations being used.
+  Also, please be careful not to have too much vertical white space around the examples
+  (I've been fixing this, but please avoid it if you write/modify more code).
+}
 
-An example of application of \verb|map| could goes like \texttt{map S (Cons 1 (Cons 2 Nil))}.
+\begin{verbatim}
+map S (Cons 1 (Cons 2 Nil))
+\end{verbatim}
+
+\noindent which increases every natural in the list by one. 
 Note that since the type parameters for \verb|map|, \verb|Cons| and \verb|Nil|
 are all implicit, they can be all omitted
-and the arguments are instantiated implicitly.
+and the arguments are instantiated implicitly. Thus the \verb|map| function
+only requires two explicit arguments, making it as convininent to use
+as in most functional language implementations. 
 
 % \bruno{You are missing the most important/interesting portion of the code: i.e. show a call to
 %   the map function and discuss how implicit polymorphism avoids having to specify 3 extra arguments
-% to the function.}
+% to the function. In this page alone there are at least 3 different variations being used.}
 
 There are a few final points worth mentioning about the example.
 Firstly, \verb|List| is an example of a dependently typed function, since it is parametrized
-by a natural value. Secondly, in \name (following the design of PITS),
+by a natural value. Secondly, in \name (following the design of PITS~\cite{}),
 fixpoint operators ($\mu$) serve a dual purposes of defining recursive types and recursive
 functions. In \verb|List| the fixpoint operator is used to define a recursive type, whereas
 in the definition of \verb|map| the fixpoint operator is used to define term-level recursion.
@@ -150,25 +155,34 @@ They also serve a role of wrapping and unwrapping the abstraction of data types.
 
 The implicit capabilities also extend to the realm of higher-kinded types~\cite{}. For example
 we can define a \verb|Functor| datatype as:
-
 \newcommand{\Functor}[0]{\mathrm{Functor}}
-\newcommand{\MkFunctor}[0]{\mathrm{MkFunctor}}
+\newcommand{\MkFunctor}[0]{\mathrm{MkF}}
 \newcommand{\Id}[0]{\mathrm{Id}}
 \newcommand{\MkId}[0]{\mathrm{MkId}}
-
 \begin{equation*}
-  \mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~(\forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b)
+  \mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~\{fmap : \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b\}
 \end{equation*}
-
-The data constructor $\MkFunctor$ has type $\forall F : \star \rightarrow \star.\, \dots \rightarrow \Functor~F$ where the dots is the type of the field.
-Then we can omit the implicit argument $F$ when defining instances of functor over higher-kinded types:
-
+In this case the type of $fmap$ is:
 \begin{align*}
-  & \mathbf{data}~\mathrm{Id}~a=\mathrm{MkId}~a \\
-  \\
-  & \mathrm{idFunctor} : \Functor~\Id \\
-  & \mathrm{idFunctor} = \MkFunctor~(\lambda f : a \rightarrow b.\, \lambda (\MkId~x) : \Id~a.\, \MkId~(f~x))
+  & fmap : \forall F : \star \to \star.~\Functor~F \to \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b 
 \end{align*}
+%data constructor $\MkFunctor$ has type $\forall F : \star \rightarrow \star.\, \dots \rightarrow \Functor~F$ where the dots are the type of the field.
+Importantly this example illustrates that universal variables can quantify over higher-kinds (i.e.
+$F : \star \to \star$).
+We can define instances of functor in a standard way:
+\begin{align*}
+  & \mathbf{data}~\mathrm{Id}~a=\mathrm{MkId}~\{runId : a\} \\
+  & \mathrm{idFunctor} : \Functor~\Id \\
+  & \mathrm{idFunctor} = \MkFunctor~\{fmap = \lambda f : a \rightarrow b.\, \lambda ~x : \Id~a.\, \MkId~(f~(runId~x))\}
+\end{align*}
+and then use \verb|fmap| with three arguments:
+
+\begin{verbatim}
+fmap idFunctor S (MkId 0)
+\end{verbatim}
+
+\noindent Note that, because our calculus has no type classes we pass the ``instance'' explicitly.
+Nonetheless three other arguments (the $F$, $a$ and $b$) are implicitly instantiated.
 
 \paragraph{Reasoning of Higher-Ranked Polymorphism}
 \label{sec:higher-ranked-poly}
