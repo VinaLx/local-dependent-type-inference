@@ -1,11 +1,34 @@
 \section{Related Work}
 
+\paragraph{Implicit Dependent Type Calculus}
+
+The implicit calculus of constructions (ICC\cite{miquel2001implicit} and
+ICC*\cite{barras2008implicit}) discuss implicit polymorphism in dependently-typed
+setting.
+
+ICC features the generalized polymorphic types and typing rules to express
+the idea of implicit instantiation. They do not explicitly have a subtyping
+relation between polymorphic types, therefore the expressiveness of reasoning
+between polymorphic types are limited to the top level polymorphic types. The
+implicit parameters does not impact the runtime semantics of ICC and therefore
+is not modeled and discussed.
+
+The implicit function types of ICC* are not interpreted as polymorphic
+function types, since their main focus is on the distinction between implicit
+functions (universal types and implicit abstraction) and explicit functions
+(\Pi types and lambda abstraction).
+The typing rules about implicit part and explicit part of the language mirror
+each other, the generalization and instantiation aspect of the implicit function
+types are not featured. ICC* depends on its tranformation to ICC to obtain type safety
+of the language, therefore the parameters of implicit functions have no impact
+on runtime behavior as well and only serves the well-scopeness of type annotations.
+
 \paragraph{Type-inference and unification with dependent types}
 \bruno{This paragraph should be improved and expanded. }
 There has been little work on formalizing type inference for calculi
 with dependent types, although essentially all implementations of
 theorem provers or dependently typed languages perform some form of
-type-inference. 
+type-inference.
 One important challenge is that type inference for
 many systems with dependent types requires \emph{higher-order unification},
 which is known to be undecidable
@@ -14,12 +37,12 @@ fragment~\cite{miller1991unification} is a well-known decidable
 fragment. Much literature on unification for dependent
 types~\cite{reed2009higher,abel2011higher, gundry2013tutorial, Cockx:2016:UEP:2951913.2951917, ziliani2015unification, coen2004mathematical} is
 built upon the pattern fragment. Algorithms for type-inference used in Agda and
-(Dependent) Haskell have been described and formalized to some degree 
+(Dependent) Haskell have been described and formalized to some degree
 in various theses~\cite{norell,gundry,dh}. However as far as we know
-there is not a clear specification and complete metatheory (let alone 
+there is not a clear specification and complete metatheory (let alone
 mechanized) for such algorithms. In the \emph{implicit calculus of
  constructions}~\cite{Miquel01} an elegant (but purely declarative) curry-style
-version of the calculus of constructions is presented. As the author 
+version of the calculus of constructions is presented. As the author
 suggests type-inference for this calculus without annotations is undecidable.
 
 \paragraph{Type-inference for higher-ranked polymorphism}
@@ -28,8 +51,8 @@ Type-inference for \emph{higher-ranked polymorphism}
 extends the classic Hindley-Milner algorithm~\cite{hindley1969principal,milner1978theory,damas1982principal},
 removing the restriction of top-level (let) polymorphism only. Type
 inference for HRP aims at providing inference for System F-like
-languages. In particular existing HRP approaches allow \emph{synthesis of type arguments} 
-and use type annotations to aid 
+languages. In particular existing HRP approaches allow \emph{synthesis of type arguments}
+and use type annotations to aid
 inference, since type-inference for full System F is
 well-known to be undecidable~\cite{wells1999typability}.
 
@@ -47,7 +70,7 @@ programs. It is
 currently in use by languages such as (GHC) Haskell, Unison~\cite{Unison}
 and PureScript~\cite{PureScript}. \bruno{mention Odersky and Laufer here before moving on to DK}
 Also relevant is Dunfield and Krishnaswami's
-(DK)~\cite{dunfield2013complete} 
+(DK)~\cite{dunfield2013complete}
 algorithm for predicative HRP type inference. DK's algorithm was
 manually proved to be sound, complete and decidable.
 With a more complex declarative system~\cite{dunfield2019sound}, DK
@@ -105,15 +128,15 @@ calculus.  While this simplifies the syntax and typing rules, the metatheory is 
 to prove transitivity elimination and left
 important lemmas that depend on transitivity, such as
 subject reduction as
-conjectures instead. 
+conjectures instead.
 None of these calculi manages to subsume
 System \fsub~\cite{fsub}, together with its desirable properties (for
 example transitivity elimination and subject reduction). System
 \fsub is a standard polymorphic calculus with subtyping, often
-identified as a canonical calculus capturing 
-essential OOP features (and especially bounded quantification). 
-Given the importance of System \fsub as a foundational 
-model for OOP, it seems highly desirable that a dependently 
+identified as a canonical calculus capturing
+essential OOP features (and especially bounded quantification).
+Given the importance of System \fsub as a foundational
+model for OOP, it seems highly desirable that a dependently
 typed OOP calculus subsumes it.
 
 Our work builds on the work done on Pure Iso-Type Systems (PITS)~\cite{???}, and
@@ -121,11 +144,11 @@ Our work builds on the work done on Pure Iso-Type Systems (PITS)~\cite{???}, and
 which captures a family of calculi with \emph{iso-types}. Iso-types generalize \emph{iso-recursive
 types}~\cite{tapl}, and provide a simple form of
 type casts to address the combination of recursion and
-dependent types. 
-Yang and Oliveira~\cite{full} introduces \name, which extends 
+dependent types.
+Yang and Oliveira~\cite{full} introduces \name, which extends
 \lami with support for OOP features such as
 \emph{higher-order subtyping}~\cite{fsubo}, \emph{bounded quantification} and
-\emph{top types}. 
+\emph{top types}.
 To address the challenges posed by
 the combination of dependent types and subtyping, \name
 employs \emph{unified subtyping}: a novel technique that unifies
@@ -172,19 +195,19 @@ meaning that it has no increased expressiveness.
 
 \paragraph{Scala and DOT}
 %Finally, it is worthwhile mentioning that we view the work on the DOT
-%calculus as complementary to our own. 
+%calculus as complementary to our own.
 Both the DOT calculus~\cite{dot:sound} and the earlier
 $\nu\mathit{Obj}$ calculus~\cite{vobj} are aimed at capturing the essence of Scala.
 Those calculi
 have path-dependent types, which are a restricted variant of dependent
-types. 
-Path-dependent types allow 
-a special kind of types, called paths, which are type selections on variables, i.e., $x.L$. 
+types.
+Path-dependent types allow
+a special kind of types, called paths, which are type selections on variables, i.e., $x.L$.
 Compared to traditional dependent types,
 it is difficult to use path-dependent types to model dependency on
-non-path values, e.g., $\Pi n:\mathit{Int}.~\mathit{Vec}~n$. 
+non-path values, e.g., $\Pi n:\mathit{Int}.~\mathit{Vec}~n$.
 An interesting feature of DOT is a
-rich notion of bounds, where 
+rich notion of bounds, where
 type variables can be quantified by both lower
 bounds and upper bounds. In contrast bounded quantification
 traditionally found in calculi such as System \fsub only allows upper
@@ -211,11 +234,11 @@ decidable. However, the metatheory of DOL is not fully developed
 yet.
 \end{comment}
 
-\paragraph{Dependent Types with Explicit Casts} Previously 
-discussed work is about the interaction between dependent types and 
+\paragraph{Dependent Types with Explicit Casts} Previously
+discussed work is about the interaction between dependent types and
 subtyping. However, the other problem is the
 interaction between dependent types and recursion. For this
-problem, a general solution that has recently emerged is the use 
+problem, a general solution that has recently emerged is the use
 of type casts to control type-level computation. In such an approach explicit casts
 are used for performing type-level computation. A motivation for
 using type casts is to decouple strong normalization from the
