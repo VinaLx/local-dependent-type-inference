@@ -417,4 +417,14 @@ to support implicit type-level reduction.
 Instead, we partially adopt the
 call-by-name design of \emph{Pure Iso-Type Systems} (PITS)~\cite{yang2016unified,yang2019pure},
 and provide operators $\castdn$ and $\castup$ to explicitly trigger one-step
-type reductions or expansions.\bruno{Show cast rules below.}
+type reductions or expansions.
+% \bruno{Show cast rules below.}
+\begin{mathpar}
+  \inferrule*[lab=Castup]
+    {[[G |- e : B]] \\ [[A --> B]] \\ [[G |- A : k]]}
+    {[[G |- castup [A] e : A]]}
+  \and
+  \inferrule*[lab=Castdn]
+    {[[G |- e : A]] \\ [[A --> B]] \\ [[G |- B : k]]}
+    {[[G |- castdn e : B]]}
+\end{mathpar}
