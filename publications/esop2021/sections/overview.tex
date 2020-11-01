@@ -184,110 +184,125 @@ fmap idFunctor S (MkId 0)
 \noindent Note that, because our calculus has no type classes we pass the ``instance'' explicitly.
 Nonetheless three other arguments (the $F$, $a$ and $b$) are implicitly instantiated.
 
-\paragraph{Reasoning of Higher-Ranked Polymorphism}
+\paragraph{Higher-Ranked Polymorphic Subtyping}
 \label{sec:higher-ranked-poly}
 
-Our language reasons about the subtyping relation between polymorphic types at
-higher-ranked positions. For example the following program type checks:
+In calculi such as the ICC~\cite{}, a form of implicit instantiation also exists.
+However, such calculi do not employ subtyping and instead they only apply instantiation
+to top-level universal quantifiers. Our next example illustrates how subtyping enables
+instantiation to be applied also in nested universal quantifiers, thus enabling
+more types to be related.
 
+When programming with continuations~\cite{} one of the functions that is typically needed
+is call-with-current-continutation (\verb|callcc|). In a polymorphic language there are
+several types that can be assigned to \verb|callcc|. One of these types is a rank-3 type,
+while another one is a rank-1 type. Using polymorphic subtyping we can show that the rank-3
+type is more general than the rank-1 type. Thus the following program type-checks:
 \begin{align*}
-& \mathrm{callcc}' :: \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a \\
-& \mathrm{callcc} :: \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a \\
+& \mathrm{callcc}' : \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a \\
+& \mathrm{callcc} : \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a \\
 & \mathrm{callcc} = \mathrm{callcc}'
 \end{align*}
-
-The type $\forall b : \star.\, a \rightarrow b$ appears at the positive position
+\noindent The type $\forall b : \star.\, a \rightarrow b$ appears in a positive position
 of the whole signature, and it is a more general signature than $a \rightarrow b$
 for an arbitrary choice of $b$. Our language capture this subtyping relation so that
- we can assign $\mathrm{callcc}'$ to $\mathrm{callcc}$ instead of the other way around.
+we can assign $\mathrm{callcc}'$ to $\mathrm{callcc}$ instead of the other way around.
+In contrast, in approaches like the ICC, the types of \verb|callcc| and \verb|callcc'|
+are not compatible and the example above would be rejected.
 
 \subsection{Key Features}
 
-In this section, we briefly discuss the major features of \name itself and
+We briefly discuss the major features of \name itself and
 its formalization. A more formal and technical discussion will be left to
-section \ref{sec:system} and \ref{sec:metatheory}.
+Sections \ref{sec:system} and \ref{sec:metatheory}.
 
 \paragraph{The Polymorphic Subtyping Relation}
 % \bruno{Have a figure and introduce the original relation here, before you move to
 % giving an overview of the dependently typed version.}
-Odersky and L\"aufer captures a \emph{more-general-than} relation between
-polymorphic and monomophic types as a subtyping relation in their polymorphic
-subtyping\cite{odersky1996putting}. They feature two rules in their
-subtyping relation as shown in figure \ref{fig:polymorphic-subtyping},
-Rule $\le\forall L$ and $\le\forall R$.
-
-Their subtyping system expresses the following idea:
+Figure \ref{fig:polymorphic-subtyping} shows Odersky and L\"aufer polymorphic
+subtyping relation~\cite{odersky1996putting}.
+This relation captures a \emph{more-general-than} relation between
+types as a subtyping relation. They key rules in their
+subtyping relation are rules $\le\forall L$ and $\le\forall R$:
 
 \begin{itemize}
-  \item A poly-type ($\forall x.\, A$) is considered \emph{more-general}
-        than another type ($B$), when we can find an arbitrary mono-type ($\tau$)
+  \item In rule $\le\forall L$, a polytype ($\forall x.\, A$) is considered \emph{more-general}
+        than another type ($B$), when we can find an arbitrary monotype ($\tau$)
         so that the instantiation is more general than $B$.
-  \item A type ($A$) is considerred more general than a poly-type ($\forall x. B$)
-        when it is still more general than the head of poly-type, with the type
+        Importantly note that this relation does not guess arbitrary (poly)types,
+        but just monotypes. In other words, the relation it \emph{predicative}~\cite{}.
+        This restriction enusres that the relation is \emph{decidable}. 
+  \item In rule  $\le\forall R$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
+        when it is still more general than the head of polytype, with the type
         parameter instantiated by an abstract variable $x$.
 \end{itemize}
 
-This semantics of subtyping relation sets a scene for our work, which attempt
-to generalize this relation to dependent type version.
+This semantics of subtyping relation sets a scene for our work, which
+to generalizes this relation to a dependently typed setting.
 
 \begin{figure}
-\label{fig:polymorphic-subtyping}
 \centering
 
 \begin{drulepar}{$\Gamma \vdash A \le B$}{Polymorphic Subtyping}
-  \inferrule*[lab=$\tau$]
+  \inferrule*[right=$\tau$]
     { }
     {\Gamma \vdash \tau \le \tau}
   \and
-  \inferrule*[lab=$\rightarrow$]
+  \inferrule*[right=$\rightarrow$]
     {\Gamma \vdash B_1 \le A_1 \\ \Gamma \vdash A_2 \le B_2}
     {\Gamma \vdash A_1 \rightarrow A_2 \le B_1 \rightarrow B_2}
   \\
-  \inferrule*[lab=$\le\forall L$]
+  \inferrule*[right=$\le\forall L$]
     {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
     {\Gamma \vdash \forall x.\, A \le B}
   \and
-  \inferrule*[lab=$\le\forall R$]
+  \inferrule*[right=$\le\forall R$]
     {\Gamma ,\, x \vdash A \le B}
     {\Gamma \vdash A \le \forall x.\, B}
 \end{drulepar}
 
-\caption{Polymorphic Subtyping}
+\caption{The polymorphic subtyping relation by Odersky and L\"aufer~\cite{odersky1996putting}.}
+\label{fig:polymorphic-subtyping}
 \end{figure}
 % \bruno{Do not just show a few rules; show the complete relation (and the rule form).}
 
 
-\paragraph{Lifting the Polymorphic Subtyping}
+\paragraph{Generalizing Polymorphic Subtyping}
 \label{sec:polymorphic-subtyping}
 
-The parameters of polymorphic types can only be types in the polymorphic
-subtyping. In \name, we generalize the polymorphic parameters so that they can
-be can be ``values'' as well. So ideally a direct generalization would be:
+The parameters of universal types can only be types in the polymorphic
+subtyping relation by Odersky and L\"aufer.
+In \name, we generalize the polymorphic parameters so that they can
+be can be values or other kinds of types as well.
+A first attempt at a direct generalization would be:
 
 \begin{mathpar}
-  \inferrule*[lab=$\le\forall L'$]
+  \inferrule*[right=$\le\forall L'$]
     {\Gamma \vdash \tau \rulehl{: A} \\ \Gamma \vdash [\tau / x]\, B \le C}
     {\Gamma \vdash \forall x \rulehl{: A}.\, B \le C}
   \and
-  \inferrule*[lab=$\le\forall R'$]
+  \inferrule*[right=$\le\forall R'$]
     {\Gamma ,\, x \rulehl{: B} \vdash A \le C}
     {\Gamma \vdash A \le \forall x \rulehl{: B}.\,C}
 \end{mathpar}
 
-Here the parameter for polymorphic types can be well-typed values besides types,
-hence instead of requiring the instantiation to be a well-formed type in rule
-$\le\forall$, it is required to be well-typed regarding the type of the parameter.
-Similarly, the context for the subtyping rule should include typing information
-for the abstract variable in the adaptation of $\ge\forall$.
+\noindent Here the parameter for universal types can have any type (and not just $\star$).
+Hence, instead of requiring the monotype $\tau$ to be a well-formed type in rule
+$\le\forall L$, in rule $\le\forall L'$ it is
+required that $\tau$ is well-typed regarding the type of the parameter
+in the universal quantifier.
+Similarly, for rule $\le\forall R'$ the context for the subtyping rule should include typing information
+for the universaly quantified variable.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 
-As the example in section \ref{sec:higher-ranked-poly} shows, these subtyping
+As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, these subtyping
 rules based on polymorphic subtyping, combining with the normal subtyping rules
 are able to handle the subtyping relations that occur at not only top-level,
 but also higher-ranked level. This feature distinguish \name from the Implicit
 Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
-implicit polymorphism on dependent type language, which features these two rules:
+implicit polymorphism on dependent type language. The ICC features the two related rules
+in the \emph{typing relation}:
 
 \begin{mathpar}
   \inferrule*[lab=inst]
@@ -299,43 +314,49 @@ implicit polymorphism on dependent type language, which features these two rules
     {[[G |- e : forall x : A. B]]}
 \end{mathpar}
 
-Without an explicit subtyping relation, ICC is not always able to handle subtyping
-relation at higher-rank position. So from another perspective,
-rule $\le\forall L'$ and $\le\forall R'$ generalize these two rules from ICC
-that talks about implicit polymorphism.
+\noindent Without an explicit subtyping relation, the ICC is not always able to handle subtyping
+at higher-ranked positions. The approach taken by the ICC is similar to Hindley-Milner type system~\cite{},
+which also features similar rules in typing. But Hindley-Milner is designed for dealing only with rank-1
+polymorphism. In generalizations of higher-ranked polymorphic type-inference~\cite{},
+it has been shown that rules like $\le\forall L$ and $\le\forall R$ generalize rules like
+\textsc{GEN} and \textsc{INST}. Since we aim at higher-ranked polymorphic generalization,
+we follow a similar, more general, approach in \name.
 
 \paragraph{Unified Subtyping}
-
-However, the notorious mutual dependency between typing and subtyping
-\cite{aspinall1996subtyping, hutchins2010pure} presents itself on our way to the direct
-generalization of polymorphic subtyping,
-due to rule $\le\forall L$ mentions typing relation, and the subsumption rule of
-typing relation (shown as below) mentions the subtyping relation.
-
+However, the $\le\forall L'$ and $\le\forall R'$ rules suffer from an
+important complication, which does not exist in a System-F like setting: there is  
+a notorious mutual dependency between typing and subtyping.
+In particular, note that rule $\le\forall L'$ now mentions the typing relation
+in its premise ($\Gamma \vdash \tau : A$). Moreover, as usual,
+the subsumption rule of
+typing relation (shown below) depends on the subtyping relation.
 \begin{mathpar}
   \inferrule*[right=t-sub]
     {\Gamma \vdash e : A \\ \Gamma \vdash A \le B}
     {\Gamma \vdash e : B}
 \end{mathpar}
+In contrast, in Odersky and L\"aufer's rules,
+the same premise in $\le\forall L$ is only well-formedness ($\Gamma \vdash \tau$),
+and thus subtyping does not depend on typing.
+This mutual dependency problem has been a significant and notorious
+problem when combining subtyping and dependent types~\cite{aspinall1996subtyping, hutchins2010pure},
+and presents itself on our way to the direct
+generalization of polymorphic subtyping.
 
-To tackle this issue, we adopt the technique developed by Yang called the
-Unified Subtyping\cite{yang2017unifying}, which merges the typing relation and
+To tackle this issue, we adopt a technique developed called
+\emph{unified subtyping}\cite{yang2017unifying}, which merges the typing relation and
 subtyping relation into a single relation to avoid the mutual dependency:
-
 \begin{mathpar}
   \Gamma \vdash e_1 \le e_2 : A
 \end{mathpar}
-
-The interpretation of this judgement is: under context $\Gamma$, $e_1$ is a sub-``type''
-of $e_2$ and they both are of type $A$. And the judgements of subtyping and typing
+The interpretation of this judgement is: under context $\Gamma$, $e_1$ is a subtype
+of $e_2$ and they both are of type $A$. The judgements for subtyping and typing
 are both special form of unified subtyping with the involvement of kinds $[[*]]$:
-
 \begin{mathpar}
   \Gamma \vdash A \le B \triangleq \Gamma \vdash A \le B : [[*]]
   \and
   \Gamma \vdash e : A \triangleq \Gamma \vdash e \le e : A
 \end{mathpar}
-
 The technique simplifies the formalization and especially the proof of
 transitivity in the original work. Ideally after applying the technique,
 the generalization of the polymorphic subtyping should be:
