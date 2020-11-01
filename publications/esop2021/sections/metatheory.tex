@@ -281,20 +281,6 @@ property:
 \noindent where the types of the premises are potentially different.
 To prove this property we employ sizes for the inductive argument. Moreover we rely on
 a subtle property of uniqueness of kinds.
-
-\begin{comment}
-Usually \emph{transitivity} in a dependently-typed subtyping system is axiomized
-in the declarative system.
-Then a process is went through called the ``transitivity elimination'', which proves
-the admissibility of transitivity in the declarative systems with the help of
-their algorithmic version \cite{hutchins2010pure}\cite{aspinall1996subtyping}.
-However Unified Subtyping help us simplify the process and prove the
-transitivity directly\cite{yang2017unifying}. We prove the generalized
-version of transitivity with the types of premises being potentially
-syntactically different. Then the ``restricted'' version of transitivity follows directly.
-\end{comment}
-
-
 \paragraph{Uniqueness of Kinds} Assuming that the derivation of the second
 premise of generalized transitivity ends with \rref{s-forall-r}, then we face the following problem:
 
@@ -307,8 +293,8 @@ premise of generalized transitivity ends with \rref{s-forall-r}, then we face th
 \noindent Before applying \rref{s-forall-r} to the conclusion,
 we have to establish the relationship between $A$ and $[[*]]$.
 Were there no restrictions on the kinding of $\forall$ types,
-this would be much more complicated situation, where the reasoning of kinding,
-such as inversion lemmas of about kinds, and transitivity depend on each other.
+this would be much more complicated situation, where the inversion lemmas of
+about kinds and transitivity depend on each other.
 This is one of the main reasons why we forbid $\forall$ types having kind $[[box]]$.
 Then we can have the following theorem:
 
@@ -318,7 +304,7 @@ Then we can have the following theorem:
 \end{theorem}
 
 \noindent The proof is achieved by generalizing the shape of $k$ to be
-$\Pi x : A.\, \dots \Pi x : B.\, \dots k$ to generate useful inductive hypotheses
+$\Pi x : A.\, \dots \Pi x : B.\, \dots k$ for useful inductive hypotheses
 when the derivation of $[[G |- e : k]]$ ends with \rref{s-app}. Then the proof
 proceeds with induction on the derivation of the generalized $[[G |- e : k]]$ and
 assembling various lemmas of kinding to solve different cases.
@@ -328,7 +314,7 @@ we ensure the equivalence of $A$ and $[[*]]$ on this and other similar situation
 
 \paragraph{The Induction}
 
-\emph{Generalized Transitivity} is proved by induction on the 3-tuple:
+We prove \emph{Generalized Transitivity} by induction on the 4-tuple:
 
 $$
 \langle \#\forall([[e1]]) + \#\forall([[e2]]) + \#\forall([[e3]]), ~
@@ -336,11 +322,13 @@ $$
 \mathcal{D}_1 + \mathcal{D}_2 \rangle
 $$
 
-\noindent where $\#\forall$ counts the number of $\forall$s in the expression, $\mathbf{size}$ measures
-the size of the syntax tree of the expression, $\mathcal{D}_1$ and $\mathcal{D}_2$ denote
-the sizes of the derivation trees of the first and the second premises respectively.
-The proof is mainly motivated by DK's transitivity proof of their subtyping system of
-induction on the pair of $\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$\cite{dunfield2013lemmas},
+\noindent where $\#\forall$ counts the number of $\forall$s in the expression,
+$\mathbf{size}$ measures the size of the syntax tree of the expressions,
+$\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation trees of
+the first and the second premises respectively.
+The proof is mainly motivated by DK's transitivity proof of their subtyping
+system of induction on the pair of
+$\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$\cite{dunfield2013lemmas},
 with adjustments to fit in our system.
 
 The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
@@ -352,10 +340,10 @@ and the second ends with \rref{s-forall-l}, essentially we have to show the foll
       {[[G |- e1 <: e3 : *]]}
 \end{mathpar}
 
-Here the only decreasing measure we can rely on is the fact that
+Here the only decreasing measure we can rely on is that
 $\#\forall([[ [t / x] B ]])$ is one less than $\#\forall([[forall x : A. B]])$.
 This case is solved by applying the inductive hypothesis after performing
-substitution on the premise $[[G , x : A |- e1 <: B : *]]$ using the fact that
+substitution on the premise $[[G , x : A |- e1 <: B : *]]$ with the help of the fact that
 $x$ does not occur in $e1$, obtaining $[[G |- e1 <: [t / x] B : *]]$.
 
 The reason why we cannot directly copy DK's proof measure is because of the case
@@ -367,15 +355,14 @@ when both premises end with \rref{s-pi}, where we encounter the following proble
       {[[G , x : A3 |- B1 <: B3 : k]]}
 \end{mathpar}
 
-The first and the second premise above do not share the same context, so they
-must be unified with the help of the context narrowing lemma.
+The first and the second premise above do not share the same context, which
+must be unified with the context narrowing lemma.
 However context narrowing changes the size of derivation tree, so we are
 not able to use the inductive hypothesis of $\mathcal{D}_1 + \mathcal{D}_2$.
 
 Finally we have to make adjustments to solve the cases which preserve the
-size of derivation tree, but not the sizes of the expressions.
-Such scenario occurs when the first premise ends with \rref{s-forall-l},
-where we face the following problem:
+size of derivation tree, but not the sizes of the expressions, which is
+when the first premise ends with \rref{s-forall-l}:
 
 \begin{mathpar}
     \inferrule*[]
@@ -479,7 +466,8 @@ for brevity.
 
 \begin{theorem}[Subtype Preservation]
     If $[[G |- e1 <: e2 : A]]$, $\extract{e_1} \longrightarrow_E E_1'$ and $\extract{e_2} \longrightarrow_E E_2'$,
-    then $\exists\,e_1' \, e_2'.$ $\extract{e_1'} = E_1'$, $\extract{e_2'} = E_2'$, $e_1 \longrightarrow e_1'$, $e_2 \longrightarrow e_2'$ and $\Gamma \vdash e_1' \le e_2' : A$.
+    then $\exists\,e_1' \, e_2'.$ $\extract{e_1'} = E_1'$, $\extract{e_2'} = E_2'$,
+    $e_1 \longrightarrow e_1'$, $e_2 \longrightarrow e_2'$ and $\Gamma \vdash e_1' \le e_2' : A$.
 \end{theorem}
 
 \begin{figure}
@@ -495,9 +483,9 @@ for brevity.
 %   the syntax for erased expressions and in earlier texts you use ``e''. You should be
 %   consistent and I think using ``E'' everywhere for erased expressions is best.}
 
-
-\noindent Figure \ref{fig:preservation} shows the idea of our preservation lemma without
-considering the subtyping aspect
+\noindent The theorem might look a bit complicated at first glance, figure
+\ref{fig:preservation} shows the idea of our preservation lemma without
+considering the subtyping aspect (assuming $[[G |- e : A]]$ instead of $[[G |- e1 <: e2 : A]]$).
 % \bruno{Are you trying to show a simplified version of the lemma here?
 % Is this actually valid, or you're just trying to give an overview of the idea?}.
 % \Alvin{The figure only talks about preservation of typing, the lemma shows the
@@ -525,11 +513,11 @@ the subtyping relation between expressions are preserved as well.
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
 cases for \rref{r-beta,r-mu} are solved with the substitution theorem,
 cases \rref{r-app,r-castdn} are solved by inductive hypothesis. The interesting
-ones are cases for \rref{r-cast-elim} and the implicit instantiation
+cases are \rref{r-cast-elim} and cases involving implicit instantiation
 (\rref{r-inst,r-cast-inst}).
 
 \paragraph{Cast Elimination}
-The main problem of cast elimination can be demonstrated by the following derivation:
+The main issue of the cast elimination case can be demonstrated by the following derivation:
 % \bruno{Do you mention this problem before to
 %   start the paragraph with this text? What is the relationship between Subtype Preservation for Types
 %   and cast elimination? You should connect these better, and also motivate why a separate lemma
@@ -549,8 +537,9 @@ The main problem of cast elimination can be demonstrated by the following deriva
 Here the typing of the inner $\castdn$ does not directly follow
 \rref{r-castup}, but the subsumption rule instead. We want to show that after
 the cast elimination (following \rref{r-cast-elim}), expression $e$ has type $B_2$,
-while in reality it has type $A_2$. We want to show $\Gamma \vdash A_2 \le B_2$
-with the information that $\Gamma \vdash A_1 \le B_1$, $[[A1 --> A2]]$
+while in reality it has type $A_2$ (as highlighted).
+Therefore want to show $\Gamma \vdash A_2 \le B_2$ with the information that
+$\Gamma \vdash A_1 \le B_1$, $[[A1 --> A2]]$
 and $[[B1 --> B2]]$, which goes back to what we want to prove initially --
 the subtype preservation after reduction, causing a circular dependency of proof.
 Subtype preservation needs to solve the cast elimination case, which depends back
@@ -562,21 +551,22 @@ by a delicate approach with the help of an essential lemma
 \emph{Reduction Exists in the Middle} (If $[[G |- e1 <: e2 : A]]$, $[[G |- e2 <: e3 : A]]$
 and $e_1 \longrightarrow e_1'$, $e_3 \longrightarrow e_3'$, there exists $e_2'$
 such that $e_2 \longrightarrow e_2'$). Unfortunately this lemma does not hold
-in our system since universal types, which is not reducible, can appear in the middle of
-two reducible types, so we cannot adopt their proof.
+in our system since universal types, which is not reducible, can appear in the
+middle of two reducible types, so we cannot adopt their proof.
 % \bruno{What lemma? briefly explain.}
 
 We tackle this problem from another direction, with the observation that the
 demand for subtyping preservation shifts from the ``terms'' to the ``types''.
-With the CoC-like kind hierarchy, we have only limited layers in types.
+With the CoC-like kind hierarchy, we have limited layers in types to traverse.
 In fact, we only need to go down one layer in the type hierarchy to be able to
-obtain subtype preservation directly, since there is no subtyping involved at kind level,
+obtain subtype preservation directly,
+since there is no subtyping involved at kind level,
 hence no problem for the cast elimination there.
 Even better, we show that by going down one level in the type hierarchy, the options
 for the reduction that can be performed by a well-typed term are very limited.
 Implicit abstractions do not occur in type computation due to the kind
-restriction of $forall$ types. Cast operators also do not occur in type-level computation,
-since we prove that well-typed reduction never occur at kind level.
+restriction of $forall$ types. We prove that well-typed reduction never occur
+at kind level, so cast operators also do not occur in type-level computation.
 
 \begin{figure}
     \drules[dr]{$[[A1 ==> A2]]$}{Deterministic Reduction}
@@ -622,15 +612,15 @@ And then the subtype preservation of type computation can be easily shown.
 
 \paragraph{Implicit Instantiations}
 The proof of two cases for implicit instantiations (\rref{r-inst,r-cast-inst})
-are quite similar. They both makes use of the observation that, the implicit
-instantiations are only triggered by \rref{s-forall-l}, which is exactly where
+are quite similar, with the observation that the implicit
+instantiations are only triggered by \rref{s-forall-l}, which is where
 polymorphic types are instantiated. The implicit arguments are the
-mono-expressions that instantiate polymorphic types. The result types of the
-implicit instantiations are exactly the instantiation of the polymorphic types.
+mono-expressions that instantiate polymorphic types. The types of the results of
+the implicit instantiations are the instantiation of the polymorphic types.
 Then the rest of the proofs are finished by standard inversion lemmas,
 with the help of the substitution lemma for the instantiations.
 
-\subsection{Equivalence of a Simplified Language}
+\subsection{Equivalence of a Simplified System}
 
 We mention in section \ref{sec:type-system} that some of the premises in the
 typing rules are redundant. They helps in the formalization, but the system
