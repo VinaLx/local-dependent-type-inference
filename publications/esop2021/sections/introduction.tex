@@ -1,0 +1,188 @@
+\section{Introduction}
+
+A \emph{polymorphic subtyping} relation, which relates more general
+types to more specific ones, is at the core of many modern functional
+languages.
+%some more background text
+
+
+In recent years dependent
+types~\cite{coc,cayenne,dep:pisigma,sjoberg:msfp12,guru,fc:kind,zombie:popl14,zombie:popl15} 
+have become a hot topic in programming
+language research. Several new
+functional programming languages, most notably Agda~\cite{2007_norell_agda} and
+Idris~\cite{brady2013idris}, are now dependently typed. 
+A key reason why dependent types are interesting is
+that they naturally lead to a unification between types and terms, which enables both
+additional \emph{expressiveness} and \emph{economy of concepts}. 
+The benefit of economy of concepts is the main
+motivator for our proposal. In essence, once various different levels of syntax (such 
+as terms and types) are unified, then redundancy of language
+constructs at the various levels can be avoided. This leads to more
+compact calculi compared to more traditional calculi for
+programming languages, which have different stratified levels 
+of syntax. In turn, such economy of concepts results in a significantly
+more compact metatheory, and can also lead to a reduction of 
+the necessary implementation effort.
+The key enabler for unifying terms and types in dependently typed
+calculi is the adoption of a style similar to 
+Pure Type Systems (PTSs)~\cite{pts}. In PTSs there is only a single level 
+of syntax for terms, and types (or kinds) that are expressed using the 
+same syntax. This is in contrast with more traditional calculi, where 
+distinct pieces of syntax (terms, types and kinds) are separated.
+
+Given that the complexity of type systems
+for OOP languages is so high, techniques for bringing down such
+complexity, while retaining or even increasing expressiveness are certainly
+welcome. The economy of concepts afforded by unified syntax typical of 
+dependently typed languages can help here, since it can significantly
+reduce the number of language constructs and relations needed in a
+calculus, and simplify the metatheory.
+Unfortunately, there has been less work on dependently typed
+calculi for object-oriented programming. We believe that there are
+essentially two primary reasons for this:
+
+\begin{itemize}
+
+\item  {\bf The interaction between recursion and dependent types.}
+ The first reason is that the
+interaction between general recursion and dependent types is
+challenging. Essentially recursion breaks strong normalization, which 
+many common properties in dependently typed calculi depend upon.
+However, this area has been actively investigated in the
+last few years, and a general approach~\cite{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15,
+  isotype}, based on explicit 
+casts for type-level computation, has emerged as an interesting
+solution.
+
+\item {\bf The interaction between dependent types and subtyping.}
+The second reason is that how to smoothly combine
+dependent types and subtyping is difficult. Subtyping is a
+substantial difference to traditional PTSs, which do not have such feature.
+The issue with subtyping 
+is well summarized by Aspinall and Compagnoni~\cite{subdep}:
+\emph{
+One thing that makes the study of these systems difficult is that {\bf
+  with
+dependent types, the typing and subtyping relations become intimately
+tangled}, which means that tested techniques of examining subtyping in
+isolation no longer apply}.
+
+\end{itemize}
+
+ 
+The OOPSLA 2017 paper introduces \name, which extends 
+\lami with support for OOP features such as
+\emph{higher-order subtyping}~\cite{fsubo}, \emph{bounded quantification} and
+\emph{top types}. 
+To address the challenges posed by
+the combination of dependent types and subtyping, \name
+employs \emph{unified subtyping}: a novel technique that unifies
+\emph{typing}, \emph{subtyping} and \emph{well-formedness} into one
+relation. Therefore, \name takes a significantly different
+approach compared to previous work, which
+attempts to fight the entanglement between typing and subtyping. In
+contrast, \name embraces such
+tangling by collapsing the typing and subtyping
+relations into the same relation.  This approach is different from
+Hutchins' technique, which eliminates types and typing. \name
+retains types.
+
+As those languages start moving towards dependently typed
+programming a natural question is how can polymorphic subtyping be
+adapted to such settings.
+% some text on existing work.
+
+Two main issues: type-safety and transitivity of subtyping.
+
+
+As a starting point we started investigating the problem of local
+type-inference for a language similar to the \emph{calculus of
+  constructions}~\cite{Coquand:Huet} (but with the $\star : \star$ axiom and
+some restrictions). As part of our preliminary work we designed a
+specification for a calculus that supports local synthesis of arguments.
+There two main challenges that we faced in the design of this calculus,
+which lead to important design decisions.
+
+The first challenge is due to the conversion rule typically present in
+dependently typed languages. %This restriction is motivated by a fundamental problem.
+In dependently typed languages the conversion rule enables type-level
+computation and it is widely used in languages like Agda or
+Idris. Unfortunately it also introduces major complications for
+type-inference. A well-known result is that type-inference for systems
+with a conversion rule requires \emph{higher-order
+  unification}, which is known to be \emph{undecidable}~\cite{goldfarb1981undecidability}.
+Therefore to avoid higher-order unification we simply drop
+the conversion rule in our initial calculus.
+Nevertheless there are still practical applications for languages
+with such a restriction. For instance, GHC Haskell language of types and kinds
+(which is dependently typed) has no type conversion and it is indeed quite
+closely related to the language that we plan to study first. Indeed
+our recent POPL 2020 paper~\cite{xie20kind} describes algorithms and specifications
+for (the very ambitious form) of type-inference currently present in GHC Haskell.
+In GHC Haskell there are no type-level lambdas and thus no type conversion
+(although type-level computation can be achieved by other means~\cite{Chakravarty05associated}).
+
+The second challenge is that formulating subtyping for dependently typed
+languages is tricky due to the mutual dependency between various relations
+(typing, subtyping and well-formedness). Subtyping is commonly used to
+specify a \emph{most general than} relation between types. It
+is for instance used by DK~\cite{dunfield2013complete} and our own ICFP 2019 work. 
+However the mutual dependencies that arise in a dependently typed setting create
+various technical problems for the metatheory.
+For instance, unlike non-dependently typed languages, it is
+not possible to develop the metatheory of subtyping separately from typing. 
+This problem has been observed by multiple researchers 
+in previous work~\cite{subdep,Chen03coc,hutchins,ptssub}, with multiple solutions making different compromises.
+Our OOPSLA 2017 work~\cite{full} is relevant here as it proposes a simple
+solution for this problem. Following the same spirit as \emph{Pure Type Systems}~\cite{BarendregtHP:intgts},
+which attempt to unify syntax and the typing and well-formedness relations,
+our OOPSLA 2017 work proposes to go one step further: it shows how to unify typing
+and subtyping into a single relation. This solves the problem of dependencies
+in that now there is only a single relation that depends on itself. Furthermore
+it results on a compact specification compared to a variant with multiple
+independent relations.
+
+
+A first problem that arizes is type-safety. 
+In a System F-like setting type safety can be proved 
+directly, by have an operational semantics for
+a variant of System F with implicit polymorphism.
+Type-safety can also be proved indirectly, by elaboration
+into conventional System F with explicit polymorphism.
+For instance this is the approach used by Odersky and L\"aufer~\cite{},
+as well as other authors.
+
+In a dependently typed setting elaboration poses
+complications. For instance an issue is that the reduction
+relation is typically used in typing. However, in an elaboration
+approach there is no reduction relation for the source calculus
+to start with. Therefore, approaches, such as the ICC, turn to
+formulating a direct operational semantics instead and proving
+type-soundness. 
+
+In our case type-safety could, in principle, follow also either an elaboration
+approach or a direct operational semantics approach. 
+
+This paper presents \system (\name): a simple dependently typed
+calculus with polymorphic subtyping. The subtyping relation in \name
+generalizes the well-known polymorphic subtyping relation by Odersky
+and L\"aufer (1996). Because \name is dependently typed, integrating
+subtyping in the calculus is non-trivial. To overcome many of the
+issues arizing from integrating subtyping with dependent types, the
+calculus employs \emph{unified subtyping}, which is a technique that
+unifies typing and subtyping into a single relation. Moreover, \name
+employs explicit casts instead of a conversion rule, allowing
+unrestricted recursion to be naturally supported.  We prove various
+non-trivial results, including \emph{type soundness} and
+\emph{transitivity} of unified subtyping. The calculus and all
+corresponding proofs are mechanized in the Coq theorem prover and we
+also have a simple prototype implementation of \name.
+
+The contributions of this paper are:
+
+\begin{itemize}
+
+\item contrib 1...
+
+\end{itemize}
