@@ -343,22 +343,22 @@ problem when combining subtyping and dependent types~\cite{aspinall1996subtyping
 and presents itself on our way to the direct
 generalization of polymorphic subtyping.
 
-To tackle this issue, we adopt a technique developed called
-\emph{unified subtyping}\cite{yang2017unifying}, which merges the typing relation and
+To tackle this issue, we adopt a technique called
+\emph{unified subtyping}~\cite{yang2017unifying}. Unified subtyping merges the typing relation and
 subtyping relation into a single relation to avoid the mutual dependency:
 \begin{mathpar}
   \Gamma \vdash e_1 \le e_2 : A
 \end{mathpar}
 The interpretation of this judgement is: under context $\Gamma$, $e_1$ is a subtype
 of $e_2$ and they both are of type $A$. The judgements for subtyping and typing
-are both special form of unified subtyping with the involvement of kinds $[[*]]$:
+are both special form of unified subtyping with the involvement of kind $[[*]]$:
 \begin{mathpar}
   \Gamma \vdash A \le B \triangleq \Gamma \vdash A \le B : [[*]]
   \and
   \Gamma \vdash e : A \triangleq \Gamma \vdash e \le e : A
 \end{mathpar}
-The technique simplifies the formalization and especially the proof of
-transitivity in the original work. Ideally after applying the technique,
+The technique simplifies the formalization of dependently typed calculi with subtyping,
+and especially the proof of transitivity in the original work. Ideally after applying the technique,
 the generalization of the polymorphic subtyping should be:
 
 \begin{mathpar}
@@ -371,57 +371,55 @@ the generalization of the polymorphic subtyping should be:
     {\Gamma \vdash A \le \forall x : B.\,C \rulehl{: [[*]]}}
 \end{mathpar}
 
-However the formalization is not exactly like this due to various issues, the
-details will be discussed in section \ref{sec:type-system}.
+\noindent The basic idea of our own formalization essentially follows a similar design.
+However, it is not exactly like this due to various issues, the
+details will be discussed in Section \ref{sec:type-system}.
 
 \paragraph{``Explicit'' Implicit Instantiation}
 
-Another feature of the polymorphic subtyping is that the instantiation of type
-parameter is done implicitly instead of being manually applied. Normally the
-type parameters only stay at type-level so terms are not involved in the
-implicit instantiation, for example:
-
+With polymorphic subtyping the instantiation of universally quantified type
+parameters is done implicitly instead of being manually applied. In non-dependently
+typed systems, \emph{implicit} parameters are types (i.e. terms are not involved in
+implicit instantiation). For example:
 \begin{mathpar}
   (\lambda x.\, x)~42 \longrightarrow 42
 \end{mathpar}
-
-Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$. The implicit
-instantiation is not reflected anywhere at term level. However for
+\noindent Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$. The implicit
+instantiation is not reflected anywhere at term level. However, in a
 language with type annotations on parameters of binders
 (for example lambda abstractions), in order
 for the polymorphic variable to be well-scoped at type annotations of terms,
-another binder $\Lambda$ is added for terms, however instantiations are still
+another binder $\Lambda$ is added for terms. However instantiations are still
 implicit as shown in the following examples:
-
 \begin{mathpar}
-  (\Lambda A : [[*]].\, \lambda x : A.\, x) ~ 42 \longrightarrow 42 \\
-  (\Lambda A : [[*]].\, \lambda x : A.\, \lambda y : A.\, x) \longrightarrow \lambda y : [[int]].\, 42
+  (\Lambda A : [[*]].\, \lambda x : A.\, x) ~ 42 \longrightarrow 42
+%  (\Lambda A : [[*]].\, \lambda x : A.\, \lambda y : A.\, x) \longrightarrow \lambda y : [[int]].\, 42
 \end{mathpar}
-
 Here $\Lambda A : [[*]].\, \lambda x : A.\, x$ has type $\forall A : \star. \, A \rightarrow A$,
-the polymorphic parameter $A$ is explicitly stated in the polymorphic
-terms. However as the reduction show, the instantiations are still implicit.
+and the polymorphic parameter $A$ is explicitly stated in the polymorphic
+term. However as the reduction shows, the instantiations are still implicit.
 We purposely omit the explicit binders for implicit parameters for all the examples
-in section \ref{sec:examples} for clarity, but for most of the cases where
-the polymorphic parameters are used, our language provide a binder to ensure
-the parameters are well-scoped at term-level.
+in Section \ref{sec:examples} for clarity, since such explicit binders can
+be recovered with a simple form of syntactic sugar:
+
+\[e : \forall (x : A) . B \hateq \Lambda (x : A). e : \forall (x : A) . B\]
+
+\noindent When polymorphic parameters are used, \name provides a binder ($\Lambda (x : A). e$)
+to ensure that the parameters are well-scoped at term-level.
 
 \paragraph{Type-level Computation and Casts}
 
-Since our language features a fixpoint that supports general recursion at both
+Since \name features a fixpoint that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
-we do not provide the congruence rule like other dependent
-type system such as the Calculus of Constructions \cite{CoquandThierry1988Tcoc}
+we do not provide the congruence rule like other dependently
+typed systems such as the Calculus of Constructions \cite{CoquandThierry1988Tcoc}
 to support implicit type-level reduction.
-
 \begin{mathpar}
   \inferrule*[lab=Cong]
     {[[G |- e : A]] \\ A =_\beta B}
     {[[G |- e : B]]}
 \end{mathpar}
-
-
 Instead, we partially adopt the
-call-by-name design of ``Pure Iso-Type System''\cite{yang2016unified,yang2019pure} and provide
-operators $\castdn$ and $\castup$ to explicitly trigger one-step
-type reductions or expansions.
+call-by-name design of \emph{Pure Iso-Type Systems} (PITS)~\cite{yang2016unified,yang2019pure},
+and provide operators $\castdn$ and $\castup$ to explicitly trigger one-step
+type reductions or expansions.\bruno{Show cast rules below.}
