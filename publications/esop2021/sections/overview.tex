@@ -18,12 +18,12 @@ is the ability to implicitly infer universally quantified arguments.
 Like most of functional languages, \name supports (implicit) parametric polymorphism.
 A first simple example is the polymorphic identity
 function:
-\begin{align*}
-&\mathrm{id} : \forall (A : \star).\, A \rightarrow A \\
-&\mathrm{id} = \lambda (x : A).\, x \\
-&\mathrm{answer} : \mathbb{N} \\
-&\mathrm{answer} = \mathrm{id} ~ 42  \quad\quad\quad\quad    \text{-- No type argument needed at the call of $\mathrm{id}$}
-\end{align*}
+\begin{flalign*}
+&\mathrm{id} : \forall (A : \star).\, A \rightarrow A &&\\
+&\mathrm{id} = \lambda (x : A).\, x &&\\
+&\mathrm{answer} : \mathbb{N} &&\\
+&\mathrm{answer} = \mathrm{id} ~ 42 \qquad \text{-- No type argument needed at the call of $\mathrm{id}$} &&
+\end{flalign*}
 \noindent The polymorphic parameter \verb|A| is annotated with its type,
 which is $\star$. The type $\star$ is the type of types (also known as
 \emph{kind}). In \name, the parameters of lambda abstractions are annotated
@@ -67,53 +67,48 @@ for our formulation of indexed lists:
 \newcommand{\Nil}[0]{\mathrm{Nil}}
 \newcommand{\Cons}[0]{\mathrm{Cons}}
 \newcommand{\map}[0]{\mathrm{map}}
-\begin{align*}
-  & \mathbf{data} ~ \Nat = \Zero ~|~ \Succ~\Nat \\
-  & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n))
-\end{align*}
+\begin{flalign*}
+  & \mathbf{data} ~ \Nat = \Zero ~|~ \Succ~\Nat &&\\
+  & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n)) &&
+\end{flalign*}
 In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
 show the definition for \verb|List|, and the types for the constructors (implementation ommitted)
 next. In later subsequent examples we will just assume some Haskell-style
 syntactic sugar for datatype definitions and constructors.
-\begin{equation*}
-\setlength{\arraycolsep}{1.5pt}
-\setstretch{1.2}
-\begin{array}{lcl}
-\List &:& \star \rightarrow \Nat \rightarrow \star \\
-\List &=& \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \forall r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r \\
-\Nil &:& \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n \\
+\begin{flalign*}
+&\List : \star \rightarrow \Nat \rightarrow \star &&\\
+&\List = \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \forall r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r &&\\
+&\Nil : \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n &&\\
 %\Nil &=& \castup \castup (\lambda z : r.\, \lambda c : (a \rightarrow \List~a~n \rightarrow r). ~ z) \\
-\Cons &:& \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n \\
+&\Cons : \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n &&
 %\Cons &=& \lambda x : a.\, \lambda xs : \List~a~(\Succ ~ n).\, \castup \castup (\lambda z : r.\, (\lambda c : a \rightarrow \List~a~(\Succ ~ n) \rightarrow r). ~ c ~ x ~ xs)
-\end{array}
-\end{equation*}
+\end{flalign*}
 \noindent Then we can define a \verb|map| function over \verb|List| with the type:
-\begin{align*}
+\begin{flalign*}
 %  & \map ' :: \forall a : \star.\, \forall b : \star. (a \rightarrow b) \rightarrow \Pi n : \Nat.\, (\List~a~n) \rightarrow (\List~b~n) \\
 %  & \map ' = \lambda f : a \rightarrow b.\, \mu ~ rec : (\Pi n : \Nat.\, \List~a~n \rightarrow \List~b~n).\, \lambda xs : \List~a~n. \\
 %  & \quad\qquad (\castdn \castdn \, xs) ~ \Nil ~ (\lambda x : a.\, \lambda xs' : \List~a~(\Succ~n).\, \Cons ~ (f ~ x) ~ (rec ~ (\Succ~n)~xs')) \\
 %  \\
-  & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n 
+  & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n &&
 %  & \map = \lambda f : a \rightarrow b.\, \lambda xs : \List ~ a ~ n.\, \map '~f~n~xs
-\end{align*}
+\end{flalign*}
 An example of application of \verb|map| is:
-\bruno{You should make sure that code is formatted consistently (for instance centered or left
-  aligned) and using the same font. This isn't the case at the moment.
-  In this page alone there are at least 3 different variations being used.
-  Also, please be careful not to have too much vertical white space around the examples
-  (I've been fixing this, but please avoid it if you write/modify more code).
-}
+% \bruno{You should make sure that code is formatted consistently (for instance centered or left
+%   aligned) and using the same font. This isn't the case at the moment.
+%   In this page alone there are at least 3 different variations being used.
+%   Also, please be careful not to have too much vertical white space around the examples
+%   (I've been fixing this, but please avoid it if you write/modify more code).
+% }
+\begin{flalign*}
+&\map~\Succ~(\Cons~1~(\Cons~2~\Nil)) &&
+\end{flalign*}
 
-\begin{verbatim}
-map S (Cons 1 (Cons 2 Nil))
-\end{verbatim}
-
-\noindent which increases every natural in the list by one. 
+\noindent which increases every natural in the list by one.
 Note that since the type parameters for \verb|map|, \verb|Cons| and \verb|Nil|
 are all implicit, they can be all omitted
 and the arguments are instantiated implicitly. Thus the \verb|map| function
 only requires two explicit arguments, making it as convininent to use
-as in most functional language implementations. 
+as in most functional language implementations.
 
 % \bruno{You are missing the most important/interesting portion of the code: i.e. show a call to
 %   the map function and discuss how implicit polymorphism avoids having to specify 3 extra arguments
@@ -159,27 +154,27 @@ we can define a \verb|Functor| datatype as:
 \newcommand{\MkFunctor}[0]{\mathrm{MkF}}
 \newcommand{\Id}[0]{\mathrm{Id}}
 \newcommand{\MkId}[0]{\mathrm{MkId}}
-\begin{equation*}
-  \mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~\{fmap : \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b\}
-\end{equation*}
+\newcommand{\fmap}[0]{fmap}
+\begin{flalign*}
+  &\mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~\{\fmap : \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b\} &&
+\end{flalign*}
 In this case the type of $fmap$ is:
-\begin{align*}
-  & fmap : \forall F : \star \to \star.~\Functor~F \to \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b 
-\end{align*}
+\begin{flalign*}
+  & \fmap : \forall F : \star \to \star.~\Functor~F \to \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b &&
+\end{flalign*}
 %data constructor $\MkFunctor$ has type $\forall F : \star \rightarrow \star.\, \dots \rightarrow \Functor~F$ where the dots are the type of the field.
 Importantly this example illustrates that universal variables can quantify over higher-kinds (i.e.
 $F : \star \to \star$).
 We can define instances of functor in a standard way:
-\begin{align*}
-  & \mathbf{data}~\mathrm{Id}~a=\mathrm{MkId}~\{runId : a\} \\
-  & \mathrm{idFunctor} : \Functor~\Id \\
-  & \mathrm{idFunctor} = \MkFunctor~\{fmap = \lambda f : a \rightarrow b.\, \lambda ~x : \Id~a.\, \MkId~(f~(runId~x))\}
-\end{align*}
+\begin{flalign*}
+  & \mathbf{data}~\mathrm{Id}~a=\MkId~\{runId : a\} && \\
+  & \mathrm{idFunctor} : \Functor~\Id && \\
+  & \mathrm{idFunctor} = \MkFunctor~\{\fmap = \lambda f : a \rightarrow b.\, \lambda ~x : \Id~a.\, \MkId~(f~(runId~x))\} &&
+\end{flalign*}
 and then use \verb|fmap| with three arguments:
-
-\begin{verbatim}
-fmap idFunctor S (MkId 0)
-\end{verbatim}
+\begin{flalign*}
+& \fmap~\mathrm{idFunctor}~\Succ~(\MkId~0) &&
+\end{flalign*}
 
 \noindent Note that, because our calculus has no type classes we pass the ``instance'' explicitly.
 Nonetheless three other arguments (the $F$, $a$ and $b$) are implicitly instantiated.
@@ -198,11 +193,11 @@ is call-with-current-continutation (\verb|callcc|). In a polymorphic language th
 several types that can be assigned to \verb|callcc|. One of these types is a rank-3 type,
 while another one is a rank-1 type. Using polymorphic subtyping we can show that the rank-3
 type is more general than the rank-1 type. Thus the following program type-checks:
-\begin{align*}
-& \mathrm{callcc}' : \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a \\
-& \mathrm{callcc} : \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a \\
-& \mathrm{callcc} = \mathrm{callcc}'
-\end{align*}
+\begin{flalign*}
+& \mathrm{callcc}' : \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a && \\
+& \mathrm{callcc} : \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a && \\
+& \mathrm{callcc} = \mathrm{callcc}' &&
+\end{flalign*}
 \noindent The type $\forall b : \star.\, a \rightarrow b$ appears in a positive position
 of the whole signature, and it is a more general signature than $a \rightarrow b$
 for an arbitrary choice of $b$. Our language capture this subtyping relation so that
@@ -231,7 +226,7 @@ subtyping relation are rules $\le\forall L$ and $\le\forall R$:
         so that the instantiation is more general than $B$.
         Importantly note that this relation does not guess arbitrary (poly)types,
         but just monotypes. In other words, the relation it \emph{predicative}~\cite{}.
-        This restriction enusres that the relation is \emph{decidable}. 
+        This restriction enusres that the relation is \emph{decidable}.
   \item In rule  $\le\forall R$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
         when it is still more general than the head of polytype, with the type
         parameter instantiated by an abstract variable $x$.
@@ -324,7 +319,7 @@ we follow a similar, more general, approach in \name.
 
 \paragraph{Unified Subtyping}
 However, the $\le\forall L'$ and $\le\forall R'$ rules suffer from an
-important complication, which does not exist in a System-F like setting: there is  
+important complication, which does not exist in a System-F like setting: there is
 a notorious mutual dependency between typing and subtyping.
 In particular, note that rule $\le\forall L'$ now mentions the typing relation
 in its premise ($\Gamma \vdash \tau : A$). Moreover, as usual,
