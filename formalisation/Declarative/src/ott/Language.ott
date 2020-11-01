@@ -7,7 +7,7 @@ kind, k :: 'k_' ::= {{ com kind }}
   | *   :: :: star {{ com type of type }}
   | box :: :: box  {{ com type of type of type }}
 
-expr, e, A, B, C, t {{ tex \tau }}, s {{ tex \sigma }} :: 'e_' ::= {{ com expressions }}
+expr, e, A, B, C, D, t {{ tex \tau }}, s {{ tex \sigma }} :: 'e_' ::= {{ com expressions }}
   | x       :: :: var  {{ com variable }}
   | k       :: :: kind {{ com type of type }}
   | n       :: :: num  {{ com integer value }}

@@ -266,6 +266,7 @@ use of the substitution lemma and the inductive hypothesis to demonstrate the he
 of $\Pi$ type preserve its kind after the argument is applied.
 
 \subsection{Transitivity}
+\label{sec:transitivity}
 
 Transitivity is typically one of the most challenging properties to prove in
 calculi with subtyping, and it was also one of the harder proofs in \name.
@@ -303,8 +304,9 @@ premise of generalized transitivity ends with \rref{s-forall-r}, then we face th
       {[[G |- e1 <: forall x : B. C : A]]}
 \end{mathpar}
 
-\noindent Before applying \rref{s-forall-r} to the conclusion, we have to establish the relationship
-between $A$ and $[[*]]$. Were there no restrictions on the kinding of $\forall$ types,
+\noindent Before applying \rref{s-forall-r} to the conclusion,
+we have to establish the relationship between $A$ and $[[*]]$.
+Were there no restrictions on the kinding of $\forall$ types,
 this would be much more complicated situation, where the reasoning of kinding,
 such as inversion lemmas of about kinds, and transitivity depend on each other.
 This is one of the main reasons why we forbid $\forall$ types having kind $[[box]]$.

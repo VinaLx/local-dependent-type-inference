@@ -1,4 +1,4 @@
-\section{Discussions}
+\section{Discussions and Future Work}
 
 \begin{comment}
 \subsection{The Trouble with Instantiation in Subtyping}
@@ -79,3 +79,123 @@ for example:
 
 So we stick with the Call-by-Name style semantics around cast operators and
 leave the discussion of other possibilities of design in a future work.
+
+\subsection{Kind Restrictions on Polymorphic Types}
+
+Currently we impose restriction on the kinding of polymorphic types ($\forall x : A. B$)
+, which has little impact on the practicality
+of our system since we do not really mind not being able to have the polymorphic
+kind $\forall x : [[int]].\,\star$. But we also does not have a real reason
+to not allow the existence of such kind except that it complicates the development
+of metatheory by a big margin.
+
+One of the obstacles of removing the striction is the mutual dependency
+between reasoning subtyping relation of polymorphic kinds and the transitivity theorem,
+where we wish to have some lemma like this:
+
+\begin{mathpar}
+    \inferrule*[]
+      {[[G |- e : A]] \\ [[G |- e : *]]}
+      {[[G |- * <: A : box]]}
+\end{mathpar}
+
+which depends on transitivity when the derivation of $[[G |- e : A]]$ ends with
+subsumption rule (rule \rref{s-sub}).
+
+Note that the reverse variant of the lemma
+(If $[[G |- e : A]]$ and $[[G |- e : *]]$ then $[[G |- A <: * : box]]$) is not generally
+true with the counter example that $A : \star \vdash \forall a : A.\, \star \le \star$
+does not hold, since we are unable to find a well-typed instantiation of an arbitrary type $A$,
+which breaks the transitivity while the derivation of the first premise ends
+with \rref{s-forall-l}:
+
+\begin{mathpar}
+    \inferrule*[]
+      {[[G |- [t / x] e1 <: e2 : *]] \\ [[G |- e2 <: e3 : A]]}
+      {[[G |- forall x : A. e1 <: e3 : *]]}
+\end{mathpar}
+
+We cannot apply \rref{s-forall-l} unless $e_3$ is of type $[[*]]$,
+i.e. $[[G |- A <: * : box]]$, which does not always holds, or the principal
+type of $e_3$ is $[[*]]$ and $[[G |- * <: A : box]]$.
+Overall, this is a situation we do not currently understand.
+
+Moreover, we expect complexities while reasoning about the kinding of types
+after we lose the kinding uniqueness in other parts of the metatheory, therefore
+we leave the relaxation of the kinding restrictions for future work.
+
+\subsection{Runtime Relevance of Implicit Arguments}
+
+In our language, the implicit arguments have no computational impact at runtime
+and only provide the necessary scoping for type annotations. This is
+a similar design to ICC\cite{miquel2001implicit} and
+ICC*\cite{barras2008implicit} to simplify the development of a direct
+operational semantics for our language. Such restriction can be lifted, if we
+prove the runtime type-safety by elaboration to a second language,
+such as the Calculus of Constructions\cite{coc},
+instead of providing a direct operational semantics.
+
+We can elaborate the implicit function types (universal types) to $\Pi$ types,
+implicit abstraction to lambda expression and implicit instantiation to explicit
+application during type checking, when we have full information about the
+choice of implicit instantiations. However elaboration on a unified subtyping
+system is not an easy task, because the subtyping relation cannot simply be interpreted
+to a coersion between values of different types, while a half of our subtyping
+rules involve the sub-``type'' relation between ``terms'' instead of ``types''.
+Therefore we leave the exploration of how elaboration can be done
+on a unified subtyping system as a future work.
+
+\subsection{Algorithmic System and Challenges}
+
+We do not currently have a algorithmic typing rules for our system. We
+consider a formalized algorithm for dependent types itself a challenge so it
+is left for future work. But while trying to comparing to the algorithmic system
+of higher-ranked polymorphism based on system F
+\cite{dunfield2013complete,zhao19mechanical}
+we identify following challenges to develop an algorithmic system on our language
+
+\paragraph{Higher-Order Unification}
+
+In dependent type system, the function type ($\Pi$ type) is dependent so that
+the type of an application potentially dependends on the value of the arguments.
+This creates the scenario of higher-order unification where the unifier is
+second-order terms (functions). For a extreme example:
+
+\begin{equation*}
+    \lambda f : [[int]] \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
+\end{equation*}
+
+Here the principal type of $\Lambda A : \star.\,\mu x : A.\, x$ is $\forall A : \star.\, A$,
+in a non-depedent setting one can easily conclude that the instantiation for type $A$
+is $[[int]] \rightarrow [[int]]$. However in dependent types we are looking at
+$(\Pi n : [[int]].\, F(n))$ for all possible $F$ such that $F(42) = [[int]]$.
+The general problem of higher-order unification is known to be undecidable\cite{goldfarb1981undecidability}
+and the decidable variant ``pattern unification''\cite{miller1991unification}
+is yet to have a clear specification.
+So we are not yet sure about how to tackle or workaround the situation in order
+for our system to be well-specified and mechanized.
+
+\paragraph{Inhabitation Problem}
+
+In polymorphic subtyping, we do not need a ``real'' instantiation to conclude
+a subtyping relation holds, for example in polymorphic subtyping:
+
+\begin{equation*}
+    \forall A.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A.\, A \rightarrow A) \rightarrow [[int]]
+\end{equation*}
+
+The subtyping holds by first applying rule $\le\forall L$ with a dummy instantiation,
+say $[[int]]$, and then showing $\forall A.\, A \rightarrow A \le [[int]] \rightarrow [[int]]$
+which clearly holds by applying rule $\le\forall L$ again. However the situation
+complicates in our system:
+
+\begin{equation*}
+    \forall A : T.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A : T.\, A \rightarrow A) \rightarrow [[int]]
+\end{equation*}
+
+We cannot apply \rref{s-forall-l} until we find a valid instantiation for type $A$,
+therefore we encounter an ``inhabitation problem'' for our system, asking the
+inhabitant for an arbitrary type in our system. And while such problem is
+undecidable for system F\cite{dudenhefner2019simpler}, we do not expect it to be
+decidable in a more complicated system. So a design is required to workaround
+this situation and we are unsure about how we are going to do that.
