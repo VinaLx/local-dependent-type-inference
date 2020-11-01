@@ -362,11 +362,11 @@ and especially the proof of transitivity in the original work. Ideally after app
 the generalization of the polymorphic subtyping should be:
 
 \begin{mathpar}
-  \inferrule*[right=$\le\forall''$]
+  \inferrule*[right=$\le\forall'' L$]
     {\Gamma \vdash \tau : A \\ \Gamma \vdash [\tau / x]\, B \le C \rulehl{: [[*]]}}
     {\Gamma \vdash \forall x : A.\, B \le C \rulehl{: [[*]]}}
   \and
-  \inferrule*[right=$\ge\forall''$]
+  \inferrule*[right=$\le\forall'' R$]
     {\Gamma ,\, x : B \vdash A \le C \rulehl{: [[*]]}}
     {\Gamma \vdash A \le \forall x : B.\,C \rulehl{: [[*]]}}
 \end{mathpar}
