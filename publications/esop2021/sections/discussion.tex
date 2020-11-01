@@ -82,14 +82,15 @@ leave the discussion of other possibilities of design in a future work.
 
 \subsection{Kind Restrictions on Polymorphic Types}
 
-Currently we impose restriction on the kinding of polymorphic types ($\forall x : A. B$)
+Currently we impose restrictions on the kinding of polymorphic types
+($\forall x : A. B$) to require they only have kind $\star$ but not $[[box]]$
 , which has little impact on the practicality
 of our system since we do not really mind not being able to have the polymorphic
 kind $\forall x : [[int]].\,\star$. But we also does not have a real reason
 to not allow the existence of such kind except that it complicates the development
 of metatheory by a big margin.
 
-One of the obstacles of removing the striction is the mutual dependency
+One of the obstacles of removing the restriction is the mutual dependency
 between reasoning subtyping relation of polymorphic kinds and the transitivity theorem,
 where we wish to have some lemma like this:
 
@@ -132,43 +133,43 @@ a similar design to ICC\cite{miquel2001implicit} and
 ICC*\cite{barras2008implicit} to simplify the development of a direct
 operational semantics for our language. Such restriction can be lifted, if we
 prove the runtime type-safety by elaboration to a second language,
-such as the Calculus of Constructions\cite{coc},
+such as \emph{the Calculus of Constructions}\cite{coc},
 instead of providing a direct operational semantics.
 
 We can elaborate the implicit function types (universal types) to $\Pi$ types,
 implicit abstraction to lambda expression and implicit instantiation to explicit
 application during type checking, when we have full information about the
-choice of implicit instantiations. However elaboration on a unified subtyping
+choice of implicit instantiations. However the elaboration on a unified subtyping
 system is not an easy task, because the subtyping relation cannot simply be interpreted
-to a coersion between values of different types, while a half of our subtyping
+to a coercion between values of different types, while a half of our subtyping
 rules involve the sub-``type'' relation between ``terms'' instead of ``types''.
 Therefore we leave the exploration of how elaboration can be done
 on a unified subtyping system as a future work.
 
 \subsection{Algorithmic System and Challenges}
 
-We do not currently have a algorithmic typing rules for our system. We
-consider a formalized algorithm for dependent types itself a challenge so it
-is left for future work. But while trying to comparing to the algorithmic system
+\name does not currently have a algorithmic system since we
+consider a formalized algorithm for dependent type system itself a challenge so it
+is left for future work. While trying to compare to the algorithmic system
 of higher-ranked polymorphism based on system F
 \cite{dunfield2013complete,zhao19mechanical}
-we identify following challenges to develop an algorithmic system on our language
+we identify following challenges to develop an algorithmic system for our language
 
 \paragraph{Higher-Order Unification}
 
-In dependent type system, the function type ($\Pi$ type) is dependent so that
-the type of an application potentially dependends on the value of the arguments.
+In dependent type systems, function types ($\Pi$ type) are dependent so that
+the type of applications potentially dependend on the values of their arguments.
 This creates the scenario of higher-order unification where the unifier is
-second-order terms (functions). For a extreme example:
+second-order terms (functions). For a extreme example in our language:
 
 \begin{equation*}
     \lambda f : [[int]] \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
 \end{equation*}
 
-Here the principal type of $\Lambda A : \star.\,\mu x : A.\, x$ is $\forall A : \star.\, A$,
-in a non-depedent setting one can easily conclude that the instantiation for type $A$
-is $[[int]] \rightarrow [[int]]$. However in dependent types we are looking at
-$(\Pi n : [[int]].\, F(n))$ for all possible $F$ such that $F(42) = [[int]]$.
+Here the principal type of $\Lambda A : \star.\,\mu x : A.\, x$ is $\forall A : \star.\, A$.
+In a non-depedent setting one can easily conclude the instantiation for type $A$ to be
+ $[[int]] \rightarrow [[int]]$. However with dependent types we are looking at
+the type $(\Pi n : [[int]].\, F(n))$ for all possible $F$ such that $F(42) = [[int]]$.
 The general problem of higher-order unification is known to be undecidable\cite{goldfarb1981undecidability}
 and the decidable variant ``pattern unification''\cite{miller1991unification}
 is yet to have a clear specification.

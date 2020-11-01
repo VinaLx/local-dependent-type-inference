@@ -133,7 +133,6 @@ which can be an arbitrary monoexpression, since we do not have access to typing
 information in the dynamic semantics.
 
 \begin{figure}
-  \label{fig:extraction}
   \centering
   \begin{equation*}
   \begin{array}{llcl}
@@ -168,6 +167,7 @@ information in the dynamic semantics.
   \drules[er]{$[[ee1 *--> ee2]]$}{Erased Semantics}
     {app,beta,elim,mu,castdn,castXXinst,castXXelim}
   \caption{Erased Expressions and Operational Semantics}
+  \label{fig:extraction}
 \end{figure}
 % \bruno{You need to use something like a latex table/tabular,
 % to neatly align the erasure function.}
@@ -322,8 +322,8 @@ other expressions. The arguments for applications are required to be
 mono-expressions, and the whole fixpoint expression is required to be a
 mono-expressions. We shall
 discuss the reason behind the restrictions in later sections.
-\bruno{I feel that we may be deferring a bit too much explanation
-to later sections, but lets come back to this after you write later sections.}
+% \bruno{I feel that we may be deferring a bit too much explanation
+% to later sections, but lets come back to this after you write later sections.}
 
 \paragraph{Kind Restriction for Universal Types}
 \label{sec:kind-restriction}

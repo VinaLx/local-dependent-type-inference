@@ -78,21 +78,6 @@ extended their original work with new features.\bruno{For the last paper, I thin
   some interesting features that are closer to dependent types, so we should
 summarize that in a few sentences.}
 
-\begin{comment}
-Impredicative type inference for HRP is challenging.
-Unfortunately the subtyping relation that enables impredicative
-polymorphism has been shown to be undecidable~\cite{tiuryn1996subtyping}.
-Works on partial impredicative type-inference algorithms~\cite{le2003ml,leijen2008hmf,vytiniotis2008fph}
-navigate a variety of design tradeoffs for a decidable algorithm.
-As a result, such algorithms tend to be more complicated, and thus less adopted in practice.
-Recent work proposed \emph{Guarded Impredicative Polymorphism}~\cite{Serrano2018},
-as an improvement on GHC's type inference algorithm with impredicative instantiation.
-They make use of local information in $n$-ary applications to
-infer polymorphic instantiations with a relatively simple specification and unification algorithm.
-Although not all impredicative instantiations can be handled well,
-their algorithm is already quite useful in practice.
-\end{comment}
-
 \paragraph{MLSub} A recent breakthrough in the area of (global) type-inference
 for type systems with subtyping is MLSub~\cite{dolan17polymorphism}. MLSub extends the Hindley-Milner
 type system with support for subtyping. A key innovation
@@ -102,8 +87,6 @@ MLSub is significantly more ambitious than local type-inference, and requires
 no annotations (in the tradition of Hindley-Milner). However MLSub does not
 account for HRP and its algorithms and metatheory have not been mechanically
 formalized.
-
-
 
 \paragraph{Dependent Types and Subtyping}
 In essence the big difficulty is that the introduction of dependent
@@ -139,7 +122,8 @@ Given the importance of System \fsub as a foundational
 model for OOP, it seems highly desirable that a dependently
 typed OOP calculus subsumes it.
 
-Our work builds on the work done on Pure Iso-Type Systems (PITS)~\cite{???}, and
+Our work builds on the work done on Pure Iso-Type Systems (PITS)~\cite{\yang2019pure}, and
+
 \emph{unified subtyping}~\cite{full}. PITS is a variant of pure type systems (PTSs),
 which captures a family of calculi with \emph{iso-types}. Iso-types generalize \emph{iso-recursive
 types}~\cite{tapl}, and provide a simple form of
@@ -162,77 +146,6 @@ relations into the same relation.  This approach is different from
 Hutchins' technique, which eliminates types and typing. \name
 retains types. \bruno{Text summarizing differences from our work}
 
-
-\begin{comment}
-\paragraph{Stratified Syntax with High-Order Subtyping and Dependent Types}
-% System Fw<=: different proofs
-System \fsubo~\cite{fsubo} is a lambda calculus with stratified syntax by extending
-System \fw~\cite{fw} with higher-order subtyping. To simplify the
-metatheory, early formalizations of System
-\fsubo~\cite{fsubo,fsubo:thesis} do not allow a bounded type
-operator. Compagnoni and Goguen later proposed a technique called
-typed operational semantics~\cite{fsubo:typed} to fully enable bounded
-quantification in System \fsubo. But its metatheory becomes quite
-complicated and relies on strong normalization, making it hard to
-apply such technique to systems with general recursion.
-
-% System \P<=: the subtyping dependent types paper; OO languages: DOL, vobj, DOT
-System $\lambda P_\leq$~\cite{subdep} is a stratified system with
-dependent types and higher-order subtyping. The metatheory becomes
-more complex than System \fsubo~due to the circular dependency of
-typing, kinding and subtyping. A novel proof technique that splits
-beta reduction on terms and types is proposed to break such
-dependency. However, System $\lambda P_\leq$ does not support
-polymorphism (i.e. abstraction over types), bounded
-quantification or top types.
-System $\lambda \Pi_\leq$~\cite{chen1,chen2} is an improvement of
-$\lambda P_\leq$. It has the property of type-level transitivity
-elimination, while System $\lambda P_\leq$ has transitivity
-elimination only for normalized types. However, $\lambda \Pi_\leq$ is
-proved to be equivalent to $\lambda P_\leq$ in typing and subtyping,
-meaning that it has no increased expressiveness.
-
-
-\paragraph{Scala and DOT}
-%Finally, it is worthwhile mentioning that we view the work on the DOT
-%calculus as complementary to our own.
-Both the DOT calculus~\cite{dot:sound} and the earlier
-$\nu\mathit{Obj}$ calculus~\cite{vobj} are aimed at capturing the essence of Scala.
-Those calculi
-have path-dependent types, which are a restricted variant of dependent
-types.
-Path-dependent types allow
-a special kind of types, called paths, which are type selections on variables, i.e., $x.L$.
-Compared to traditional dependent types,
-it is difficult to use path-dependent types to model dependency on
-non-path values, e.g., $\Pi n:\mathit{Int}.~\mathit{Vec}~n$.
-An interesting feature of DOT is a
-rich notion of bounds, where
-type variables can be quantified by both lower
-bounds and upper bounds. In contrast bounded quantification
-traditionally found in calculi such as System \fsub only allows upper
-bounds.
-The metatheory of DOT is well-developed~\cite{dot:sound}, though the soundness proof requires many non-standard techniques. Transitivity of subtyping needs to be treated as an axiom and
-transitivity elimination is not
-possible~\cite{dot:sound}.
-Neither DOT nor $\nu\mathit{Obj}$ use unified syntax: they are both stratified calculi which
-distinguish between types and terms.
-\end{comment}
-
-\begin{comment}
-\paragraph{Subtyping with Restricted Dependent Types}
-There has been some work focusing on exploring subtyping with
-\emph{restricted} forms of dependent types but not \emph{full} dependent
-types in the context of object-oriented (OO)
-programming. The \emph{Dependent Object-Oriented Language}~\cite{dol}
-(DOL) is an imperative OO programming language with subtyping and \emph{index
-refinements}, a restricted notion of dependent types originated from
-Dependent ML~\cite{dml}, which allows types to depend on static indices of
-natural numbers. DOL supports the verification of mutable objects and
-unrestricted use of shared objects. The type checking of DOL is
-decidable. However, the metatheory of DOL is not fully developed
-yet.
-\end{comment}
 
 \paragraph{Dependent Types with Explicit Casts} Previously
 discussed work is about the interaction between dependent types and

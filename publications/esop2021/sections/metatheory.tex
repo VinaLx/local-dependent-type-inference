@@ -12,7 +12,7 @@ to the mutual dependency of typing and subtyping, and the Odersky and L\"aufer s
 subtyping brings new issues to the table. For type-soundness the key challenge
 is the non-deterministic and non type-preserving nature of the reduction relation.
 To address this issue, we employ a type soundness proof technique
-that uses the erased reduction relation shown in Section~\ref{}.
+that uses the erased reduction relation shown in figure~\ref{fig:extraction}.
 % \bruno{Check that the completeness lemma with respect to DK is discussed, and that the lemma
 % that shows that redundant premises are indeed redundant are discussed as well.}
 
@@ -40,7 +40,7 @@ declarative subtyping.
 
 \subsection{Polymorphic Subtyping in a Dependently Typed Setting}
 \label{sec:adaptation}
-\bruno{I'm not entirely sure if this text belongs here or in a previous section.}
+% \bruno{I'm not entirely sure if this text belongs here or in a previous section.}
 
 The polymorphic subtyping by Odersky and L\"aufer features the following two rules:
 
@@ -549,10 +549,12 @@ The main problem of cast elimination can be demonstrated by the following deriva
 Here the typing of the inner $\castdn$ does not directly follow
 \rref{r-castup}, but the subsumption rule instead. We want to show that after
 the cast elimination (following \rref{r-cast-elim}), expression $e$ has type $B_2$,
-while in reality it has type $A_2$. So we want to show $\Gamma \vdash A_2 \le B_2$
+while in reality it has type $A_2$. We want to show $\Gamma \vdash A_2 \le B_2$
 with the information that $\Gamma \vdash A_1 \le B_1$, $[[A1 --> A2]]$
 and $[[B1 --> B2]]$, which goes back to what we want to prove initially --
-the subtype preservation, causing a circular dependency of proof.
+the subtype preservation after reduction, causing a circular dependency of proof.
+Subtype preservation needs to solve the cast elimination case, which depends back
+on subtype preservation.
 % \bruno{I don't follow this last sentence}.
 This problem was also observed by the previous work on unified subtyping
 with the cast operators\cite{yang2017unifying}. They solved this situation
@@ -611,12 +613,12 @@ And then the subtype preservation of type computation can be easily shown.
     then $[[G |- A2 <: B2 : k]]$.
 \end{lemma}
 
-\bruno{I think that, at the start of the explanation, a better high-level description
-  of what's going on is needed. You need to state that we are interested in two different
-  subtype preservation lemmas, because reduction is used in two different ways (at runtime
-  and at the type-level). Moreover reudction at the type-level is the usual one (not erased), whereas
-  at runtime we use (or can use) erased reduction. Then briefly state that each of those results
-has some associatted challenges. }
+% \bruno{I think that, at the start of the explanation, a better high-level description
+%   of what's going on is needed. You need to state that we are interested in two different
+%   subtype preservation lemmas, because reduction is used in two different ways (at runtime
+%   and at the type-level). Moreover reudction at the type-level is the usual one (not erased), whereas
+%   at runtime we use (or can use) erased reduction. Then briefly state that each of those results
+% has some associatted challenges. }
 
 \paragraph{Implicit Instantiations}
 The proof of two cases for implicit instantiations (\rref{r-inst,r-cast-inst})
@@ -636,13 +638,23 @@ is equivalent to the system without them. We define system
 $[[G |= e1 <: e2 : A]]$, whose rules are the same as the typing rules of \name
 , but with all redundant premises eliminated. Also, \rref{s-castdn,s-castup}
 are also simplified to use deterministic reduction ($A \longrightarrow_D B$)
-instead of the reduction rule $A \longrightarrow B$.
+instead of the reduction rule $A \longrightarrow B$ as shown below (other rules omitted):
 
-We prove the two system equivalent.
+\begin{drulepar}[ss]{$[[G |= e1 <: e2 : A]]$}{Simplified Unified Subtyping}
+    \ottaltinferrule{ss-castdn}{width=20em}
+      {[[G |= e1 <: e2 : A]] \\ \rulehl{[[A ==> B]]} \\ [[G |= B : k]]}
+      {[[G |= castdn e1 <: castdn e2 : B]]}
+    \and
+    \ottaltinferrule{ss-castup}{width=20em}
+      {[[G |= e1 <: e2 : B]] \\ \rulehl{[[A ==> B]]} \\ [[G |= A : k]]}
+      {[[G |= castup [A] e1 <: castup [A] e2 : B]]}
+\end{drulepar}
+
+We prove that the two system are equivalent in terms of expressiveness.
 
 \begin{theorem}[Equivalence of \name and the Simplification]
   If $[[G |- e1 <: e2 : A]]$ then $[[G |= e1 <: e2 : A]]$.
-  If $[[G |= e1 <: e2 : A]]$ then $[[G |- e1 <: e2 : A]]$.
+  And if $[[G |= e1 <: e2 : A]]$ then $[[G |- e1 <: e2 : A]]$.
 \end{theorem}
 
 \subsection{Subsumption of Polymorphic Subtyping}
@@ -684,4 +696,4 @@ $\forall x. A$ is well-formed in $\Gamma \vdash \forall x. \, A \le B$.
 % \bruno{The lemma that shows that the redundant premises are indeed redundant is not shown, right?
 %   I think it should appear somewhere in Section 3.2.}
 
-\bruno{After reading this section, I feel that the text in Section 3.1 should come in Section 2 instead.}
+% \bruno{After reading this section, I feel that the text in Section 3.1 should come in Section 2 instead.}
