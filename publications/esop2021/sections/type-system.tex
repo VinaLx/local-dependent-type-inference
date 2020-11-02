@@ -48,7 +48,7 @@ Moreover, there are a number of additional language constructs for
 supporting implicit polymorphism, recursion and explicit type-level computation
 via casts. These constructs are discussed next.
 
-\paragraph{Implicit Polymorphism.}
+\paragraph{Implicit Polymorphism}
 In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
 polymorphism in non-dependent.
 In contrast to universal quantification in conventional functional languages, the
@@ -62,7 +62,9 @@ implicit lambda expressions ($[[bind x : A. e]]$), which are the implicit counte
   employs similar constructs for implicit dependent products.
 Like conventional universal quantification, the arguments of $\forall$ types are
 deduced during applications rather than being explicitly passed.
-In addition, following designs for predicative higher-ranked polymorphism~\cite{oderskylufer,DK,PJ}, we have also generalized the concept of \emph{monotypes} to
+In addition, following designs for predicative higher-ranked polymorphism~
+\cite{odersky1996putting,dunfield2013complete,jones2007practical},
+we have also generalized the concept of \emph{monotypes} to
 \emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
 
 \paragraph{Recursion and Explicit Type-level Computation.}
