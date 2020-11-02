@@ -27,7 +27,7 @@ Dunfield and Krishnaswami (DK)~\cite{dunfield2013complete} provide an elegant
 formalization of another sound and complete algorithm, which has
 also inspired implementations of type-inference in some polymorphic
 programming languages (such as PureScript~\cite{PureScript} or DDC~\cite{Disciple}).
-More recently Zhao et al.~\cite{zhao19mechanical} has mechanized DK's type system in a theorem prover.
+More recently Zhao et al.~\cite{zhao19mechanical} have mechanized DK's type system in a theorem prover.
 
 %some more background text
 
@@ -72,7 +72,7 @@ tangled, which means that tested techniques of examining subtyping in
 isolation no longer apply''}.
 Recent work on \emph{unified subtyping}~\cite{full} provides a
 simple technique to address this problem.
-Following the same spirit as \emph{Pure Type Systems}~\cite{BarendregtHP:intgts},
+Following the same spirit as Pure Type Systems,
 which attempt to unify syntax and the typing and well-formedness relations,
 \emph{unified subtyping} suggests unifying typing
 and subtyping into a single relation. This solves the problem of dependencies
@@ -84,13 +84,12 @@ In this paper we investigate how polymorphic subtyping can be
 adapted into a dependently typed calculus with general recursion and
 explicit casts for type-level computation. We employ unified subtyping
 to address the issues of combining dependent types with subtyping.
-Furthermore, the use of explicit casts
+The use of explicit casts
 for type-level computation means that type equality is essentially
 syntactic (or rather up-to $\alpha$-equivalence).
 This avoids some major complications that arize in the presence
-of a conversion rule, which enable a much more powerful notion of type equality
-up-to $\beta$-equivalence of types.
-A well-known result is that type-inference for systems
+of a conversion rule:
+a well-known result is that type-inference for systems
 with a conversion rule requires \emph{higher-order
   unification}, which is known to be \emph{undecidable}~\cite{goldfarb1981undecidability}.
 By employing a system with $\alpha$-equivalence only we stay closer to existing
@@ -112,17 +111,19 @@ is partly inspired by the approach used in the \emph{Implicit Calculus of Constr
 to prove type soundness. However our unified subtyping setting is significantly
 different from ICC due to the presence of subtyping, which brings complications not in the ICC.
 We also prove that any valid subtyping statement in the Odersky and L\"aufer relation
-is also valid in \name. Thus \name's unified subtyping subsumes the polymorphic subtyping
+is valid in \name. Thus \name's unified subtyping subsumes the polymorphic subtyping
 relation by Odersky and L\"aufer.
 
-We formalized \name and all the proofs reported in this paper in the Coq theorem
-prover~\cite{coq}. Moreover we have a simple prototype implementation of \name by adapting
-the algorithms from Zhao et al.~\cite{zhao19mechanical} for polymorphic subtyping.
-\bruno{Can the implementation run the examples we show?}
-However, it is important to note that this work
-does not address the issue of decidability or soundness and completeness of \name to an
-algorithmic formulation. These are important and challenging
-questions, which are left open for future work.
+\name and all the proofs reported in this paper are formalized in the Coq theorem
+prover~\cite{coq}.
+%Moreover we have a simple prototype implementation of \name by adapting
+%the algorithms from Zhao et al.~\cite{zhao19mechanical} for polymorphic subtyping.
+%\bruno{Can the implementation run the examples we show?}
+This paper
+does not address decidability or soundness and completeness of \name to an
+algorithmic formulation, which are outside of the scope of this work.
+Nonetheless, these are important and challenging
+questions for practical implementations of \name, which are left open for future work.
 
 In summary, the contributions of this paper are:
 
@@ -138,9 +139,8 @@ In summary, the contributions of this paper are:
   unified subtyping can encode all valid poymorphic subtyping statements of Odersky and L\"aufer's
   relation.
 
-\item {\bf Mechanical formalization and implementation.} All the results have been mechanically
-  formalized in the Coq theorem prover and we provide a small prototype implementation of the
-  calculus. The formalization and implementation are available online in the
-  github repository\footnote{\url{https://github.com/VinaLx/dependent-polymorphic-subtyping}}.
+\item {\bf Mechanical formalization.} All the results have been mechanically
+  formalized in the Coq theorem prover. The formalization is available online at:
+  \url{https://github.com/VinaLx/dependent-polymorphic-subtyping}.
 
 \end{itemize}
