@@ -223,17 +223,17 @@ Figure \ref{fig:polymorphic-subtyping} shows Odersky and L\"aufer polymorphic
 subtyping relation~\cite{odersky1996putting}.
 This relation captures a \emph{more-general-than} relation between
 types as a subtyping relation. They key rules in their
-subtyping relation are rules $\le\forall L$ and $\le\forall R$:
+subtyping relation are rules $\forallL$ and $\forallR$:
 
 \begin{itemize}
-  \item In rule $\le\forall L$, a polytype ($\forall x.\, A$) is considered \emph{more-general}
+  \item In rule $\forallL$, a polytype ($\forall x.\, A$) is considered \emph{more-general}
         than another type ($B$), when we can find an arbitrary monotype ($\tau$)
         so that the instantiation is more general than $B$.
         Importantly note that this relation does not guess arbitrary (poly)types,
         but just monotypes. In other words, the relation is \emph{predicative}~
         \cite{Martin-Lof-1973}.
         This restriction enusres that the relation is \emph{decidable}.
-  \item In rule  $\le\forall R$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
+  \item In rule  $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
         when it is still more general than the head of polytype, with the type
         parameter instantiated by an abstract variable $x$.
 \end{itemize}
@@ -253,11 +253,11 @@ to generalizes this relation to a dependently typed setting.
     {\Gamma \vdash B_1 \le A_1 \\ \Gamma \vdash A_2 \le B_2}
     {\Gamma \vdash A_1 \rightarrow A_2 \le B_1 \rightarrow B_2}
   \\
-  \inferrule*[right=$\le\forall L$]
+  \inferrule*[right=$\forallL$]
     {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
     {\Gamma \vdash \forall x.\, A \le B}
   \and
-  \inferrule*[right=$\le\forall R$]
+  \inferrule*[right=$\forallR$]
     {\Gamma ,\, x \vdash A \le B}
     {\Gamma \vdash A \le \forall x.\, B}
 \end{drulepar}
@@ -278,21 +278,21 @@ be can be values or other kinds of types as well.
 A first attempt at a direct generalization would be:
 
 \begin{mathpar}
-  \inferrule*[right=$\le\forall L'$]
+  \inferrule*[right=$\forallL'$]
     {\Gamma \vdash \tau \rulehl{: A} \\ \Gamma \vdash [\tau / x]\, B \le C}
     {\Gamma \vdash \forall x \rulehl{: A}.\, B \le C}
   \and
-  \inferrule*[right=$\le\forall R'$]
+  \inferrule*[right=$\forallR'$]
     {\Gamma ,\, x \rulehl{: B} \vdash A \le C}
     {\Gamma \vdash A \le \forall x \rulehl{: B}.\,C}
 \end{mathpar}
 
 \noindent Here the parameter for universal types can have any type (and not just $\star$).
 Hence, instead of requiring the monotype $\tau$ to be a well-formed type in rule
-$\le\forall L$, in rule $\le\forall L'$ it is
+$\forallL$, in rule $\forallL'$ it is
 required that $\tau$ is well-typed regarding the type of the parameter
 in the universal quantifier.
-Similarly, for rule $\le\forall R'$ the context for the subtyping rule should include typing information
+Similarly, for rule $\forallR'$ the context for the subtyping rule should include typing information
 for the universaly quantified variable.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
@@ -322,15 +322,15 @@ which also features similar rules in typing. But Hindley-Milner is designed for
 dealing only with rank-1 polymorphism.
 In generalizations of higher-ranked polymorphic type-inference~
 \cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
-it has been shown that rules like $\le\forall L$ and $\le\forall R$ generalize rules like
+it has been shown that rules like $\forallL$ and $\forallR$ generalize rules like
 \textsc{GEN} and \textsc{INST}. Since we aim at higher-ranked polymorphic generalization,
 we follow a similar, more general, approach in \name.
 
 \paragraph{Unified Subtyping}
-However, the $\le\forall L'$ and $\le\forall R'$ rules suffer from an
+However, the $\forallL'$ and $\forallR'$ rules suffer from an
 important complication, which does not exist in a System-F like setting: there is
 a notorious mutual dependency between typing and subtyping.
-In particular, note that rule $\le\forall L'$ now mentions the typing relation
+In particular, note that rule $\forallL'$ now mentions the typing relation
 in its premise ($\Gamma \vdash \tau : A$). Moreover, as usual,
 the subsumption rule of
 typing relation (shown below) depends on the subtyping relation.
@@ -340,7 +340,7 @@ typing relation (shown below) depends on the subtyping relation.
     {\Gamma \vdash e : B}
 \end{mathpar}
 In contrast, in Odersky and L\"aufer's rules,
-the same premise in $\le\forall L$ is only well-formedness ($\Gamma \vdash \tau$),
+the same premise in $\forallL$ is only well-formedness ($\Gamma \vdash \tau$),
 and thus subtyping does not depend on typing.
 This mutual dependency problem has been a significant and notorious
 problem when combining subtyping and dependent types~\cite{aspinall1996subtyping, hutchins2010pure},

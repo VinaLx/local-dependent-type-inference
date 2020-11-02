@@ -45,11 +45,11 @@ declarative subtyping.
 The polymorphic subtyping by Odersky and L\"aufer features the following two rules:
 
 \begin{mathpar}
-    \inferrule*[right=$\le\forall L$]
+    \inferrule*[right=$\forallL$]
       {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
       {\Gamma \vdash \forall x.\, A \le B}
     \and
-    \inferrule*[right=$\le\forall R$]
+    \inferrule*[right=$\forallR$]
       {\Gamma ,\, x \vdash A \le B}
       {\Gamma \vdash A \le \forall x.\, B}
 \end{mathpar}
@@ -62,7 +62,7 @@ in our adaptation to combat these issues, which resulted in the difference betwe
 our current system and a direct generalization.
 
 \subsubsection{Reverse Substitution of Well-Formedness.}
-Rule $\le\forall L$ relies on the \emph{reverse substitution} property, but this property
+Rule $\forallL$ relies on the \emph{reverse substitution} property, but this property
 does not hold in a dependently typed setting. Thus we need an alternative design that
 still ensures well-formedness, but without relying on the reverse substitution property.
 
@@ -93,7 +93,7 @@ ensure the well-formedness of types in the conclusion.
 %   at this point, and mention only fixpoints in Section~\ref{sec:instantiation}. Please rewrite
 % accordingly.}
 
-Rule $\le\forall R$ relies on a standard strenghtening lemma:
+Rule $\forallR$ relies on a standard strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{is fresh in}~ A$, then $\Gamma \vdash A$}, which
 is trivial to prove.
 However its generalization:

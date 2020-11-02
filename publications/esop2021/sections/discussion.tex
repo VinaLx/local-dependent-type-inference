@@ -185,9 +185,9 @@ a subtyping relation holds, for example in polymorphic subtyping:
     \forall A.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A.\, A \rightarrow A) \rightarrow [[int]]
 \end{equation*}
 
-The subtyping holds by first applying rule $\le\forall L$ with a dummy instantiation,
+The subtyping holds by first applying rule $\forallL$ with a dummy instantiation,
 say $[[int]]$, and then showing $\forall A.\, A \rightarrow A \le [[int]] \rightarrow [[int]]$
-which clearly holds by applying rule $\le\forall L$ again. However the situation
+which clearly holds by applying rule $\forallL$ again. However the situation
 complicates in our system:
 
 \begin{equation*}
