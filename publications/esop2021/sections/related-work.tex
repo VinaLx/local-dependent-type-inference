@@ -1,5 +1,20 @@
 \section{Related Work}
 
+\bruno{We should talk about Ningning's work at POPL. Some text, which needs to be improved,
+is shown next.}
+Indeed, the current GHC Haskell's language of types and kinds
+is already dependently typed, and has no type conversion. Recent work by
+Xie et al.~\cite{xie20kind} describes algorithms and specifications
+for the form of (dependently typed) type-inference currently present in GHC Haskell.
+In GHC Haskell there are no type-level lambdas and thus no type conversion
+(although type-level computation can be achieved by other means at the source
+level~\cite{Chakravarty05associated}). In our work we do allow type-level lambdas
+but lambdas can only be equal up to $\alpha$-equivalence.
+Thus our focus is on Haskell-like languages with dependently typed
+features and explicit casts, rather than languages like Agda or Idris
+which typically have a conversion rule that triggers implicit type level
+computation.
+
 \paragraph{Implicit Dependent Type Calculus}
 
 The implicit calculus of constructions (ICC\cite{miquel2001implicit} and
