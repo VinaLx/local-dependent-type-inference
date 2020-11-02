@@ -125,7 +125,7 @@ functions. In \verb|List| the fixpoint operator is used to define a recursive ty
 in the definition of \verb|map| the fixpoint operator is used to define term-level recursion.
 Moreover recursion is unrestricted and there is no termination checking, much like approaches
 such as Dependently Typed Haskell~\cite{dh}, and unlike various other dependently typed languages
-such as Agda~\cite{agda} or Idris~\cite{brady2013idris}.
+such as Agda~\cite{2007_norell_agda} or Idris~\cite{brady2013idris}.
 
 
 \begin{comment}
@@ -233,6 +233,7 @@ subtyping relation are rules $\forallL$ and $\forallR$:
         but just monotypes. In other words, the relation is \emph{predicative}~
         \cite{Martin-Lof-1973}.
         This restriction ensures that the relation is \emph{decidable}.
+        
   \item In rule  $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
         when it is still more general than the head of the polytype, with the type
         parameter instantiated by an abstract variable $x$.
