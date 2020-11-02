@@ -120,7 +120,7 @@ as in most functional language implementations.
 There are a few final points worth mentioning about the example.
 Firstly, \verb|List| is an example of a dependently typed function, since it is parametrized
 by a natural value. Secondly, in \name (following the design of PITS~\cite{yang2019pure}),
-fixpoint operators ($\mu$) serve a dual purposes of defining recursive types and recursive
+fixpoint operators ($\mu$) serve a dual purpose of defining recursive types and recursive
 functions. In \verb|List| the fixpoint operator is used to define a recursive type, whereas
 in the definition of \verb|map| the fixpoint operator is used to define term-level recursion.
 Moreover recursion is unrestricted and there is no termination checking, much like approaches
@@ -179,7 +179,7 @@ and then use \verb|fmap| with three arguments:
 & \fmap~\mathrm{idFunctor}~\Succ~(\MkId~0) &&
 \end{flalign*}
 
-\noindent Note that, because our calculus has no type classes we pass the ``instance'' explicitly.
+\noindent Note that, because our calculus has no mechanism like type classes we pass the ``instance'' explicitly.
 Nonetheless three other arguments (the $F$, $a$ and $b$) are implicitly instantiated.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
@@ -205,8 +205,8 @@ type is more general than the rank-1 type. Thus the following program type-check
 \end{flalign*}
 \noindent The type $\forall b : \star.\, a \rightarrow b$ appears in a positive position
 of the whole signature, and it is a more general signature than $a \rightarrow b$
-for an arbitrary choice of $b$. Our language capture this subtyping relation so that
-we can assign $\mathrm{callcc}'$ to $\mathrm{callcc}$ instead of the other way around.
+for an arbitrary choice of $b$. Our language captures this subtyping relation so that
+we can assign $\mathrm{callcc}'$ to $\mathrm{callcc}$ (but not the other way around).
 In contrast, in approaches like the ICC, the types of \verb|callcc| and \verb|callcc'|
 are not compatible and the example above would be rejected.
 
@@ -222,7 +222,7 @@ Sections \ref{sec:system} and \ref{sec:metatheory}.
 Figure \ref{fig:polymorphic-subtyping} shows Odersky and L\"aufer polymorphic
 subtyping relation~\cite{odersky1996putting}.
 This relation captures a \emph{more-general-than} relation between
-types as a subtyping relation. They key rules in their
+types as a subtyping relation. The key rules in their
 subtyping relation are rules $\forallL$ and $\forallR$:
 
 \begin{itemize}
@@ -232,14 +232,14 @@ subtyping relation are rules $\forallL$ and $\forallR$:
         Importantly note that this relation does not guess arbitrary (poly)types,
         but just monotypes. In other words, the relation is \emph{predicative}~
         \cite{Martin-Lof-1973}.
-        This restriction enusres that the relation is \emph{decidable}.
+        This restriction ensures that the relation is \emph{decidable}.
   \item In rule  $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
-        when it is still more general than the head of polytype, with the type
+        when it is still more general than the head of the polytype, with the type
         parameter instantiated by an abstract variable $x$.
 \end{itemize}
 
-This semantics of subtyping relation sets a scene for our work, which
-to generalizes this relation to a dependently typed setting.
+This subtyping relation sets a scene for our work, which
+generalizes this relation to a dependently typed setting.
 
 \begin{figure}
 \centering
@@ -298,9 +298,9 @@ for the universaly quantified variable.
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 
 As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, these subtyping
-rules based on polymorphic subtyping, combining with the normal subtyping rules
+rules based on polymorphic subtyping, combined with other subtyping rules,
 are able to handle the subtyping relations that occur at not only top-level,
-but also higher-ranked level. This feature distinguish \name from the Implicit
+but also at a higher-ranked level. This feature distinguish \name from the Implicit
 Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
 implicit polymorphism on dependent type language. The ICC features the two related rules
 in the \emph{typing relation}:
@@ -327,10 +327,13 @@ it has been shown that rules like $\forallL$ and $\forallR$ generalize rules lik
 we follow a similar, more general, approach in \name.
 
 \paragraph{Unified Subtyping}
-However, the $\forallL'$ and $\forallR'$ rules suffer from an
-important complication, which does not exist in a System-F like setting: there is
+However, the revised subtyping relation with $\forallL'$ and $\forallR'$ rules suffers from an
+important complication compared to the Odersky and L\"aufer formulation: there is now
 a notorious mutual dependency between typing and subtyping.
-In particular, note that rule $\forallL'$ now mentions the typing relation
+In Odersky and L\"aufer's rules, the subtyping rules
+do not depend on typing. In particular
+the rule $\forallL$ depends only on well-formedness ($\Gamma \vdash \tau$).
+In contrast, note that rule $\forallL'$ now mentions the typing relation
 in its premise ($\Gamma \vdash \tau : A$). Moreover, as usual,
 the subsumption rule of
 typing relation (shown below) depends on the subtyping relation.
@@ -339,9 +342,6 @@ typing relation (shown below) depends on the subtyping relation.
     {\Gamma \vdash e : A \\ \Gamma \vdash A \le B}
     {\Gamma \vdash e : B}
 \end{mathpar}
-In contrast, in Odersky and L\"aufer's rules,
-the same premise in $\forallL$ is only well-formedness ($\Gamma \vdash \tau$),
-and thus subtyping does not depend on typing.
 This mutual dependency problem has been a significant and notorious
 problem when combining subtyping and dependent types~\cite{aspinall1996subtyping, hutchins2010pure},
 and presents itself on our way to the direct
@@ -355,7 +355,7 @@ subtyping relation into a single relation to avoid the mutual dependency:
 \end{mathpar}
 The interpretation of this judgement is: under context $\Gamma$, $e_1$ is a subtype
 of $e_2$ and they both are of type $A$. The judgements for subtyping and typing
-are both special form of unified subtyping with the involvement of kind $[[*]]$:
+are both special form of unified subtyping: % with the involvement of kind $[[*]]$:
 \begin{mathpar}
   \Gamma \vdash A \le B \triangleq \Gamma \vdash A \le B : [[*]]
   \and
@@ -375,9 +375,9 @@ the generalization of the polymorphic subtyping should be:
     {\Gamma \vdash A \le \forall x : B.\,C \rulehl{: [[*]]}}
 \end{mathpar}
 
-\noindent The basic idea of our own formalization essentially follows a similar design.
-However, it is not exactly like this due to various issues, the
-details will be discussed in Section \ref{sec:type-system}.
+\noindent The basic idea of our own formalization essentially follows a similar design,
+although the actual rules in \name are slightly more sophisticated.
+The details will be discussed in Section \ref{sec:type-system}.
 
 \paragraph{``Explicit'' Implicit Instantiation}
 
@@ -389,12 +389,12 @@ implicit instantiation). For example:
   (\lambda x.\, x)~42 \longrightarrow 42
 \end{mathpar}
 \noindent Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$. The implicit
-instantiation is not reflected anywhere at term level. However, in a
+instantiation is not reflected anywhere at term level. In a
 language with type annotations on parameters of binders
 (for example lambda abstractions), in order
 for the polymorphic variable to be well-scoped at type annotations of terms,
-another binder $\Lambda$ is added for terms. However instantiations are still
-implicit as shown in the following examples:
+another binder $\Lambda$ is added for terms. Nonetheless, instantiations are still
+implicit as shown in the following example:
 \begin{mathpar}
   (\Lambda A : [[*]].\, \lambda x : A.\, x) ~ 42 \longrightarrow 42
 %  (\Lambda A : [[*]].\, \lambda x : A.\, \lambda y : A.\, x) \longrightarrow \lambda y : [[int]].\, 42
@@ -402,8 +402,8 @@ implicit as shown in the following examples:
 Here $\Lambda A : [[*]].\, \lambda x : A.\, x$ has type $\forall A : \star. \, A \rightarrow A$,
 and the polymorphic parameter $A$ is explicitly stated in the polymorphic
 term. However as the reduction shows, the instantiations are still implicit.
-We purposely omit the explicit binders for implicit parameters for all the examples
-in Section \ref{sec:examples} for clarity, since such explicit binders can
+We purposely omitted the explicit binders for implicit parameters for all the examples
+in Section \ref{sec:examples} for clarity. Such explicit binders can
 be recovered with a simple form of syntactic sugar:
 
 \[e : \forall (x : A) . B \hateq \Lambda (x : A). e : \forall (x : A) . B\]
@@ -412,8 +412,7 @@ be recovered with a simple form of syntactic sugar:
 to ensure that the parameters are well-scoped at term-level.
 
 \paragraph{Type-level Computation and Casts}
-
-Since \name features a fixpoint that supports general recursion at both
+\name features a fixpoint that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
 we do not provide the congruence rule like other dependently
 typed systems such as the Calculus of Constructions \cite{CoquandThierry1988Tcoc}
