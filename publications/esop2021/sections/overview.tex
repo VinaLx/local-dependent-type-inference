@@ -1,9 +1,9 @@
 \section{Overview}
 % \bruno{Please fill in missing references.}
 
-In this section we introduce \name by going through
+In this section, we introduce \name by going through
 some interesting examples to show the expressiveness and major features of the calculus.
-Then we discuss motivation, rationale of our design and challenges.
+Then we discuss the motivation, rationale of our design, and challenges.
 The formal system of \name will be
 discussed in Sections \ref{sec:system} and \ref{sec:metatheory}.
 
@@ -46,16 +46,16 @@ polymorphism~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph
 % \bruno{reference to many (i.e. 5+) papers on that topic},
 which has focused on System F-like
 languages where universal quantification can only have arguments of type $\star$.
-Furthermore \name supports general recursion at both the term and the type-level.
+Furthermore, \name supports general recursion at both the term and the type-level.
 
 Using these features we can encode an indexed list, a \verb|map| operation over it
 and illustrate how implicit instantiation allows us to use the \verb|map| function
 conveniently.
 However, because \name is just a core calculus there is no built-in support
 yet for algebraic datatypes and pattern matching.
-We expect that a source language would provide a more convinient
+We expect that a source language would provide a more convenient
 way to define the \verb|map| function using pattern matching and other useful source-level
-constructs. To model algebraic datatypes and pattern matching in \name we
+constructs. To model algebraic datatypes and pattern matching in \name, we
 use an encoding by Yang and Oliveira~\cite{yang2019pure},
 which is based on Scott encodings~\cite{mogensen1992efficient}.
 Since the details of that encoding are not relevant for this paper,
@@ -110,7 +110,7 @@ An example of application of \verb|map| is:
 Note that since the type parameters for \verb|map|, \verb|Cons| and \verb|Nil|
 are all implicit, they can be all omitted
 and the arguments are instantiated implicitly. Thus the \verb|map| function
-only requires two explicit arguments, making it as convininent to use
+only requires two explicit arguments, making it as convenient to use
 as in most functional language implementations.
 
 % \bruno{You are missing the most important/interesting portion of the code: i.e. show a call to
@@ -123,7 +123,7 @@ by a natural value. Secondly, in \name (following the design of PITS~\cite{yang2
 fixpoint operators ($\mu$) serve a dual purpose of defining recursive types and recursive
 functions. In \verb|List| the fixpoint operator is used to define a recursive type, whereas
 in the definition of \verb|map| the fixpoint operator is used to define term-level recursion.
-Moreover recursion is unrestricted and there is no termination checking, much like approaches
+Moreover, recursion is unrestricted and there is no termination checking, much like approaches
 such as Dependently Typed Haskell~\cite{dh}, and unlike various other dependently typed languages
 such as Agda~\cite{2007_norell_agda} or Idris~\cite{brady2013idris}.
 
@@ -180,20 +180,20 @@ and then use \verb|fmap| with three arguments:
 \end{flalign*}
 
 \noindent Note that, because our calculus has no mechanism like type classes we pass the ``instance'' explicitly.
-Nonetheless three other arguments (the $F$, $a$ and $b$) are implicitly instantiated.
+Nonetheless, three other arguments (the $F$, $a$, and $b$) are implicitly instantiated.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 \label{sec:higher-ranked-poly}
 
 In calculi such as the ICC~\cite{miquel2001implicit}, a form of implicit instantiation also exists.
-However, such calculi do not employ subtyping and instead they only apply instantiation
+However, such calculi do not employ subtyping and instead, they only apply instantiation
 to top-level universal quantifiers. Our next example illustrates how subtyping enables
 instantiation to be applied also in nested universal quantifiers, thus enabling
 more types to be related.
 
 When programming with continuations~\cite{sussman1998scheme} one of the
-functions that is typically needed is call-with-current-continutation
-(\verb|callcc|). In a polymorphic language there are several types that can be
+functions that are typically needed is call-with-current-continutation
+(\verb|callcc|). In a polymorphic language, there are several types that can be
 assigned to \verb|callcc|. One of these types is a rank-3 type,
 while another one is a rank-1 type.
 Using polymorphic subtyping we can show that the rank-3
@@ -216,7 +216,7 @@ We briefly discuss the major features of \name itself and
 its formalization. A more formal and technical discussion will be left to
 Sections \ref{sec:system} and \ref{sec:metatheory}.
 
-\paragraph{The Polymorphic Subtyping Relation}
+\paragraph{Polymorphic Subtyping Relation}
 % \bruno{Have a figure and introduce the original relation here, before you move to
 % giving an overview of the dependently typed version.}
 Figure \ref{fig:polymorphic-subtyping} shows Odersky and L\"aufer polymorphic
@@ -233,7 +233,7 @@ subtyping relation are rules $\forallL$ and $\forallR$:
         but just monotypes. In other words, the relation is \emph{predicative}~
         \cite{Martin-Lof-1973}.
         This restriction ensures that the relation is \emph{decidable}.
-        
+
   \item In rule  $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
         when it is still more general than the head of the polytype, with the type
         parameter instantiated by an abstract variable $x$.
@@ -294,7 +294,7 @@ $\forallL$, in rule $\forallL'$ it is
 required that $\tau$ is well-typed regarding the type of the parameter
 in the universal quantifier.
 Similarly, for rule $\forallR'$ the context for the subtyping rule should include typing information
-for the universaly quantified variable.
+for the universally quantified variable.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 
@@ -410,7 +410,7 @@ be recovered with a simple form of syntactic sugar:
 \[e : \forall (x : A) . B \hateq \Lambda (x : A). e : \forall (x : A) . B\]
 
 \noindent When polymorphic parameters are used, \name provides a binder ($\Lambda (x : A). e$)
-to ensure that the parameters are well-scoped at term-level.
+to ensure that the parameters are well-scoped at the term-level.
 
 \paragraph{Type-level Computation and Casts}
 \name features a fixpoint that supports general recursion at both
