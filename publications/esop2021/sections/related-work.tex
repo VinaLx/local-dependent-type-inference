@@ -24,17 +24,17 @@ setting.
 ICC features the generalized polymorphic types and typing rules to express
 the idea of implicit instantiation. They do not explicitly have a subtyping
 relation between polymorphic types, therefore the expressiveness of reasoning
-between polymorphic types are limited to the top level polymorphic types. The
-implicit parameters does not impact the runtime semantics of ICC and therefore
+between polymorphic types are limited to the top-level polymorphic types. The
+implicit parameter does not impact the runtime semantics of ICC and therefore
 is not modeled and discussed.
 
 The implicit function types of ICC* are not interpreted as polymorphic
 function types, since their main focus is on the distinction between implicit
 functions (universal types and implicit abstraction) and explicit functions
 ($\Pi$-types and lambda abstraction).
-The typing rules about implicit part and explicit part of the language mirror
+The typing rules about the implicit part and explicit part of the language mirror
 each other, the generalization and instantiation aspect of the implicit function
-types are not featured. ICC* depends on its tranformation to ICC to obtain type safety
+types are not featured. ICC* depends on its transformation to ICC to obtain type safety
 of the language, therefore the parameters of implicit functions have no impact
 on runtime behavior as well and only serves the well-scopeness of type annotations.
 
@@ -53,7 +53,7 @@ fragment. Much literature on unification for dependent
 types~\cite{reed2009higher,abel2011higher, gundry2013tutorial, Cockx:2016:UEP:2951913.2951917, ziliani2015unification, coen2004mathematical} is
 built upon the pattern fragment. Algorithms for type-inference used in Agda and
 (Dependent) Haskell have been described and formalized to some degree
-in various theses~\cite{norell,gundry,dh}. However as far as we know
+in various theses~\cite{norell,gundry,dh}. However, as far as we know
 there is not a clear specification and complete metatheory (let alone
 mechanized) for such algorithms. In the \emph{implicit calculus of
  constructions}~\cite{Miquel01} an elegant (but purely declarative) curry-style
@@ -89,7 +89,7 @@ their declarative system,
 % \bruno{mention Odersky and Laufer here before moving on to DK}
 Dunfield and Krishnaswami (DK)~\cite{dunfield2013complete} develop an
 algorithmic system for predicative HRP type inference. DK's algorithm was
-manually proved to be sound, complete and decidable.
+manually proved to be sound, complete, and decidable.
 With a more complex declarative system~\cite{dunfield2019sound}, DK
 extended their original work with new features.\bruno{For the last paper, I think it supports
   some interesting features that are closer to dependent types, so we should
@@ -101,12 +101,12 @@ type system with support for subtyping. A key innovation
 of MLSub is that it has compact principal types, which had been a challenge
 in previous research on type-inference in the presence of subtyping~\cite{eifrig95inference,Trifonov96subtyping,pottier1998inference}.
 MLSub is significantly more ambitious than local type-inference, and requires
-no annotations (in the tradition of Hindley-Milner). However MLSub does not
+no annotations (in the tradition of Hindley-Milner). However, MLSub does not
 account for HRP and its algorithms and metatheory have not been mechanically
 formalized.
 
 \paragraph{Dependent Types and Subtyping}
-In essence the big difficulty is that the introduction of dependent
+In essence, the big difficulty is that the introduction of dependent
 types makes typing and subtyping depend on each other. This causes
 several difficulties in developing the metatheory for calculi that
 combine dependent types and subtyping. Practically all previous
@@ -163,7 +163,7 @@ relations into the same relation. This approach is different from
 Hutchins' technique, which eliminates typing relation and embed it into
 the combination of subtyping, well-formedness and reduction relations.
 While unified subtyping
-retains the tradition concept of typing and subtyping, which are just the two
+retains the traditional concept of typing and subtyping, which are just the two
 projections of the unified relation.
 % \name retains types. \bruno{Text summarizing differences from our work}
 
@@ -174,7 +174,7 @@ subtyping. However, the other problem is the
 interaction between dependent types and recursion. For this
 problem, a general solution that has recently emerged is the use
 of type casts to control type-level computation. In such an approach explicit casts
-are used for performing type-level computation. A motivation for
+are used for performing type-level computations. A motivation for
 using type casts is to decouple strong normalization from the
 proofs of metatheory, which also makes it possible to allow general
 recursion. There have been several studies~\cite{guru,sjoberg:msfp12,

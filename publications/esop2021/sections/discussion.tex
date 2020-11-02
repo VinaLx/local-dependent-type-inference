@@ -47,26 +47,26 @@ when it is fresh everywhere else:
 
 For the time being, we think the addition of the premise in \rref{s-forall-r} and
 the addition of \rref{s-forall} do not complicate the metatheory as much, so
-we leave the further exploration of the issue above in a future work.
+we leave the further exploration of the issue above in future work.
 \end{comment}
 
 \subsection{Design Choices of the Semantics around Cast Operators}
 \label{sec:cast-design}
 
 The type reduction in cast operators is potentially under a context that
-is not empty, so it is likely that we are performing reduction to a open term.
+is not empty, so it is likely that we are performing reduction to an open term.
 Intuitively we should generalize the definition of value by introducing inert
 terms\cite{yang2017unifying} to handle open term reduction.
 
-However since we adopts the Call-by-Name semantics of Pure Iso-type System\cite{yang2019pure},
+However since we adopt the Call-by-Name semantics of Pure Iso-type System\cite{yang2019pure},
 there is no value check during the reduction, and whether the result of reduction
 inside cast operator does not matter during the reasoning of type safety. It is
 not necessary to complicate the metatheory by introducing inert terms.
 
 An alternate design around cast operator is the Call-by-Value (CBV) style\cite{yang2019pure},
-by not considering all $\castup$ terms as value, and performing cast elimination only
+by not considering all $\castup$ terms as values, and performing cast elimination only
 when the expression inside two casts is a value. Such design requires us to
-have a more general definition for value, and thus there is a need for inert terms.
+have a more general definition of value, and thus there is a need for inert terms.
 
 However, a simple design with CBV-style cast semantics and inert terms
 potentially lead to a system where \emph{Reduction Substitution} does not hold,
@@ -78,15 +78,15 @@ for example:
 \end{gather*}
 
 So we stick with the Call-by-Name style semantics around cast operators and
-leave the discussion of other possibilities of design in a future work.
+leave the discussion of other possibilities of design in future work.
 
 \subsection{Kind Restrictions on Polymorphic Types}
 
-Currently we impose restrictions on the kinding of polymorphic types
+Currently, we impose restrictions on the kinding of polymorphic types
 ($\forall x : A. B$) to require they only have kind $\star$ but not $[[box]]$
 , which has little impact on the practicality
 of our system since we do not really mind not being able to have the polymorphic
-kind $\forall x : [[int]].\,\star$. But we also does not have a real reason
+kind $\forall x : [[int]].\,\star$. But we also do not have a real reason
 to not allow the existence of such kind except that it complicates the development
 of metatheory by a big margin.
 
@@ -131,29 +131,29 @@ In our language, the implicit arguments have no computational impact at runtime
 and only provide the necessary scoping for type annotations. This is
 a similar design to ICC\cite{miquel2001implicit} and
 ICC*\cite{barras2008implicit} to simplify the development of a direct
-operational semantics for our language. Such restriction can be lifted, if we
+operational semantics for our language. Such restriction can be lifted if we
 prove the runtime type-safety by elaboration to a second language,
 such as \emph{the Calculus of Constructions}\cite{coc},
-instead of providing a direct operational semantics.
+instead of providing the direct operational semantics.
 
 We can elaborate the implicit function types (universal types) to $\Pi$ types,
 implicit abstraction to lambda expression and implicit instantiation to explicit
 application during type checking, when we have full information about the
 choice of implicit instantiations. However the elaboration on a unified subtyping
 system is not an easy task, because the subtyping relation cannot simply be interpreted
-to a coercion between values of different types, while a half of our subtyping
+to coercion between values of different types, while half of our subtyping
 rules involve the sub-``type'' relation between ``terms'' instead of ``types''.
 Therefore we leave the exploration of how elaboration can be done
-on a unified subtyping system as a future work.
+on a unified subtyping system as future work.
 
 \subsection{Algorithmic System and Challenges}
 
-\name does not currently have a algorithmic system since we
+\name does not currently have an algorithmic system since we
 consider a formalized algorithm for dependent type system itself a challenge so it
 is left for future work. While trying to compare to the algorithmic system
 of higher-ranked polymorphism based on system F
 \cite{dunfield2013complete,zhao19mechanical}
-we identify following challenges to develop an algorithmic system for our language
+we identify the following challenges to develop an algorithmic system for our language
 
 \paragraph{Higher-Order Unification}
 
@@ -196,7 +196,7 @@ complicates in our system:
 
 We cannot apply \rref{s-forall-l} until we find a valid instantiation for type $A$,
 therefore we encounter an ``inhabitation problem'' for our system, asking the
-inhabitant for an arbitrary type in our system. And while such problem is
+inhabitant for an arbitrary type in our system. And while this problem is
 undecidable for system F\cite{dudenhefner2019simpler}, we do not expect it to be
-decidable in a more complicated system. So a design is required to workaround
+decidable in a more complicated system. So a design is required to work around
 this situation and we are unsure about how we are going to do that.
