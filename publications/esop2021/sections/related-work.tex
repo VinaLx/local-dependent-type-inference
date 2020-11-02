@@ -79,14 +79,16 @@ such restriction. However impredicative HRP is quite complex because
 the polymorphic subtyping relation for impredicative HRP is undecidable~\cite{tiuryn1996subtyping}.
 Thus reasonable restrictions that work well in practice are still
 a hot topic in research.
-The monotype restriction on
-predicative instantiation is considered reasonable and practical for most
-programs. It is
-currently in use by languages such as (GHC) Haskell, Unison~\cite{Unison}
-and PureScript~\cite{PureScript}. \bruno{mention Odersky and Laufer here before moving on to DK}
-Also relevant is Dunfield and Krishnaswami's
-(DK)~\cite{dunfield2013complete}
-algorithm for predicative HRP type inference. DK's algorithm was
+The monotype restriction on predicative instantiation is considered reasonable
+and practical for most programs. It is currently in use by languages such as
+(GHC) Haskell, Unison~\cite{Unison} and PureScript~\cite{PureScript}.
+The original work of polymorphic subtyping by Odersky and L\"aufer also enforce
+the monotype restriction in the subtyping rule (rule \forallL) to prevent
+choosing a polytype in the instantiation. Based on polymorphic subtyping as
+their declarative system,
+% \bruno{mention Odersky and Laufer here before moving on to DK}
+Dunfield and Krishnaswami (DK)~\cite{dunfield2013complete} develop an
+algorithmic system for predicative HRP type inference. DK's algorithm was
 manually proved to be sound, complete and decidable.
 With a more complex declarative system~\cite{dunfield2019sound}, DK
 extended their original work with new features.\bruno{For the last paper, I think it supports
