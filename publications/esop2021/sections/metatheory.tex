@@ -1,16 +1,16 @@
 \section{The Metatheory of \name}
 \label{sec:metatheory}
 
-This section presents the methatheory of \name, and discusses several challenges
-that arised in the design of the rules to ensure the desired properties.
+This section presents the metatheory of \name, and discusses several challenges
+that arose in the design of the rules to ensure the desired properties.
 
 The three main results of the metatheory are:
 \emph{transitivity of unified subtyping}, \emph{type-soundness} and
 \emph{completeness with respect to Odersky and L\"aufer's} polymorphic
-subtyping. Transitivity of subtyping is a general challenge for dependen type systems due
+subtyping. Transitivity of subtyping is a general challenge for dependent type systems due
 to the mutual dependency of typing and subtyping, and the Odersky and L\"aufer style
-subtyping brings new issues to the table. For type-soundness the key challenge
-is the non-deterministic and non type-preserving nature of the reduction relation.
+subtyping brings new issues to the table. For type-soundness, the key challenge
+is the non-deterministic and non-type-preserving nature of the reduction relation.
 To address this issue, we employ a type soundness proof technique
 that uses the erased reduction relation shown in figure~\ref{fig:extraction}.
 % \bruno{Check that the completeness lemma with respect to DK is discussed, and that the lemma
@@ -25,16 +25,16 @@ the proof of transitivity and type safety.
 
 Transitivity of subtyping is a general challenge for dependent type systems due
 to the mutual dependency of typing and subtyping. Thankfully the Unified Subtyping
-combines the two so there is only one judgement to reason about. Although
+combines the two so there is only one judgment to reason about. Although
 significantly simplified in one aspect, the DK's style subtyping brings new issues
-on the table.
+to the table.
 
 Although we have imposed restrictions on the implicit instantiation, they do not
 change the indeterministic and non-type-preserving nature of the direct operational
 semantics, due to not having access to typing information in the dynamic semantics.
-So we choose a indirect path to show the type safety of \name.
+So we choose an indirect path to show the type safety of \name.
 
-And finally we expect the subtyping relation of \name to subsume the DK's
+And finally, we expect the subtyping relation of \name to subsume the DK's
 declarative subtyping.
 \end{comment}
 
@@ -81,7 +81,7 @@ besides the types of expressions, a counter-example of the property is:
 \end{align*}
 
 We cannot ``reverse substitute'' the $42$ in the type annotation to a variable
-of same type, while the application expression depends specifically on the value
+of the same type, while the application expression depends specifically on the value
 $42$ in order for the type of argument $a$ to match the parameter type.
 So we add a premise $[[G , x : A |- B : *]]$ in \rref{s-forall-l} to directly
 ensure the well-formedness of types in the conclusion.
@@ -106,12 +106,12 @@ does not hold in our system, while we can construct the following example:
 
 The variable $a$ does not appear in any expression, but contribute a
 crucial role when considering the subtyping relation $\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$.
-In this case we cannot apply \rref{s-forall-l} while we are not able to find a
+In this case, we cannot apply \rref{s-forall-l} while we are not able to find a
 well-typed instance for the polymorphic parameter, so the variable in the context
 is needed even though it does not occur anywhere. Note that although in this
 case we could pick a diverging program $\mu x : A.\, x$ as an instance. But
 since we require fixpoint to be mono-expression to be well-typed, the workaround
-does not work if we replace $A$ with an poly-type.
+does not work if we replace $A$ with a polytype.
 
 So we add a premise $[[G |- A : *]]$ to \rref{s-forall-r},
 requiring $A$ to be a well-typed type without the help of the fresh variable.
@@ -133,7 +133,7 @@ in this section.
    then $[[G |- e1 : A]]$ and $[[G |- e2 : A]]$.
 \end{theorem}
 
-Usually a subtyping relation is reflexive when any well-formed type is a subtype
+Usually, a subtyping relation is reflexive when any well-formed type is a subtype
 of itself. With unified subtyping, the well-formedness of types is expressed by
 subtyping relation as well, so the reflexivity looks more like the generalization
 of \emph{well-formedness} mentioned in the previous section. Reflexivity
@@ -162,7 +162,7 @@ and \rref{s-forall-r} respectively are directly solved by \rref{s-forall}.
 \noindent \emph{Weakening} is proved by induction on the derivation of
 $[[G1 ,, G3 |- e1 <: e2 : A]]$. The redundant premises discussed in Section
 \ref{sec:type-system} help simplify the proof, by creating the induction
-hypotheses about the type annotation of various expressions. Otherwise we are
+hypotheses about the type annotation of various expressions. Otherwise, we are
 not able to prove $[[|- G1 ,, G2 ,, G3 , x : A]]$ given only
 $[[|- G1 ,, G3 , x : A]]$ and no help from induction hypotheses.
 
@@ -192,7 +192,7 @@ derive $[[G1 , x : A ,, G2 |- x : B]]$ through \rref{s-sub}.
 
 \noindent Notably \emph{substitution} imposes a mono-expression restriction on the expression
 being substituted with, which comes at a result of restricting the instantiation
-of polymorphic parameter to only mono-expressions in \rref{s-forall-l}.
+of polymorphic parameters to only mono-expressions in \rref{s-forall-l}.
 
 Take following derivation as an example:
 
@@ -269,7 +269,7 @@ of $\Pi$ type preserve its kind after the argument is applied.
 \label{sec:transitivity}
 
 Transitivity is typically one of the most challenging properties to prove in
-calculi with subtyping, and it was also one of the harder proofs in \name.
+calculi with subtyping and it was also one of the harder proofs in \name.
 The proof of transitivity requires a generalization of the usual transitivity
 property:
 
@@ -293,7 +293,7 @@ premise of generalized transitivity ends with \rref{s-forall-r}, then we face th
 \noindent Before applying \rref{s-forall-r} to the conclusion,
 we have to establish the relationship between $A$ and $[[*]]$.
 Were there no restrictions on the kinding of $\forall$ types,
-this would be much more complicated situation, where the inversion lemmas of
+this would be a much more complicated situation, where the inversion lemmas of
 about kinds and transitivity depend on each other.
 This is one of the main reasons why we forbid $\forall$ types having kind $[[box]]$.
 Then we can have the following theorem:
@@ -357,7 +357,7 @@ when both premises end with \rref{s-pi}, where we encounter the following proble
 
 The first and the second premise above do not share the same context, which
 must be unified with the context narrowing lemma.
-However context narrowing changes the size of derivation tree, so we are
+However context narrowing changes the size of the derivation tree, so we are
 not able to use the inductive hypothesis of $\mathcal{D}_1 + \mathcal{D}_2$.
 
 Finally we have to make adjustments to solve the cases which preserve the
@@ -370,7 +370,7 @@ when the first premise ends with \rref{s-forall-l}:
       {[[G |- forall x : A. B <: e3 : *]]}
 \end{mathpar}
 
-\noindent In this case $\#\forall({[[ [t / x] B]]})$ is one less than $\#\forall([[forall x : A. B]])$,
+\noindent In this case, $\#\forall({[[ [t / x] B]]})$ is one less than $\#\forall([[forall x : A. B]])$,
 so it can be solved by applying \rref{s-forall-l} and the inductive hypothesis of $\#\forall(e_1)$.
 And $\#\forall(e_3)$ is added to make the measure ``symmetric''
 to deal with the contravariance case of \rref{s-pi}.
@@ -396,8 +396,8 @@ measure is the size of the derivation trees.
 % replace those yourself.}
 
 Since the reduction rules of \name do not have access to typing information, they
-cannot perform valid instantiations of the implicit arguments during application,
-leaving the runtime semantics nondeterministic and potentially non-type-preserving.
+cannot perform valid instantiations of the implicit arguments during the application,
+leaving the runtime semantics non-deterministic and potentially non-type-preserving.
 
 We tackle this issue by making the choice of implicit instantiation
 irrelevant at runtime with the restrictions in \rref{s-bind}.
@@ -406,16 +406,16 @@ We define an erasure function (shown in figure \ref{fig:extraction})
 %   If so add a back reference to the figure here.}
 that eliminates the type annotations
 in some of the expressions ($\lambda$, $\Lambda$, $mu$ and $\castup$),
-and keep the implicit parameter from occuring in the erased expressions.
+and keep the implicit parameter from occurring in the erased expressions.
 This way the choices of implicit instantiation only affect the type annotation,
 which should not be relevant for runtime computation.
 
-We show that \name is type safe the sense that,
+We show that \name is type-safe the sense that,
 if an expression is well-typed, then the reduction of its erased version
 does not ``go wrong''. Figure \ref{fig:extract-semantics} shows the semantics of
 erased expressions. The erasure semantics mostly mirrors the semantics
 shown in Figure \ref{fig:semantics}, except for \rref{er-elim,er-cast-elim}, which
-conveys the idea of irrelevance of implicit instantiation by eliminating the
+conveys the idea of the irrelevance of implicit instantiation by eliminating the
 parameter directly.
 
 \subsubsection{Progress} We show the \emph{progress} property for both the original expressions
@@ -502,13 +502,13 @@ this instantiation only affects the type annotation.
 In other words, the runtime semantics of \name can be implemented only with
 erased expressions, when its annotation is well-typed.
 Because for every step it reduces, we can find a corresponding annotation that
-preserve the type of, and have the reduction relation with the
+preserve the type of, and have a reduction relation with the
 annotation of its expansion.
 
 Aside from the erased aspect of our preservation lemma, we also consider a
 generalized version of preservation in our unified subtyping system, the
 ``subtype preservation'': reductions not only preserves the type of expression,
-the subtyping relation between expressions are preserved as well.
+the subtyping relation between expressions is preserved as well.
 
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
 cases for \rref{r-beta,r-mu} are solved with the substitution theorem,
