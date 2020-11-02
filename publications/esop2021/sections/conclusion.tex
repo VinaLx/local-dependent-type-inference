@@ -1,0 +1,19 @@
+\section{Conclusion}
+
+In this article, we come up with a design of a dependently-typed calculi \name
+that generalizes non-dependent polymorphic subtyping by Odersky and
+L\"aufer\cite{odersky1996putting} and contains other features like general
+recursion and explicit casts for type-level computations.
+We adopt the techniques of the Unified Subtyping\cite{yang2017unifying} to
+avoid the mutual dependency between typing and subtyping relation to simplify
+the formalization. Besides other relevant theorems about typing and subtyping,
+\emph{transitivity} and \emph{type safety} are proved mechanically with a proof assistant.
+
+In the future, we attempt to lift various contraints that we put in our system
+that complicates the metatheory, such as the kind restriction of polymorphic
+types and the runtime irrelevance of implicit arguments. Also we would like to
+study the impact to the metatheory of adding $\top$ types to our language,
+which is a common feature of a subtyping system.
+And most importantly, we consider the development
+of an well-specified algorithmic typing system a major challenge in our future
+work.
