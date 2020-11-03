@@ -50,7 +50,7 @@ via casts. These constructs are discussed next.
 
 \paragraph{Implicit Polymorphism}
 In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
-polymorphism in non-dependent.
+polymorphism.
 In contrast to universal quantification in conventional functional languages, the
 argument $x$ ranges over all well-typed expressions besides well-formed
 types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
@@ -95,7 +95,7 @@ it is used at the type-level to allow type conversions induced
 by the cast operators. The second reduction relation is deterministic and
 is employed to give the run-time semantics of expressions.
 
-\paragraph{Nondeterministic Reduction.}
+\paragraph{Nondeterministic Reduction}
 Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
 which mostly follows the call-by-name variant of \emph{Pure Iso-Type Systems} (PITS)
 \cite{yang2019pure} corresponding to the calculus of constructions.
@@ -138,7 +138,7 @@ information in the dynamic semantics.
   \centering
   \begin{equation*}
   \begin{array}{llcl}
-      \text{Erased Expressions} & e, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \\
+      \text{Erased Expressions} & E, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \\
       & & \mid & [[ebind x. ee]] \mid [[eforall x : eA. eB]] \mid [[emu x. ee]] \mid [[ecastup ee]] \mid [[ecastdn ee]] \\
       \text{Erased Value} & ev & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
       & & \mid & [[eforall x : eA. eB]] \mid [[ecastup ee]]
@@ -184,11 +184,45 @@ $\Lambda$, $\mu$ and $\castup$ expressions.
 Figure \ref{fig:extraction} shows the syntax of the erased expressions and
 the companion operational semantics. Note that restrictions are imposed in the
 typing rules to forbid the implicit parameter occuring in runtime-relevant part
-of the expression, i.e. the erased expressions (see section \ref{sec:type-system}).
+of the expression, i.e. the erased expressions (see Section \ref{sec:type-system}).
 With such restriction, implicit parameters can be directly eliminated in
 \rref{er-elim,er-cast-inst}. For a well-typed expression, the reduction of
 its erasure is deterministic. The type safety of our system is built around
-this idea and is discussed in \ref{sec:type-safety}.
+this idea and is discussed in Section \ref{sec:type-safety}.
+
+
+
+\subsection{Unified Subtyping}
+\label{sec:type-system}
+
+Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt a
+simplified design of unified subtyping~\cite{yang2017unifying}, where the subtyping rules and
+typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
+% The originals design lean towards object-oriented features,
+% supporting generalized top type and bounded quantification,
+% while our work focus on the subtyping relation between polymorphic types.
+% \bruno{The previous sentence is something to be mentioned in related work, not here.}
+
+Unified subtyping solves the challenging issue of mutual dependency between typing
+and subtyping in a dependently type system.
+% \bruno{Make sure that the overview discusses this issue.}
+The interpretation of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
+subtype of $[[e2]]$ and they are both of type $[[A]]$''.
+In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
+special case of unified subtyping judgment $[[G |- e <: e : A]]$,
+and the well-formedness of types $\Gamma \vdash A$ is expressed by
+$[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
+
+Although unified, the typing rules can still be viewed as two parts, the ``typing'' part
+(\rref{s-abs,s-app,s-bind,s-mu,s-castup,s-castdn,s-sub}) and the ``subtyping'' part
+(\rref{s-pi,s-forall,s-forall-l,s-forall-r}). We follow a usual design for
+typing rules for lambda abstraction and application, and the subtyping rule of
+dependent function types ($\Pi$ type).
+% \bruno{We should say something about the ``more standard'' rules here.
+%   I think we can briefly explain them and point the
+%   reader to Linus work for further details, while observing that the rules
+%   here are essentially simplified version (due to the absence of bounded quantification)
+% of his rules.}
 
 \begin{figure}
     \centering
@@ -267,38 +301,6 @@ this idea and is discussed in \ref{sec:type-safety}.
 %   affect the whole section, starting from syntax.
 % }
 
-\subsection{Unified Subtyping System}
-\label{sec:type-system}
-
-Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt a
-simplified design of unified subtyping~\cite{yang2017unifying}, where the subtyping rules and
-typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
-% The originals design lean towards object-oriented features,
-% supporting generalized top type and bounded quantification,
-% while our work focus on the subtyping relation between polymorphic types.
-% \bruno{The previous sentence is something to be mentioned in related work, not here.}
-
-Unified subtyping solves the challenging issue of mutual dependency between typing
-and subtyping in a dependently type system.
-% \bruno{Make sure that the overview discusses this issue.}
-The interpretation of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
-subtype of $[[e2]]$ and they are both of type $[[A]]$''.
-In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
-special case of unified subtyping judgment $[[G |- e <: e : A]]$,
-and the well-formedness of types $\Gamma \vdash A$ is expressed by
-$[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
-
-Although unified, the typing rules can still be viewed as two parts, the ``typing'' part
-(\rref{s-abs,s-app,s-bind,s-mu,s-castup,s-castdn,s-sub}) and the ``subtyping'' part
-(\rref{s-pi,s-forall,s-forall-l,s-forall-r}). We follow a usual design for
-typing rules for lambda abstraction and application, and the subtyping rule of
-dependent function types ($\Pi$ type).
-% \bruno{We should say something about the ``more standard'' rules here.
-%   I think we can briefly explain them and point the
-%   reader to Linus work for further details, while observing that the rules
-%   here are essentially simplified version (due to the absence of bounded quantification)
-% of his rules.}
-
 \paragraph{Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
 the spirit of the Odersky and L\"aufer's polymorphic subtyping~\cite{odersky1996putting,DunfieldJoshua2013Caeb},
@@ -310,11 +312,12 @@ type $[[forall x : B. C]]$ is less general than a type $A$,
 if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
 is abstracted out (\rref{s-forall-r}).
 
-Notably our formalization is not a direct generalization of the polymorphic subtyping,
+Notably our formalization is not a direct generalization of Odersky and L\"aufer's
+polymorphic subtyping:
 \rref{s-forall} axiomatizes the subtyping relation between two polymorphic types.
-And additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
+Furthermore, additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
 ones we previously mentioned in section \label{sec:polymorphic-subtyping}
-The motivations for these changes are discussed in more detail in section \ref{sec:adaptation}.
+The motivations for these changes are discussed in more detail in Section \ref{sec:adaptation}.
 
 \paragraph{Mono-expression Restrictions}
 As in other predicative relations (such as the one by Odersky and L\"aufer),
@@ -322,7 +325,7 @@ the type arguments for instantiation in \rref{s-forall-l} are
 required to be mono-expressions, which has cascading effects on typing rules of
 other expressions. The arguments for applications are required to be
 mono-expressions, and the whole fixpoint expression is required to be a
-mono-expressions. We shall
+mono-expression. We shall
 discuss the reason behind the restrictions in later sections.
 % \bruno{I feel that we may be deferring a bit too much explanation
 % to later sections, but lets come back to this after you write later sections.}
@@ -344,19 +347,20 @@ the possibility of non-deterministic implicit instantiations is eliminated.
 
 \paragraph{Runtime Irrelevance of Implicit Arguments}
 
-Our direct operational semantics choose random mono-expressions to instantiate
-the implicit arguments which potentially breaks type safety, so we adopt a
+Our direct operational semantics chooses arbitrary mono-expressions to instantiate
+the implicit arguments, which potentially breaks type safety. Thus, we adopt a
 restriction in \rref{s-bind} that is similar to the
 Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit}.
-We only allowing the implicit parameters to occur in type annotations in the
-body of implicit abstraction, so that the choices of implicit parameters is not
+We only allow the implicit parameters to occur in type annotations in the
+body of implicit abstraction, so that the choices of implicit parameters are not
 relevant at runtime. The type safety of the direct operational semantics is
-proved indirectly in section \ref{sec:type-safety} with the help of the
+proved indirectly in Section \ref{sec:type-safety} with the help of the
 erasure of expressions.
 
 \paragraph{Redundant Premises}
 
-All the premises highlight in gray are redundant in a way that
-the system without them is proved equivalent to the system in figure \ref{fig:typing}.
-They are there to simplify the mechanized proofs of certain lemmas.
+All the premises highlighted in gray are redundant in a way that
+the system without them is proved equivalent to the system with them.
+These redundant rules are there to simplify the mechanized proofs of
+certain lemmas, but can safely be dropped in an actual implementation.
 
