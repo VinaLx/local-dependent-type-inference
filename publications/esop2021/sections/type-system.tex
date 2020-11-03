@@ -62,8 +62,7 @@ implicit lambda expressions ($[[bind x : A. e]]$), which are the implicit counte
   employs similar constructs for implicit dependent products.
 Like conventional universal quantification, the arguments of $\forall$ types are
 deduced during applications rather than being explicitly passed.
-Also, following the designs for predicative higher-ranked polymorphism~
-\cite{odersky1996putting,dunfield2013complete,jones2007practical},
+Also, following the designs for predicative higher-ranked polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical},
 we have generalized the concept of \emph{monotypes} to
 \emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
 
@@ -98,7 +97,7 @@ is employed to give the run-time semantics of expressions.
 \paragraph{Nondeterministic Reduction}
 Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
 which mostly follows the call-by-name variant of \emph{Pure Iso-Type Systems} (PITS)
-\cite{yang2019pure} corresponding to the calculus of constructions.
+~\cite{yang2019pure} corresponding to the calculus of constructions.
 Note that the arguments of $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
 Meanwhile, we consider $\castup$ terms to be a value,
@@ -176,7 +175,7 @@ information in the dynamic semantics.
 
 \paragraph{Deterministic Reduction}
 We address the issue of determinacy of the dynamic semantics with
-a design similar to $\mathrm{ICC}^*$ \cite{barras2008implicit},
+a design similar to $\mathrm{ICC}^*$~\cite{barras2008implicit},
 employing type-erased expressions. The erased expressions
 essentially mirror the syntax and semantics
 of normal expressions, except for the elimination of type annotations in $\lambda$,
@@ -350,7 +349,7 @@ the possibility of non-deterministic implicit instantiations is eliminated.
 Our direct operational semantics chooses arbitrary mono-expressions to instantiate
 the implicit arguments, which potentially breaks type safety. Thus, we adopt a
 restriction in \rref{s-bind} that is similar to the
-Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit}.
+Implicit Calculus of Constructions (ICC)~\cite{miquel2001implicit}.
 We only allow the implicit parameters to occur in type annotations in the
 body of implicit abstraction, so that the choices of implicit parameters are not
 relevant at runtime. The type safety of the direct operational semantics is

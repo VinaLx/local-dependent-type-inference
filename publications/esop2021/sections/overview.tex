@@ -320,8 +320,7 @@ at higher-ranked positions. The approach taken by the ICC is similar to
 Hindley-Milner type system~\cite{hindley1969principal,milner1978theory},
 which also features similar rules in typing. But Hindley-Milner is designed for
 dealing only with rank-1 polymorphism.
-In generalizations of higher-ranked polymorphic type-inference~
-\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
+In generalizations of higher-ranked polymorphic type-inference~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
 it has been shown that rules like $\forallL$ and $\forallR$ generalize rules like
 \textsc{GEN} and \textsc{INST}. Since we aim at higher-ranked polymorphic generalization,
 we follow a similar, more general, approach in \name.
@@ -415,7 +414,7 @@ to ensure that the parameters are well-scoped at the term-level.
 \name features a fixpoint that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
 we do not provide the congruence rule like other dependently
-typed systems such as the Calculus of Constructions \cite{CoquandThierry1988Tcoc}
+typed systems such as the Calculus of Constructions~\cite{CoquandThierry1988Tcoc}
 to support implicit type-level reduction.
 \begin{mathpar}
   \inferrule*[lab=Cong]

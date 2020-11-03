@@ -321,7 +321,7 @@ $\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation trees of
 the first and the second premises respectively.
 The proof is mainly motivated by DK's transitivity proof of their subtyping
 system of induction on the pair of
-$\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$\cite{dunfield2013lemmas},
+$\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\cite{dunfield2013lemmas},
 with adjustments to fit in our system.
 
 The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
@@ -448,7 +448,7 @@ value definitions are very similar.
 \paragraph{Preservation}
 %In this section we discuss the preservation theorem tailored by \name.
 The direct operational semantics is not generally type-preserving and
-deterministic because of the implicit instantiations. Thus, we show 
+deterministic because of the implicit instantiations. Thus, we show
 preservation with the help of the erased expressions (where implicit parameters
 do not matter to the computation). For other reduction rules that do not involve
 such issues, we discuss them as though we are proving a normal preservation
@@ -554,10 +554,11 @@ In fact, we only need to go down one layer in the type hierarchy to be able to
 obtain subtype preservation directly,
 since there is no subtyping involved at the kind level,
 hence no problem for the cast elimination there.
-Even better, we show that by going down one level in the type hierarchy, the options
+Even better, we show that by going up one level in the type hierarchy
+(only discussing the types of terms), the options
 for the reduction that can be performed by a well-typed term are very limited.
-\bruno{Do you mean going down or going up? I would say that moving from term to type
-or from type to kind is moving up.}
+% \bruno{Do you mean going down or going up? I would say that moving from term to type
+% or from type to kind is moving up.}
 Implicit abstractions do not occur in type computation due to the kind
 restriction of universal types. We prove that well-typed reduction never occurs
 at kind level, so cast operators also do not occur in type-level computation.
