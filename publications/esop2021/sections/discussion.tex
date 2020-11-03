@@ -56,14 +56,14 @@ we leave the further exploration of the issue above in future work.
 The type reduction in cast operators is potentially under a context that
 is not empty, so it is likely that we are performing reduction to an open term.
 Intuitively we should generalize the definition of value by introducing inert
-terms\cite{yang2017unifying} to handle open term reduction.
-
-However since we adopt the Call-by-Name semantics of Pure Iso-type System\cite{yang2019pure},
-there is no value check during the reduction, and whether the result of reduction
+terms~\cite{yang2017unifying} to handle open term reduction.
+However since we adopt the call-by-name semantics of PITS~\cite{yang2019pure},
+there is no value check during the reduction. Whether the result of reduction
 inside cast operator does not matter during the reasoning of type safety. It is
 not necessary to complicate the metatheory by introducing inert terms.
 
-An alternate design around cast operator is the Call-by-Value (CBV) style\cite{yang2019pure},
+An alternative design
+around cast operators is the call-by-value (CBV) style~\cite{yang2019pure},
 by not considering all $\castup$ terms as values, and performing cast elimination only
 when the expression inside two casts is a value. Such design requires us to
 have a more general definition of value, and thus there is a need for inert terms.
@@ -71,55 +71,52 @@ have a more general definition of value, and thus there is a need for inert term
 However, a simple design with CBV-style cast semantics and inert terms
 potentially lead to a system where \emph{Reduction Substitution} does not hold,
 for example:
-
 \begin{gather*}
     \castdn \, \castup \, [A] \, f ~ x \longrightarrow f ~ x \\
     [\lambda x : B. \, x / f] \, \castdn \, \castup \, [A] \, f ~ x \longrightarrow \castdn \, \castup \, [A] \, x
-\end{gather*}
-
-So we stick with the Call-by-Name style semantics around cast operators and
+\end{gather*}\bruno{some brackets are missing in the expression above (application has
+the highest priority)}
+So we stick with the call-by-name style semantics around cast operators and
 leave the discussion of other possibilities of design in future work.
 
 \subsection{Kind Restrictions on Polymorphic Types}
 
 Currently, we impose restrictions on the kinding of polymorphic types
-($\forall x : A. B$) to require they only have kind $\star$ but not $[[box]]$
-, which has little impact on the practicality
-of our system since we do not really mind not being able to have the polymorphic
-kind $\forall x : [[int]].\,\star$. But we also do not have a real reason
-to not allow the existence of such kind except that it complicates the development
-of metatheory by a big margin.
+($\forall x : A. B$) to require that they only have kind $\star$ but not $[[box]]$.
+We believe that this has little impact on the usability
+of our system since we do not really polymorphic
+kinds such as $\forall x : [[int]].\,\star$ do not appear frequently in practice.
+However it would be reasonable not to have this restriction, but then 
+this complicates the development of the metatheory significantly.
 
 One of the obstacles of removing the restriction is the mutual dependency
 between reasoning subtyping relation of polymorphic kinds and the transitivity theorem,
-where we wish to have some lemma like this:
-
+where we wish to have some lemma like this:\bruno{I don't understand the previous sentence.
+  It is confusing. Please rephrase in simpler terms. You also have an habit of writing long
+sentences: try to break long sentences into multiple smaller ones.}
 \begin{mathpar}
     \inferrule*[]
       {[[G |- e : A]] \\ [[G |- e : *]]}
       {[[G |- * <: A : box]]}
 \end{mathpar}
-
-which depends on transitivity when the derivation of $[[G |- e : A]]$ ends with
+\noindent which depends on transitivity when the derivation of $[[G |- e : A]]$ ends with
 subsumption rule (rule \rref{s-sub}).
 
 Note that the reverse variant of the lemma
 (If $[[G |- e : A]]$ and $[[G |- e : *]]$ then $[[G |- A <: * : box]]$) is not generally
-true with the counter example that $A : \star \vdash \forall a : A.\, \star \le \star$
-does not hold, since we are unable to find a well-typed instantiation of an arbitrary type $A$,
-which breaks the transitivity while the derivation of the first premise ends
+true. A counter example is $A : \star \vdash \forall a : A.\, \star \le \star$, which 
+does not hold. We are unable to find a well-typed instantiation of an arbitrary type $A$,
+which breaks the transitivity, while the derivation of the first premise ends
 with \rref{s-forall-l}:
-
 \begin{mathpar}
     \inferrule*[]
       {[[G |- [t / x] e1 <: e2 : *]] \\ [[G |- e2 <: e3 : A]]}
       {[[G |- forall x : A. e1 <: e3 : *]]}
 \end{mathpar}
-
 We cannot apply \rref{s-forall-l} unless $e_3$ is of type $[[*]]$,
 i.e. $[[G |- A <: * : box]]$, which does not always holds, or the principal
 type of $e_3$ is $[[*]]$ and $[[G |- * <: A : box]]$.
-Overall, this is a situation we do not currently understand.
+%Overall, this is a situation we do not currently understand.
 
 Moreover, we expect complexities while reasoning about the kinding of types
 after we lose the kinding uniqueness in other parts of the metatheory, therefore
@@ -129,8 +126,8 @@ we leave the relaxation of the kinding restrictions for future work.
 
 In our language, the implicit arguments have no computational impact at runtime
 and only provide the necessary scoping for type annotations. This is
-a similar design to ICC\cite{miquel2001implicit} and
-ICC*\cite{barras2008implicit} to simplify the development of a direct
+a similar design to ICC~\cite{miquel2001implicit} and
+ICC*~\cite{barras2008implicit} to simplify the development of a direct
 operational semantics for our language. Such restriction can be lifted if we
 prove the runtime type-safety by elaboration to a second language,
 such as \emph{the Calculus of Constructions}\cite{coc},
@@ -141,8 +138,8 @@ implicit abstraction to lambda expression and implicit instantiation to explicit
 application during type checking, when we have full information about the
 choice of implicit instantiations. However the elaboration on a unified subtyping
 system is not an easy task, because the subtyping relation cannot simply be interpreted
-to coercion between values of different types, while half of our subtyping
-rules involve the sub-``type'' relation between ``terms'' instead of ``types''.
+to a coercion between values of different types, while half of our subtyping
+rules involve the subtype relation between terms instead of types.
 Therefore we leave the exploration of how elaboration can be done
 on a unified subtyping system as future work.
 
@@ -150,13 +147,14 @@ on a unified subtyping system as future work.
 
 \name does not currently have an algorithmic system since we
 consider a formalized algorithm for dependent type system itself a challenge so it
-is left for future work. While trying to compare to the algorithmic system
-of higher-ranked polymorphism based on system F
-\cite{dunfield2013complete,zhao19mechanical}
+is left for future work. While trying to compare to existing algorithmic systems
+for higher-ranked polymorphic type inference for System F-like languages
+~\cite{dunfield2013complete,zhao19mechanical},
 we identify the following challenges to develop an algorithmic system for our language
 
 \paragraph{Higher-Order Unification}
-
+\bruno{We discussed this on slack: I think this is not about higher-order unification.
+So, please reformulate.}
 In dependent type systems, function types ($\Pi$ type) are dependent so that
 the type of applications potentially dependend on the values of their arguments.
 This creates the scenario of higher-order unification where the unifier is
@@ -179,24 +177,24 @@ for our system to be well-specified and mechanized.
 \paragraph{Inhabitation Problem}
 
 In polymorphic subtyping, we do not need a ``real'' instantiation to conclude
-a subtyping relation holds, for example in polymorphic subtyping:
-
+that a subtyping relation holds. For example, in polymorphic subtyping:
 \begin{equation*}
     \forall A.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A.\, A \rightarrow A) \rightarrow [[int]]
 \end{equation*}
-
-The subtyping holds by first applying rule $\forallL$ with a dummy instantiation,
-say $[[int]]$, and then showing $\forall A.\, A \rightarrow A \le [[int]] \rightarrow [[int]]$
-which clearly holds by applying rule $\forallL$ again. However the situation
-complicates in our system:
-
+\noindent holds by first applying rule $\forallL$ with a dummy instantiation,
+say $[[int]]$, and then showing $\forall A.\, A \rightarrow A \le [[int]] \rightarrow [[int]]$.
+This clearly holds by applying rule $\forallL$ again. However such dummy instantiations
+pose extra difficulties in \name:
 \begin{equation*}
     \forall A : T.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A : T.\, A \rightarrow A) \rightarrow [[int]]
 \end{equation*}
-
 We cannot apply \rref{s-forall-l} until we find a valid instantiation for type $A$,
 therefore we encounter an ``inhabitation problem'' for our system, asking the
-inhabitant for an arbitrary type in our system. And while this problem is
-undecidable for system F\cite{dudenhefner2019simpler}, we do not expect it to be
-decidable in a more complicated system. So a design is required to work around
+inhabitant for an arbitrary type in our system. This problem is
+undecidable for System F~\cite{dudenhefner2019simpler}. We do not expect it to be
+decidable in a more complicated system with strong normalization.
+However, because of general recursion, all types are inhabited in \name.
+\begin{comment}
+So a design is required to work around
 this situation and we are unsure about how we are going to do that.
+\end{comment}
