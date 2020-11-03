@@ -1,5 +1,4 @@
 \section{Overview}
-% \bruno{Please fill in missing references.}
 
 In this section, we introduce \name by going through
 some interesting examples to show the expressiveness and major features of the calculus.
@@ -43,7 +42,6 @@ $\mathrm{id}~\mathbb{N}~ 42$.
 on arguments of type $\star$, but it allows arguments of other types. This is
 a key difference compared to much of the work on type-inference for higher-ranked
 polymorphism~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical}
-% \bruno{reference to many (i.e. 5+) papers on that topic},
 which has focused on System F-like
 languages where universal quantification can only have arguments of type $\star$.
 Furthermore, \name supports general recursion at both the term and the type-level.
@@ -82,26 +80,13 @@ syntactic sugar for datatype definitions and constructors.
 &\List : \star \rightarrow \Nat \rightarrow \star &&\\
 &\List = \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \forall r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r &&\\
 &\Nil : \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n &&\\
-%\Nil &=& \castup \castup (\lambda z : r.\, \lambda c : (a \rightarrow \List~a~n \rightarrow r). ~ z) \\
 &\Cons : \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n &&
-%\Cons &=& \lambda x : a.\, \lambda xs : \List~a~(\Succ ~ n).\, \castup \castup (\lambda z : r.\, (\lambda c : a \rightarrow \List~a~(\Succ ~ n) \rightarrow r). ~ c ~ x ~ xs)
 \end{flalign*}
 \noindent Then we can define a \verb|map| function over \verb|List| with the type:
 \begin{flalign*}
-%  & \map ' :: \forall a : \star.\, \forall b : \star. (a \rightarrow b) \rightarrow \Pi n : \Nat.\, (\List~a~n) \rightarrow (\List~b~n) \\
-%  & \map ' = \lambda f : a \rightarrow b.\, \mu ~ rec : (\Pi n : \Nat.\, \List~a~n \rightarrow \List~b~n).\, \lambda xs : \List~a~n. \\
-%  & \quad\qquad (\castdn \castdn \, xs) ~ \Nil ~ (\lambda x : a.\, \lambda xs' : \List~a~(\Succ~n).\, \Cons ~ (f ~ x) ~ (rec ~ (\Succ~n)~xs')) \\
-%  \\
   & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n &&
-%  & \map = \lambda f : a \rightarrow b.\, \lambda xs : \List ~ a ~ n.\, \map '~f~n~xs
 \end{flalign*}
 An example of application of \verb|map| is:
-% \bruno{You should make sure that code is formatted consistently (for instance centered or left
-%   aligned) and using the same font. This isn't the case at the moment.
-%   In this page alone there are at least 3 different variations being used.
-%   Also, please be careful not to have too much vertical white space around the examples
-%   (I've been fixing this, but please avoid it if you write/modify more code).
-% }
 \begin{flalign*}
 &\map~\Succ~(\Cons~1~(\Cons~2~\Nil)) &&
 \end{flalign*}
@@ -165,7 +150,6 @@ In this case the type of $fmap$ is:
 \begin{flalign*}
   & \fmap : \forall F : \star \to \star.~\Functor~F \to \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b &&
 \end{flalign*}
-%data constructor $\MkFunctor$ has type $\forall F : \star \rightarrow \star.\, \dots \rightarrow \Functor~F$ where the dots are the type of the field.
 Importantly this example illustrates that universal variables can quantify over higher-kinds (i.e.
 $F : \star \to \star$).
 We can define instances of functor in a standard way:
@@ -217,8 +201,6 @@ its formalization. A more formal and technical discussion will be left to
 Sections \ref{sec:system} and \ref{sec:metatheory}.
 
 \paragraph{Polymorphic Subtyping Relation}
-% \bruno{Have a figure and introduce the original relation here, before you move to
-% giving an overview of the dependently typed version.}
 Figure \ref{fig:polymorphic-subtyping} shows Odersky and L\"aufer polymorphic
 subtyping relation~\cite{odersky1996putting}.
 This relation captures a \emph{more-general-than} relation between
@@ -265,8 +247,6 @@ generalizes this relation to a dependently typed setting.
 \caption{The polymorphic subtyping relation by Odersky and L\"aufer~\cite{odersky1996putting}.}
 \label{fig:polymorphic-subtyping}
 \end{figure}
-% \bruno{Do not just show a few rules; show the complete relation (and the rule form).}
-
 
 \paragraph{Generalizing Polymorphic Subtyping}
 \label{sec:polymorphic-subtyping}
@@ -320,8 +300,7 @@ at higher-ranked positions. The approach taken by the ICC is similar to
 Hindley-Milner type system~\cite{hindley1969principal,milner1978theory},
 which also features similar rules in typing. But Hindley-Milner is designed for
 dealing only with rank-1 polymorphism.
-In generalizations of higher-ranked polymorphic type-inference~
-\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
+In generalizations of higher-ranked polymorphic type-inference~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
 it has been shown that rules like $\forallL$ and $\forallR$ generalize rules like
 \textsc{GEN} and \textsc{INST}. Since we aim at higher-ranked polymorphic generalization,
 we follow a similar, more general, approach in \name.
@@ -397,7 +376,6 @@ another binder $\Lambda$ is added for terms. Nonetheless, instantiations are sti
 implicit as shown in the following example:
 \begin{mathpar}
   (\Lambda A : [[*]].\, \lambda x : A.\, x) ~ 42 \longrightarrow 42
-%  (\Lambda A : [[*]].\, \lambda x : A.\, \lambda y : A.\, x) \longrightarrow \lambda y : [[int]].\, 42
 \end{mathpar}
 Here $\Lambda A : [[*]].\, \lambda x : A.\, x$ has type $\forall A : \star. \, A \rightarrow A$,
 and the polymorphic parameter $A$ is explicitly stated in the polymorphic
@@ -415,7 +393,7 @@ to ensure that the parameters are well-scoped at the term-level.
 \name features a fixpoint that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
 we do not provide the congruence rule like other dependently
-typed systems such as the Calculus of Constructions \cite{CoquandThierry1988Tcoc}
+typed systems such as the Calculus of Constructions~\cite{CoquandThierry1988Tcoc}
 to support implicit type-level reduction.
 \begin{mathpar}
   \inferrule*[lab=Cong]
@@ -426,7 +404,6 @@ Instead, we partially adopt the
 call-by-name design of \emph{Pure Iso-Type Systems} (PITS)~\cite{yang2016unified,yang2019pure},
 and provide operators $\castdn$ and $\castup$ to explicitly trigger one-step
 type reductions or expansions.
-% \bruno{Show cast rules below.}
 \begin{mathpar}
   \inferrule*[lab=Castup]
     {[[G |- e : B]] \\ [[A --> B]] \\ [[G |- A : k]]}

@@ -13,10 +13,6 @@ subtyping brings new issues to the table. For type-soundness, the key challenge
 is the non-deterministic and non-type-preserving nature of the reduction relation.
 To address this issue, we employ a type soundness proof technique
 that uses the erased reduction relation shown in Figure~\ref{fig:extraction}.
-% \bruno{Check that the completeness lemma with respect to DK is discussed, and that the lemma
-% that shows that redundant premises are indeed redundant are discussed as well.}
-
-
 \begin{comment}
 In this section, we introduce the design choices of \name to handle to challenge
 brought by the dependent generalization of DK's declarative subtyping rules.
@@ -40,7 +36,6 @@ declarative subtyping.
 
 \subsection{Polymorphic Subtyping in a Dependently Typed Setting}
 \label{sec:adaptation}
-% \bruno{I'm not entirely sure if this text belongs here or in a previous section.}
 
 The polymorphic subtyping relation by Odersky and L\"aufer features the following two rules:
 \begin{mathpar}
@@ -83,11 +78,6 @@ So we add a premise $[[G , x : A |- B : *]]$ in \rref{s-forall-l} to directly
 ensure the well-formedness of types in the conclusion.
 
 \subsubsection{Strengthening of Contexts.}
-% \bruno{As far as I understand the discussion here + in Section 4.1 the strenghtening
-%   lemma does not hold even when considering that fixpoints are added to the language.
-%   Thus I think you should just show a counter-example here, avoid mentioning fixpoints
-%   at this point, and mention only fixpoints in Section~\ref{sec:instantiation}. Please rewrite
-% accordingly.}
 
 Rule $\forallR$ relies on a strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{is fresh in}~ A$, then $\Gamma \vdash A$}, which
@@ -103,10 +93,6 @@ crucial role when considering the subtyping relation $\Gamma \vdash \forall x : 
 In this case, we cannot apply \rref{s-forall-l} while we are not able to find a
 well-typed instance for the polymorphic parameter, so the variable in the context
 is needed even though it does not occur anywhere.
-%Note that although in this
-%case we could pick a diverging program $\mu x : A.\, x$ as an instance. But
-%since we require fixpoint to be mono-expression to be well-typed, the workaround
-%does not work if we replace $A$ with a polytype.
 
 To counter the lack of strenghtening, we add a premise $[[G |- A : *]]$ to \rref{s-forall-r},
 requiring $A$ to be a well-typed type without the help of the fresh variable.
@@ -209,10 +195,6 @@ the typing of one expression
 (If $[[G1 , x : A ,, G2 |- e : B]]$ and $[[G1 |- e1 : A]]$,
 then $[[G1 ,, [e1 / x] G2 |- [e1 / x] e : [e1 / x] B]]$)
 does not hold for similar reasons.
-% \bruno{Hummm is this text correctly
-%   written? The way I read it is that both subtyping and typing aspects break the lemma, but I suppose
-% that what you want to say is that one aspect breaks but the other does not. Please rephrase more carefully.}.
-% \Alvin{Yup, the seemingly only-typing version of the substitution doesn't hold}
 Because, in dependently-typed languages, substitutions are also involved in the types of
 expressions as well. Due to the presence of \rref{s-sub}, we still have to
 maintain the potential subtyping relation of the types of expressions after substitution,
@@ -321,7 +303,7 @@ $\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation trees of
 the first and the second premises respectively.
 The proof is mainly motivated by DK's transitivity proof of their subtyping
 system of induction on the pair of
-$\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$\cite{dunfield2013lemmas},
+$\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\cite{dunfield2013lemmas},
 with adjustments to fit in our system.
 
 The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
@@ -382,9 +364,6 @@ measure is the size of the derivation trees.
 
 \subsection{Type Safety}
 \label{sec:type-safety}
-% \bruno{You have been using the terminology extracted, whereas I think erased is more standard.
-%   I've been trying to replace the terminology, but if you find more ``extracted'' occurrences, please
-% replace those yourself.}
 
 Since the reduction rules of \name do not have access to typing information, they
 cannot perform valid instantiation checks of the implicit arguments during the application.
@@ -393,8 +372,6 @@ Thus, the runtime semantics is non-deterministic and potentially non-type-preser
 We tackle this issue by making the choice of implicit instantiation
 irrelevant at runtime with the restrictions in \rref{s-bind}.
 We define an erasure function (shown in Figure \ref{fig:extraction})
-% \bruno{This is the function that is shown earlier, right?
-%   If so add a back reference to the figure here.}
 that eliminates the type annotations
 in some of the expressions ($\lambda$, $\Lambda$, $\mu$ and $\castup$),
 and keep the implicit parameter from occurring in the erased expressions.
@@ -421,7 +398,6 @@ and erased expressions.
     If $[[nil |- e : A]]$,
     then $\exists \, E'. \, \extract{e} \longrightarrow_E E'$ or $\extract{e}$ is an erased value.
 \end{theorem}
-% \bruno{You mean a rightarrow above instead of a left arrow, right?}
 
 \noindent Both theorems are proved by induction on the derivation of $[[nil |- e : A]]$.
 The proof is mostly straightforward except when the derivation ends with $\castdn$.
@@ -446,9 +422,8 @@ value definitions are very similar.
 
 
 \paragraph{Preservation}
-%In this section we discuss the preservation theorem tailored by \name.
 The direct operational semantics is not generally type-preserving and
-deterministic because of the implicit instantiations. Thus, we show 
+deterministic because of the implicit instantiations. Thus, we show
 preservation with the help of the erased expressions (where implicit parameters
 do not matter to the computation). For other reduction rules that do not involve
 such issues, we discuss them as though we are proving a normal preservation
@@ -469,17 +444,10 @@ for brevity.
     \caption{Diagram for Erased Preservation without Subtyping}
     \label{fig:preservation}
 \end{figure}
-% \bruno{In the diagram you use ``E'' to denote erased expressions, but earlier when you define
-%   the syntax for erased expressions and in earlier texts you use ``e''. You should be
-%   consistent and I think using ``E'' everywhere for erased expressions is best.}
 
 \noindent The theorem might look a bit complicated at first glance, Figure
 \ref{fig:preservation} shows the idea of our preservation lemma without
 considering the subtyping aspect (assuming $[[G |- e : A]]$ instead of $[[G |- e1 <: e2 : A]]$).
-% \bruno{Are you trying to show a simplified version of the lemma here?
-% Is this actually valid, or you're just trying to give an overview of the idea?}.
-% \Alvin{The figure only talks about preservation of typing, the lemma shows the
-% preservation of subtyping, they both hold, but only typing is clearer}
 Here we use \emph{annotation} as the reverse process of erasure.
 If an expression ($e$) is well-typed, and its erasure ($E$)
 reduces to another erased expression ($E'$), we can find a ``annotated''
@@ -510,10 +478,6 @@ cases are \rref{r-cast-elim} and cases involving implicit instantiation
 
 \paragraph{Cast Elimination}
 The main issue of the cast elimination case can be demonstrated by the following derivation:
-% \bruno{Do you mention this problem before to
-%   start the paragraph with this text? What is the relationship between Subtype Preservation for Types
-%   and cast elimination? You should connect these better, and also motivate why a separate lemma
-% for Subtype preservation of types is needed. }
 
 \begin{mathpar}
     \hspace{-1.5cm}
@@ -536,7 +500,6 @@ and $[[B1 --> B2]]$ (which goes back to what we want to prove initially)
 the subtype preservation after reduction, causes a circular dependency in the proof.
 Subtype preservation needs to solve the cast elimination case, which depends back
 on subtype preservation.
-% \bruno{I don't follow this last sentence}.
 This problem was also observed by the previous work on unified subtyping
 with cast operators~\cite{yang2017unifying}. They solved this situation
 by a delicate approach with the help of an essential lemma
@@ -545,7 +508,6 @@ and $e_1 \longrightarrow e_1'$, $e_3 \longrightarrow e_3'$, there exists $e_2'$
 such that $e_2 \longrightarrow e_2'$). Unfortunately this lemma does not hold
 in our system since universal types, which are not reducible, can appear in the
 middle of two reducible types, so we cannot adopt their proof.
-% \bruno{What lemma? briefly explain.}
 
 We tackle this problem from another direction, with the observation that the
 demand for subtyping preservation shifts from the terms to the types.
@@ -554,10 +516,9 @@ In fact, we only need to go down one layer in the type hierarchy to be able to
 obtain subtype preservation directly,
 since there is no subtyping involved at the kind level,
 hence no problem for the cast elimination there.
-Even better, we show that by going down one level in the type hierarchy, the options
+Even better, we show that by going up one level in the type hierarchy
+(only discussing the types of terms), the options
 for the reduction that can be performed by a well-typed term are very limited.
-\bruno{Do you mean going down or going up? I would say that moving from term to type
-or from type to kind is moving up.}
 Implicit abstractions do not occur in type computation due to the kind
 restriction of universal types. We prove that well-typed reduction never occurs
 at kind level, so cast operators also do not occur in type-level computation.
@@ -596,13 +557,6 @@ And then the subtype preservation of type computation can be easily shown.
     If $[[G |- A1 <: B1 : k]]$, $[[A1 ==> A2]]$ and $[[B1 ==> B2]]$,
     then $[[G |- A2 <: B2 : k]]$.
 \end{lemma}
-
-% \bruno{I think that, at the start of the explanation, a better high-level description
-%   of what's going on is needed. You need to state that we are interested in two different
-%   subtype preservation lemmas, because reduction is used in two different ways (at runtime
-%   and at the type-level). Moreover reudction at the type-level is the usual one (not erased), whereas
-%   at runtime we use (or can use) erased reduction. Then briefly state that each of those results
-% has some associatted challenges. }
 
 \paragraph{Implicit Instantiations}
 The proof of two cases for implicit instantiations (\rref{r-inst,r-cast-inst})
