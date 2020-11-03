@@ -9,7 +9,7 @@ and has a single relation that generalizes both typing and subtyping.
 The calculus can be seen as a variant of the \emph{Calculus of Constructions}~\cite{coc},
 but it uses a simple form of casts~\cite{isotype,yang2019pure} instead of the
 conversion rule and features unrestricted recursion.
-We present syntax, unified subtyping and reduction for \name.
+We present syntax, unified subtyping, and reduction for \name.
 
 \begin{figure}[t]
 \centering
@@ -44,8 +44,8 @@ The syntax includes all the constructs of the calculus of constructions:
 variables ($[[x]]$), kinds ($[[k]]$), function applications  ($[[e1 e2]]$),
 lambda expressions ($[[lambda x : A. e]]$), dependent function types ($[[pi x : A. B]]$)
 as well as integer types ($[[int]]$) and integers ($[[n]]$).
-Moreover, there are a number of additional language constructs for
-supporting implicit polymorphism, recursion and explicit type-level computation
+Moreover, there are several additional language constructs for
+supporting implicit polymorphism, recursion, and explicit type-level computation
 via casts. These constructs are discussed next.
 
 \paragraph{Implicit Polymorphism}
@@ -62,9 +62,9 @@ implicit lambda expressions ($[[bind x : A. e]]$), which are the implicit counte
   employs similar constructs for implicit dependent products.
 Like conventional universal quantification, the arguments of $\forall$ types are
 deduced during applications rather than being explicitly passed.
-In addition, following designs for predicative higher-ranked polymorphism~
+Also, following the designs for predicative higher-ranked polymorphism~
 \cite{odersky1996putting,dunfield2013complete,jones2007practical},
-we have also generalized the concept of \emph{monotypes} to
+we have generalized the concept of \emph{monotypes} to
 \emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
 
 \paragraph{Recursion and Explicit Type-level Computation.}
@@ -89,7 +89,7 @@ the presence of $\castup$ and $\castdn$, which correspond to the
 %   this subsection, I think we want
 % to tell that story here and present the 2 variants of reduction here.}
 
-For the operational semantics we employ two different, but closely related,
+For the operational semantics we employ two different but closely related
 reduction relations. The first reduction relation is non-deterministic, and
 it is used at the type-level to allow type conversions induced
 by the cast operators. The second reduction relation is deterministic and
@@ -101,7 +101,7 @@ which mostly follows the call-by-name variant of \emph{Pure Iso-Type Systems} (P
 \cite{yang2019pure} corresponding to the calculus of constructions.
 Note that the arguments of $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
-Meanwhile we consider $\castup$ terms to be a value,
+Meanwhile, we consider $\castup$ terms to be a value,
 and only perform reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unroll
 operation of the fixpoint operator is supported by \rref{r-mu}.
 
@@ -131,7 +131,7 @@ operation of the fixpoint operator is supported by \rref{r-mu}.
 Due to the presence of instantiation of implicit parameters, the direct operational
 semantics is not deterministic, and potentially not type-preserving because of
 \rref{r-inst,r-cast-inst}. The indeterminacy is caused by the guess of $\tau$,
-which can be an arbitrary monoexpression, since we do not have access to typing
+which can be an arbitrary mono-expression, since we do not have access to typing
 information in the dynamic semantics.
 
 \begin{figure}
@@ -175,7 +175,7 @@ information in the dynamic semantics.
 % to neatly align the erasure function.}
 
 \paragraph{Deterministic Reduction}
-We address the issue of determinancy of the dynamic semantics with
+We address the issue of determinacy of the dynamic semantics with
 a design similar to $\mathrm{ICC}^*$ \cite{barras2008implicit},
 employing type-erased expressions. The erased expressions
 essentially mirror the syntax and semantics
@@ -183,7 +183,7 @@ of normal expressions, except for the elimination of type annotations in $\lambd
 $\Lambda$, $\mu$ and $\castup$ expressions.
 Figure \ref{fig:extraction} shows the syntax of the erased expressions and
 the companion operational semantics. Note that restrictions are imposed in the
-typing rules to forbid the implicit parameter occuring in runtime-relevant part
+typing rules to forbid the implicit parameter occurring in runtime-relevant part
 of the expression, i.e. the erased expressions (see Section \ref{sec:type-system}).
 With such restriction, implicit parameters can be directly eliminated in
 \rref{er-elim,er-cast-inst}. For a well-typed expression, the reduction of
@@ -204,7 +204,7 @@ typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
 % \bruno{The previous sentence is something to be mentioned in related work, not here.}
 
 Unified subtyping solves the challenging issue of mutual dependency between typing
-and subtyping in a dependently type system.
+and subtyping in a dependent type system.
 % \bruno{Make sure that the overview discusses this issue.}
 The interpretation of this judgment is ``under context $[[G]]$, $[[e1]]$ is a
 subtype of $[[e2]]$ and they are both of type $[[A]]$''.
@@ -312,11 +312,11 @@ type $[[forall x : B. C]]$ is less general than a type $A$,
 if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
 is abstracted out (\rref{s-forall-r}).
 
-Notably our formalization is not a direct generalization of Odersky and L\"aufer's
+Notably, our formalization is not a direct generalization of Odersky and L\"aufer's
 polymorphic subtyping:
 \rref{s-forall} axiomatizes the subtyping relation between two polymorphic types.
 Furthermore, additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
-ones we previously mentioned in section \label{sec:polymorphic-subtyping}
+ones we previously mentioned in Section \label{sec:polymorphic-subtyping}
 The motivations for these changes are discussed in more detail in Section \ref{sec:adaptation}.
 
 \paragraph{Mono-expression Restrictions}
@@ -326,7 +326,7 @@ required to be mono-expressions, which has cascading effects on typing rules of
 other expressions. The arguments for applications are required to be
 mono-expressions, and the whole fixpoint expression is required to be a
 mono-expression. We shall
-discuss the reason behind the restrictions in later sections.
+discuss the reason behind the restrictions in Section \label{sec:metatheory}.
 % \bruno{I feel that we may be deferring a bit too much explanation
 % to later sections, but lets come back to this after you write later sections.}
 
