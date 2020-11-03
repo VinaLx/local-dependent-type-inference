@@ -86,7 +86,7 @@ Currently, we impose restrictions on the kinding of polymorphic types
 We believe that this has little impact on the usability
 of our system since we do not really polymorphic
 kinds such as $\forall x : [[int]].\,\star$ do not appear frequently in practice.
-However it would be reasonable not to have this restriction, but then 
+However it would be reasonable not to have this restriction, but then
 this complicates the development of the metatheory significantly.
 
 One of the obstacles of removing the restriction is the mutual dependency
@@ -104,7 +104,7 @@ subsumption rule (rule \rref{s-sub}).
 
 Note that the reverse variant of the lemma
 (If $[[G |- e : A]]$ and $[[G |- e : *]]$ then $[[G |- A <: * : box]]$) is not generally
-true. A counter example is $A : \star \vdash \forall a : A.\, \star \le \star$, which 
+true. A counter example is $A : \star \vdash \forall a : A.\, \star \le \star$, which
 does not hold. We are unable to find a well-typed instantiation of an arbitrary type $A$,
 which breaks the transitivity, while the derivation of the first premise ends
 with \rref{s-forall-l}:
@@ -152,27 +152,28 @@ for higher-ranked polymorphic type inference for System F-like languages
 ~\cite{dunfield2013complete,zhao19mechanical},
 we identify the following challenges to develop an algorithmic system for our language
 
-\paragraph{Higher-Order Unification}
-\bruno{We discussed this on slack: I think this is not about higher-order unification.
-So, please reformulate.}
+\paragraph{Unification Inside Binders}
 In dependent type systems, function types ($\Pi$ type) are dependent so that
 the type of applications potentially dependend on the values of their arguments.
 This creates the scenario of higher-order unification where the unifier is
 second-order terms (functions). For a extreme example in our language:
 
 \begin{equation*}
-    \lambda f : [[int]] \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
+    \lambda F : [[int]] \rightarrow F.\, \lambda f : F~42 \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
 \end{equation*}
 
 Here the principal type of $\Lambda A : \star.\,\mu x : A.\, x$ is $\forall A : \star.\, A$.
 In a non-depedent setting one can easily conclude the instantiation for type $A$ to be
- $[[int]] \rightarrow [[int]]$. However with dependent types we are looking at
-the type $(\Pi n : [[int]].\, F(n))$ for all possible $F$ such that $F(42) = [[int]]$.
-The general problem of higher-order unification is known to be undecidable\cite{goldfarb1981undecidability}
-and the decidable variant ``pattern unification''\cite{miller1991unification}
-is yet to have a clear specification.
-So we are not yet sure about how to tackle or workaround the situation in order
-for our system to be well-specified and mechanized.
+$F~42 \rightarrow [[int]]$. However with the presence of dependent types,
+we are looking at the type $(\Pi x : [[int]].\, F e)$ where expression $e$
+satisfy the equation that $[42/x]\,e = 42$ according to the Rule \rref{s-app}.
+Note that, although we do not allow implicit type reduction in our system,
+so that the unification problem here stay at first-order, we still face the
+problem where we have to solve
+the unification problem involving substitution. Moreover, in this case expression
+$e$ has two solutions, namely variable $x$ and $42$. We consider coming up with
+a formal system a challenging problem to resolve the general issues that this
+example implies.
 
 \paragraph{Inhabitation Problem}
 
@@ -193,8 +194,5 @@ therefore we encounter an ``inhabitation problem'' for our system, asking the
 inhabitant for an arbitrary type in our system. This problem is
 undecidable for System F~\cite{dudenhefner2019simpler}. We do not expect it to be
 decidable in a more complicated system with strong normalization.
-However, because of general recursion, all types are inhabited in \name.
-\begin{comment}
-So a design is required to work around
-this situation and we are unsure about how we are going to do that.
-\end{comment}
+While we support general recursion in our language, so that all types are
+likely to be inhabited, we currently do not have the proof that this is the case.
