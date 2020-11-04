@@ -1,55 +1,5 @@
 \section{Discussions and Future Work}
 
-\begin{comment}
-\subsection{The Trouble with Instantiation in Subtyping}
-\label{sec:instantiation}
-
-One of the features of DK's subtyping is that the instantiation of implicit type
-parameter happen during subtyping of polymorphic types. It makes sense when
-viewing the subtyping relation as a more-general-than relation. A polymorphic
-type is a subtype of another when we can find specific instantiation of the
-type parameter. This idea works well in DK's system, but brings troubles
-in the realm of dependent types, consider the following subtyping relation:
-
-\begin{equation*}
-    A : [[*]] \vdash [[forall x : A. int]] <: [[int]] : [[*]]
-\end{equation*}
-
-The relation above is not derivable in \name, because the type of implicit type
-parameter is an abstract type, for which we are not able to find an well-typed
-instantiation except for the infinite loop $\mu x : A.\, x$, this is the also the
-case when $A$ in an arbitrary uninhabited types (without the help of a fixpoint).
-
-This situation also assign a special role to variables in the context,
-for example:
-
-\begin{equation*}
-    A : [[*]],\, F : A \rightarrow [[*]],\, \rulehl{a : A} \vdash
-    \forall x : A.\, (F~x \rightarrow [[int]]) \le (\forall x : A.\, F~x) \rightarrow [[int]] : [[*]]
-\end{equation*}
-
-Without the help of the fixpoint, this subtyping relation is only derivable
-with the presence of the highlighted variable in the context. The relation has to
-be derived from \rref{s-forall-l}, which requires a well-typed instantiation for
-the parameter, in this case, only $x$ is eligible even though it does not occur
-anywhere in the expression except for the context.
-
-The help of fixpoint does not solve the general problem, because
-in \name the fixpoint expressions are only well-typed when it is not a polymorphic
-type. So the general ``Strengthening'' lemma is not admissible in \name. Even
-a restricted case where we only consider typing complicated examples can still
-be construct to stop us from eliminating the a variable in the context even
-when it is fresh everywhere else:
-
-\begin{equation*}
-    F : [[int]] \rightarrow [[*]],\, A : [[*]],\, \rulehl{a : A} \vdash F ~ ([[(bind x : A. lambda y : int. y)]]~ 42) : [[*]]
-\end{equation*}
-
-For the time being, we think the addition of the premise in \rref{s-forall-r} and
-the addition of \rref{s-forall} do not complicate the metatheory as much, so
-we leave the further exploration of the issue above in future work.
-\end{comment}
-
 \subsection{Design Choices of the Semantics around Cast Operators}
 \label{sec:cast-design}
 
@@ -72,10 +22,9 @@ However, a simple design with CBV-style cast semantics and inert terms
 potentially lead to a system where \emph{Reduction Substitution} does not hold,
 for example:
 \begin{gather*}
-    \castdn \, \castup \, [A] \, f ~ x \longrightarrow f ~ x \\
-    [\lambda x : B. \, x / f] \, \castdn \, \castup \, [A] \, f ~ x \longrightarrow \castdn \, \castup \, [A] \, x
-\end{gather*}\bruno{some brackets are missing in the expression above (application has
-the highest priority)}
+    \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow f ~ x \\
+    [\lambda x : B. \, x / f] \, \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow \castdn \, \castup \, [A] \, x
+\end{gather*}
 So we stick with the call-by-name style semantics around cast operators and
 leave the discussion of other possibilities of design in future work.
 
@@ -89,11 +38,9 @@ kinds such as $\forall x : [[int]].\,\star$ do not appear frequently in practice
 However it would be reasonable not to have this restriction, but then
 this complicates the development of the metatheory significantly.
 
-One of the obstacles of removing the restriction is the mutual dependency
-between reasoning subtyping relation of polymorphic kinds and the transitivity theorem,
-where we wish to have some lemma like this:\bruno{I don't understand the previous sentence.
-  It is confusing. Please rephrase in simpler terms. You also have an habit of writing long
-sentences: try to break long sentences into multiple smaller ones.}
+One of the obstacles of removing the kind restriction is that,
+there is a mutual dependency between the transitivity theorem and the subtyping
+reasoning of polymorphic kinds. We wish to have some lemma like this:
 \begin{mathpar}
     \inferrule*[]
       {[[G |- e : A]] \\ [[G |- e : *]]}
@@ -116,7 +63,6 @@ with \rref{s-forall-l}:
 We cannot apply \rref{s-forall-l} unless $e_3$ is of type $[[*]]$,
 i.e. $[[G |- A <: * : box]]$, which does not always holds, or the principal
 type of $e_3$ is $[[*]]$ and $[[G |- * <: A : box]]$.
-%Overall, this is a situation we do not currently understand.
 
 Moreover, we expect complexities while reasoning about the kinding of types
 after we lose the kinding uniqueness in other parts of the metatheory, therefore
@@ -154,9 +100,10 @@ we identify the following challenges to develop an algorithmic system for our la
 
 \paragraph{Unification Inside Binders}
 In dependent type systems, function types ($\Pi$ type) are dependent so that
-the type of applications potentially dependend on the values of their arguments.
-This creates the scenario of higher-order unification where the unifier is
-second-order terms (functions). For a extreme example in our language:
+the type of applications potentially depends on the values of their arguments.
+Therefore the unification problem we meet is potentially inside binders and
+depends on the value of the arguments.
+For a extreme example in our language:
 
 \begin{equation*}
     \lambda F : [[int]] \rightarrow F.\, \lambda f : F~42 \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
