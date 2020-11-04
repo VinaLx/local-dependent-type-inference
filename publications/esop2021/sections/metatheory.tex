@@ -12,27 +12,7 @@ to the mutual dependency of typing and subtyping, and the Odersky and L\"aufer s
 subtyping brings new issues to the table. For type-soundness, the key challenge
 is the non-deterministic and non-type-preserving nature of the reduction relation.
 To address this issue, we employ a type soundness proof technique
-that uses the erased reduction relation shown in Figure~\ref{fig:extraction}.
-\begin{comment}
-In this section, we introduce the design choices of \name to handle to challenge
-brought by the dependent generalization of DK's declarative subtyping rules.
-We also present the desired properties for \name to hold, which contribute to
-the proof of transitivity and type safety.
-
-Transitivity of subtyping is a general challenge for dependent type systems due
-to the mutual dependency of typing and subtyping. Thankfully the Unified Subtyping
-combines the two so there is only one judgment to reason about. Although
-significantly simplified in one aspect, the DK's style subtyping brings new issues
-to the table.
-
-Although we have imposed restrictions on the implicit instantiation, they do not
-change the indeterministic and non-type-preserving nature of the direct operational
-semantics, due to not having access to typing information in the dynamic semantics.
-So we choose an indirect path to show the type safety of \name.
-
-And finally, we expect the subtyping relation of \name to subsume the DK's
-declarative subtyping.
-\end{comment}
+that makes use of the erased reduction relation shown in Figure~\ref{fig:extraction}.
 
 \subsection{Polymorphic Subtyping in a Dependently Typed Setting}
 \label{sec:adaptation}
@@ -62,10 +42,10 @@ still ensures well-formedness, but without relying on the reverse substitution p
 The reverse substitution property is:
 \emph{If $\Gamma \vdash [B / x] \, A$ and $\Gamma \vdash B$, then $\Gamma,\, x \vdash A$}.
 That is if we have a type $A$ with all occurrences of $x$ substituted by $B$ and $B$
-is well-formed we can conclude that $A$ is well-formed under $\Gamma,\, x$.
+is well-formed, we can conclude that $A$ is well-formed under $\Gamma,\, x$.
 A possible generalization of this property in a dependently typed setting would be:
 \emph{If $[[G |- [B / x] A : *]]$ and $[[G |- B : C]]$, then $[[G , x : C |- A : *]]$}.
-Since in a dependently-typed setting, the values of expressions also matter during typing
+In a dependently-typed setting, the values of expressions also matter during typing
 besides the types of expressions, a counter-example of the property is:
 \begin{align*}
 & F : [[int]] \rightarrow [[*]],\, a : F~42  \vdash (\lambda y : F~\rulehl{42}.\, [[int]]) ~ a : [[*]] \\
@@ -189,9 +169,9 @@ derivation stops working because \rref{s-forall-l} requires a mono-expression
 instantiation and \rref{s-app} requires the argument of both sides to be
 syntactically the same.
 
-Worth mentioning is that while poly-expressions break the subtyping aspect of the
-\emph{substitution}, a special case of the substitution theorem that discusses
-the typing of one expression
+Worth mentioning is that while substitution of poly-expressions break the
+subtyping aspect of the language, a special case of the substitution theorem
+that discusses the typing of one expression
 (If $[[G1 , x : A ,, G2 |- e : B]]$ and $[[G1 |- e1 : A]]$,
 then $[[G1 ,, [e1 / x] G2 |- [e1 / x] e : [e1 / x] B]]$)
 does not hold for similar reasons.
@@ -223,7 +203,7 @@ Lemma \ref{thm:wf-substitution} on the derivations of
 $[[G1 , x : A ,, G2 |- e1 <: e2 : B]]$ and $[[|- G1 , x : A ,, G2]]$. When the
 derivation ends with \rref{castup,castdn}, the proof
 requires the reduction relation to preserve after the substitution.
-This property should usually hold, but puts an interesting constraint which we
+This property should usually hold, but it puts an interesting constraint which we
 have to consider when designing the reduction rules (see Section \ref{sec:cast-design}).
 
 \begin{lemma}[Reduction Substitution]
@@ -284,12 +264,12 @@ when the derivation of $[[G |- e : k]]$ ends with \rref{s-app}. Then the proof
 proceeds with induction on the derivation of the generalized $[[G |- e : k]]$ and
 assembling various lemmas of kinding to solve different cases.
 
-With the help of \emph{Kind Uniqueness},
+With the help of \emph{kind uniqueness},
 we ensure the equivalence of $A$ and $[[*]]$ on this and other similar situations.
 
 \paragraph{The Induction}
 
-We prove \emph{Generalized Transitivity} by induction on the 4-tuple:
+We prove \emph{Generalized Transitivity} by induction on the 3-tuple:
 
 $$
 \langle \#\forall([[e1]]) + \#\forall([[e2]]) + \#\forall([[e3]]), ~
@@ -304,7 +284,7 @@ the first and the second premises respectively.
 The proof is mainly motivated by DK's transitivity proof of their subtyping
 system of induction on the pair of
 $\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\cite{dunfield2013lemmas},
-with adjustments to fit in our system.
+with some adjustments to fit in our system.
 
 The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
 and the second ends with \rref{s-forall-l}, essentially we have to show the following:
@@ -329,11 +309,13 @@ when both premises end with \rref{s-pi}, where we encounter the following proble
       {[[G , x : A3 |- B1 <: B3 : k]]}
 \end{mathpar}
 The first and the second premise above do not share the same context, which
-must be unified with the context narrowing lemma.
+must be unified with the context narrowing theorem to be able to use the
+inductive hypotheses.
 However context narrowing changes the size of the derivation tree, so we are
-not able to use the inductive hypothesis of $\mathcal{D}_1 + \mathcal{D}_2$.
+not able to use the inductive hypothesis of $\mathcal{D}_1 + \mathcal{D}_2$, and
+resort to the sizes of expressions ($\mathbf{size}(e_1) + \mathbf{size}(e_3)$)
 
-We have to make adjustments to solve the cases which preserve the
+And then we have to make adjustments to solve the cases which preserve the
 size of derivation tree, but not the sizes of the expressions, which is
 when the first premise ends with \rref{s-forall-l}:
 
@@ -366,10 +348,9 @@ measure is the size of the derivation trees.
 \label{sec:type-safety}
 
 Since the reduction rules of \name do not have access to typing information, they
-cannot perform valid instantiation checks of the implicit arguments during the application.
+cannot perform valid instantiation checks of the implicit arguments during applications.
 Thus, the runtime semantics is non-deterministic and potentially non-type-preserving.
-
-We tackle this issue by making the choice of implicit instantiation
+We tackle this issue by employ designs to make the choice of implicit instantiation
 irrelevant at runtime with the restrictions in \rref{s-bind}.
 We define an erasure function (shown in Figure \ref{fig:extraction})
 that eliminates the type annotations
@@ -386,8 +367,8 @@ shown in Figure \ref{fig:semantics}, except for \rref{er-elim,er-cast-elim}, whi
 conveys the idea of the irrelevance of implicit instantiation by eliminating the
 parameter directly.
 
-\paragraph{Progress} We show the \emph{progress} property for both the original expressions
-and erased expressions.
+\paragraph{Progress} We show the \emph{progress} property for both of
+the original expressions and erased expressions.
 
 \begin{theorem}[Progress]
     If $[[nil |- e : A]]$,
@@ -401,7 +382,8 @@ and erased expressions.
 
 \noindent Both theorems are proved by induction on the derivation of $[[nil |- e : A]]$.
 The proof is mostly straightforward except when the derivation ends with $\castdn$.
-We use the fact that, for a well-typed expression whose type can reduce, that expression
+We use another fact to solve the situation:
+for a well-typed expression whose type can reduce, that expression
 cannot be a value unless it is a $\castup$ or $\Lambda$ expression.
 
 \begin{lemma}[Reducible Type]
@@ -409,17 +391,17 @@ cannot be a value unless it is a $\castup$ or $\Lambda$ expression.
     then $e$ is not a value.
 \end{lemma}
 
-This lemma is also useful for the proof of progress for erased expressions, since the
-value definitions are very similar.
-
 \begin{lemma}[Erased Value to Value]
     If $\extract{e}$ is an erased value, then $e$ is a value.
 \end{lemma}
 
+This lemma is also useful for the proof of progress for erased expressions.
+Since the value definitions are very similar, we can use the property of values
+on erased values.
+
 \begin{lemma}[Value to Erased Value]
     If $e$ is a value, then $\extract{e}$ is an erased value.
 \end{lemma}
-
 
 \paragraph{Preservation}
 The direct operational semantics is not generally type-preserving and
@@ -445,8 +427,10 @@ for brevity.
     \label{fig:preservation}
 \end{figure}
 
-\noindent The theorem might look a bit complicated at first glance, Figure
-\ref{fig:preservation} shows the idea of our preservation lemma without
+\noindent The theorem might look a little complicated at first glance. It breaks
+down into two aspects: a erasure-annotation process and the subtype preservation.
+
+Figure \ref{fig:preservation} shows the idea of our preservation lemma without
 considering the subtyping aspect (assuming $[[G |- e : A]]$ instead of $[[G |- e1 <: e2 : A]]$).
 Here we use \emph{annotation} as the reverse process of erasure.
 If an expression ($e$) is well-typed, and its erasure ($E$)
@@ -459,21 +443,16 @@ exist a valid instantiation for $e$ that preserves its type after the reduction,
 this instantiation only affects type annotations.
 In other words, the runtime semantics of \name can be implemented only with
 erased expressions.
-\begin{comment}
-Because, for every reduction step, we can find a corresponding annotation that
-preserves the type of, and have a reduction relation with the
-annotation of its expansion.
-\end{comment}
 
-Aside from the erased aspect of our preservation lemma, we also consider a
+Aside from the erasure aspect of our preservation lemma, we also consider the
 generalized version of preservation in our unified subtyping system, the
 \emph{subtype preservation}: reductions not only preserves the type of expression,
 the subtyping relation between expressions is preserved as well.
 
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
 cases for \rref{r-beta,r-mu} are solved with the substitution theorem,
-cases \rref{r-app,r-castdn} are solved by inductive hypothesis. The interesting
-cases are \rref{r-cast-elim} and cases involving implicit instantiation
+cases \rref{r-app,r-castdn} are solved by inductive hypotheses. The interesting
+cases to prove are \rref{r-cast-elim} and cases involving implicit instantiation
 (\rref{r-inst,r-cast-inst}).
 
 \paragraph{Cast Elimination}
@@ -496,10 +475,10 @@ the cast elimination (following \rref{r-cast-elim}), expression $e$ has type $B_
 while in reality it has type $A_2$ (as highlighted).
 Therefore want to show $\Gamma \vdash A_2 \le B_2$ with the information that
 $\Gamma \vdash A_1 \le B_1$, $[[A1 --> A2]]$
-and $[[B1 --> B2]]$ (which goes back to what we want to prove initially)
-the subtype preservation after reduction, causes a circular dependency in the proof.
-Subtype preservation needs to solve the cast elimination case, which depends back
-on subtype preservation.
+and $[[B1 --> B2]]$, which depends on the property we want to prove initially,
+subtype preservation after reduction.
+And subtype preservation needs to solve the cast elimination case, causing a
+circular dependency of properties.
 This problem was also observed by the previous work on unified subtyping
 with cast operators~\cite{yang2017unifying}. They solved this situation
 by a delicate approach with the help of an essential lemma
@@ -507,12 +486,13 @@ by a delicate approach with the help of an essential lemma
 and $e_1 \longrightarrow e_1'$, $e_3 \longrightarrow e_3'$, there exists $e_2'$
 such that $e_2 \longrightarrow e_2'$). Unfortunately this lemma does not hold
 in our system since universal types, which are not reducible, can appear in the
-middle of two reducible types, so we cannot adopt their proof.
+middle of two reducible types, so we cannot adopt their proof on this case.
 
 We tackle this problem from another direction, with the observation that the
-demand for subtyping preservation shifts from the terms to the types.
-With the CoC-like kind hierarchy, we have limited layers in types to traverse.
-In fact, we only need to go down one layer in the type hierarchy to be able to
+demand for subtype preservation property shifts from the term-level to the type-level.
+With the calculus-of-constructions-like kind hierarchy, our system only have
+limited layers in types.
+In fact, we only need to go up one layer in the type hierarchy to be able to
 obtain subtype preservation directly,
 since there is no subtyping involved at the kind level,
 hence no problem for the cast elimination there.
@@ -520,7 +500,7 @@ Even better, we show that by going up one level in the type hierarchy
 (only discussing the types of terms), the options
 for the reduction that can be performed by a well-typed term are very limited.
 Implicit abstractions do not occur in type computation due to the kind
-restriction of universal types. We prove that well-typed reduction never occurs
+restriction of universal types. We prove that well-typed reductions never occur
 at kind level, so cast operators also do not occur in type-level computation.
 
 \begin{figure}
@@ -574,7 +554,7 @@ unified subtyping rules are redundant. They help in the formalization, but the c
 is equivalent to a variant of the calculus without them. We define system
 $[[G |= e1 <: e2 : A]]$, whose rules are the same as the typing rules of \name,
 but with all redundant premises eliminated. Also, \rref{s-castdn,s-castup}
-are also simplified to use deterministic reduction ($A \longrightarrow_D B$)
+are simplified to use deterministic reduction ($A \longrightarrow_D B$)
 instead of the reduction rule $A \longrightarrow B$ as shown below (other rules omitted):
 
 \begin{drulepar}[ss]{$[[G |= e1 <: e2 : A]]$}{Simplified Unified Subtyping}

@@ -38,17 +38,17 @@ $\mathrm{id}~\mathbb{N}~ 42$.
 
 \paragraph{Recursion and Dependent Types}
 
-\name is dependently typed, and universal quantification is not limited to work
+\name is dependently typed, and universal quantifications are not limited to work
 on arguments of type $\star$, but it allows arguments of other types. This is
 a key difference compared to much of the work on type-inference for higher-ranked
 polymorphism~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical}
-which has focused on System F-like
+which has been focusing on System F-like
 languages where universal quantification can only have arguments of type $\star$.
 Furthermore, \name supports general recursion at both the term and the type-level.
 
 Using these features we can encode an indexed list, a \verb|map| operation over it
-and illustrate how implicit instantiation allows us to use the \verb|map| function
-conveniently.
+and illustrate how the implicit instantiation allows us to use the \verb|map|
+function conveniently.
 However, because \name is just a core calculus there is no built-in support
 yet for algebraic datatypes and pattern matching.
 We expect that a source language would provide a more convenient
@@ -73,9 +73,9 @@ for our formulation of indexed lists:
   & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n)) &&
 \end{flalign*}
 In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
-show the definition for \verb|List|, and the types for the constructors (implementation ommitted)
-next. In later subsequent examples we will just assume some Haskell-style
-syntactic sugar for datatype definitions and constructors.
+show the definition for \verb|List|, and the types for the constructors next
+(implementation ommitted). In later subsequent examples we will just assume some
+Haskell-style syntactic sugar for datatype definitions and constructors.
 \begin{flalign*}
 &\List : \star \rightarrow \Nat \rightarrow \star &&\\
 &\List = \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \forall r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r &&\\
@@ -98,10 +98,6 @@ and the arguments are instantiated implicitly. Thus the \verb|map| function
 only requires two explicit arguments, making it as convenient to use
 as in most functional language implementations.
 
-% \bruno{You are missing the most important/interesting portion of the code: i.e. show a call to
-%   the map function and discuss how implicit polymorphism avoids having to specify 3 extra arguments
-% to the function. In this page alone there are at least 3 different variations being used.}
-
 There are a few final points worth mentioning about the example.
 Firstly, \verb|List| is an example of a dependently typed function, since it is parametrized
 by a natural value. Secondly, in \name (following the design of PITS~\cite{yang2019pure}),
@@ -112,27 +108,6 @@ Moreover, recursion is unrestricted and there is no termination checking, much l
 such as Dependently Typed Haskell~\cite{dh}, and unlike various other dependently typed languages
 such as Agda~\cite{2007_norell_agda} or Idris~\cite{brady2013idris}.
 
-
-\begin{comment}
-  can not only be types, also values of other data types
-(in this case, $\Nat$). So our language is able to directly encode the behavior of
-``Datatype Promotion'' of GHC haskell. The type parameters of $\List$ at most
-positions can be implicit parameter and instantiated during application.
-
-\paragraph{Fixpoint Operators}
-In our language, fixpoint operators ($\mu$) serves a dual purposes of defining
-recursive data type and recursive functions. However we put restrictions on
-fixpoint that its type can not be poly-type. So there is an awkward indirection
-in the definition of $\map$ to make all of the type parameters implicit. The rationale
-of this restriction is discussed in later sections.
-
-\paragraph{Explicit Type-Level Computations}
-The type-level computations of our language do not happen implicitly, they happen
-explicitly when $\mathrm{cast}$ operators are used. $\castdn$ and $\castup$
-generalize the ``unfold'' and ``fold'' of Iso-Recursive Types and invoke
-one-step reduction or expansion respectively at type-level.
-They also serve a role of wrapping and unwrapping the abstraction of data types.
-\end{comment}
 
 \paragraph{Implicit Higher-Kinded Types}
 
@@ -280,8 +255,8 @@ for the universally quantified variable.
 As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, these subtyping
 rules based on polymorphic subtyping, combined with other subtyping rules,
 are able to handle the subtyping relations that occur at not only top-level,
-but also at a higher-ranked level. This feature distinguish \name from the Implicit
-Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
+but also at a higher-ranked level. This feature distinguishes us \name from the
+Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
 implicit polymorphism on dependent type language. The ICC features the two related rules
 in the \emph{typing relation}:
 
@@ -321,10 +296,9 @@ typing relation (shown below) depends on the subtyping relation.
     {\Gamma \vdash e : A \\ \Gamma \vdash A \le B}
     {\Gamma \vdash e : B}
 \end{mathpar}
-This mutual dependency problem has been a significant and notorious
+This mutual dependency problem has been a significant
 problem when combining subtyping and dependent types~\cite{aspinall1996subtyping, hutchins2010pure},
-and presents itself on our way to the direct
-generalization of polymorphic subtyping.
+and presents itself on our way to the direct generalization of polymorphic subtyping.
 
 To tackle this issue, we adopt a technique called
 \emph{unified subtyping}~\cite{yang2017unifying}. Unified subtyping merges the typing relation and
@@ -381,7 +355,7 @@ Here $\Lambda A : [[*]].\, \lambda x : A.\, x$ has type $\forall A : \star. \, A
 and the polymorphic parameter $A$ is explicitly stated in the polymorphic
 term. However as the reduction shows, the instantiations are still implicit.
 We purposely omitted the explicit binders for implicit parameters for all the examples
-in Section \ref{sec:examples} for clarity. Such explicit binders can
+in Section \ref{sec:examples} for conciseness. Such explicit binders can
 be recovered with a simple form of syntactic sugar:
 
 \[e : \forall (x : A) . B \hateq \Lambda (x : A). e : \forall (x : A) . B\]
@@ -403,7 +377,7 @@ to support implicit type-level reduction.
 Instead, we partially adopt the
 call-by-name design of \emph{Pure Iso-Type Systems} (PITS)~\cite{yang2016unified,yang2019pure},
 and provide operators $\castdn$ and $\castup$ to explicitly trigger one-step
-type reductions or expansions.
+type reductions or expansions as shown in the typing rules below.
 \begin{mathpar}
   \inferrule*[lab=Castup]
     {[[G |- e : B]] \\ [[A --> B]] \\ [[G |- A : k]]}

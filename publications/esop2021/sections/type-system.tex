@@ -32,13 +32,13 @@ We present syntax, unified subtyping, and reduction for \name.
 \end{figure}
 \subsection{Syntax}
 
-Figure \ref{fig:syntax} presents the syntax of \name. The syntax is similar
+Figure \ref{fig:syntax} shows the syntax of \name. The syntax is similar
 syntax to the Calculus of Constructions, featuring
 $[[*]]$ and $[[box]]$ in the kind hierarchy, and unifying the concepts of terms
 and types as expressions. Due to the unified syntax, types and
 expressions ($e$, $A$ and $B$) are used
 interchangeably, although we mostly adopt the convention of using $A$ and $B$
-for contexts where the expressions are used as types and $e$ for contexts
+for the contexts where the expressions are used as types and $e$ for contexts
 where the expressions represent terms.
 The syntax includes all the constructs of the calculus of constructions:
 variables ($[[x]]$), kinds ($[[k]]$), function applications  ($[[e1 e2]]$),
@@ -52,16 +52,16 @@ via casts. These constructs are discussed next.
 In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
 polymorphism.
 In contrast to universal quantification in conventional functional languages, the
-argument $x$ ranges over all well-typed expressions besides well-formed
+parameter $x$ ranges over all well-typed expressions besides well-formed
 types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
-In other words, ``polymorphic types'' are naturally dependent, so $\forall$
+In other words, ``polymorphic types'' are naturally dependent, and $\forall$
 types can be viewed as the implicit counterpart of $\Pi$ types. We also have
 implicit lambda expressions ($[[bind x : A. e]]$), which are the implicit counterpart of
   $\lambda$ abstractions. The design used in \name
   is similar to the design of the \emph{Implicit Calculus of Constructions} ($\text{ICC}^*$)~\cite{barras2008implicit}, which
   employs similar constructs for implicit dependent products.
 Like conventional universal quantification, the arguments of $\forall$ types are
-deduced during applications rather than being explicitly passed.
+deduced during applications rather than explicitly passed.
 Also, following the designs for predicative higher-ranked polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical},
 we have generalized the concept of \emph{monotypes} to
 \emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
@@ -91,10 +91,10 @@ is employed to give the run-time semantics of expressions.
 Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
 which mostly follows the call-by-name variant of \emph{Pure Iso-Type Systems} (PITS)
 ~\cite{yang2019pure} corresponding to the calculus of constructions.
-Note that the arguments of $\beta$-reduction (\rref{r-beta}) and expressions in
+Note that the arguments of the $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
 Meanwhile, we consider $\castup$ terms to be a value,
-and only perform reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unroll
+and only perform reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unfol
 operation of the fixpoint operator is supported by \rref{r-mu}.
 
 \begin{figure}[t]
@@ -116,10 +116,10 @@ operation of the fixpoint operator is supported by \rref{r-mu}.
     \label{fig:semantics}
 \end{figure}
 
-Due to the presence of instantiation of implicit parameters, the direct operational
+Due to the presence of the instantiation of implicit parameters, the direct operational
 semantics is not deterministic, and potentially not type-preserving because of
 \rref{r-inst,r-cast-inst}. The indeterminacy is caused by the guess of $\tau$,
-which can be an arbitrary mono-expression, since we do not have access to typing
+which can be an arbitrary mono-expression, since we do not have access to any typing
 information in the dynamic semantics.
 
 \begin{figure}
@@ -265,13 +265,13 @@ dependent function types ($\Pi$ type).
 \paragraph{Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
 the spirit of the Odersky and L\"aufer's polymorphic subtyping~\cite{odersky1996putting,DunfieldJoshua2013Caeb},
-where the subtyping relation is interpreted as a ``more general than'' relation.
+where the subtyping relation is interpreted as a ``more-general-than'' relation.
 A polymorphic type $[[forall x : A. B]]$
 is more general than another type $C$ when its well-typed
 instantiation is more general than $C$ (\rref{s-forall-l}). A polymorphic
 type $[[forall x : B. C]]$ is less general than a type $A$,
 if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
-is abstracted out (\rref{s-forall-r}).
+is instantiated abstractly (\rref{s-forall-r}).
 
 Notably, our formalization is not a direct generalization of Odersky and L\"aufer's
 polymorphic subtyping:
@@ -321,5 +321,5 @@ erasure of expressions.
 All the premises highlighted in gray are redundant in a way that
 the system without them is proved equivalent to the system with them.
 These redundant rules are there to simplify the mechanized proofs of
-certain lemmas, but can safely be dropped in an actual implementation.
+certain lemmas, but can be safely dropped in an actual implementation.
 

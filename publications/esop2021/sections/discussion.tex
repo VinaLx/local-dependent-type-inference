@@ -9,8 +9,8 @@ Intuitively we should generalize the definition of value by introducing inert
 terms~\cite{yang2017unifying} to handle open term reduction.
 However since we adopt the call-by-name semantics of PITS~\cite{yang2019pure},
 there is no value check during the reduction. Whether the result of reduction
-inside cast operator does not matter during the reasoning of type safety. It is
-not necessary to complicate the metatheory by introducing inert terms.
+inside cast operator is a value or not does not matter during the reasoning of
+type safety. It is not necessary to complicate the metatheory by introducing inert terms.
 
 An alternative design
 around cast operators is the call-by-value (CBV) style~\cite{yang2019pure},
@@ -19,7 +19,7 @@ when the expression inside two casts is a value. Such design requires us to
 have a more general definition of value, and thus there is a need for inert terms.
 
 However, a simple design with CBV-style cast semantics and inert terms
-potentially lead to a system where \emph{Reduction Substitution} does not hold,
+potentially leads to a system where \emph{Reduction Substitution} does not hold,
 for example:
 \begin{gather*}
     \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow f ~ x \\
@@ -46,15 +46,15 @@ reasoning of polymorphic kinds. We wish to have some lemma like this:
       {[[G |- e : A]] \\ [[G |- e : *]]}
       {[[G |- * <: A : box]]}
 \end{mathpar}
-\noindent which depends on transitivity when the derivation of $[[G |- e : A]]$ ends with
-subsumption rule (rule \rref{s-sub}).
+\noindent which depends on transitivity when the derivation of $[[G |- e : A]]$
+ends with subsumption rule (rule \rref{s-sub}).
 
 Note that the reverse variant of the lemma
 (If $[[G |- e : A]]$ and $[[G |- e : *]]$ then $[[G |- A <: * : box]]$) is not generally
 true. A counter example is $A : \star \vdash \forall a : A.\, \star \le \star$, which
-does not hold. We are unable to find a well-typed instantiation of an arbitrary type $A$,
-which breaks the transitivity, while the derivation of the first premise ends
-with \rref{s-forall-l}:
+does not hold if we are unable to find a well-typed instantiation of an
+arbitrary type $A$, which breaks the transitivity, while the derivation of the
+first premise ends with \rref{s-forall-l}:
 \begin{mathpar}
     \inferrule*[]
       {[[G |- [t / x] e1 <: e2 : *]] \\ [[G |- e2 <: e3 : A]]}
@@ -82,7 +82,7 @@ instead of providing the direct operational semantics.
 We can elaborate the implicit function types (universal types) to $\Pi$ types,
 implicit abstraction to lambda expression and implicit instantiation to explicit
 application during type checking, when we have full information about the
-choice of implicit instantiations. However the elaboration on a unified subtyping
+choice of implicit instantiations. However the the elaboration on a unified subtyping
 system is not an easy task, because the subtyping relation cannot simply be interpreted
 to a coercion between values of different types, while half of our subtyping
 rules involve the subtype relation between terms instead of types.
@@ -102,8 +102,7 @@ we identify the following challenges to develop an algorithmic system for our la
 In dependent type systems, function types ($\Pi$ type) are dependent so that
 the type of applications potentially depends on the values of their arguments.
 Therefore the unification problem we meet is potentially inside binders and
-depends on the value of the arguments.
-For a extreme example in our language:
+depends on the value of the arguments. For an extreme example in our language:
 
 \begin{equation*}
     \lambda F : [[int]] \rightarrow F.\, \lambda f : F~42 \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
@@ -114,13 +113,12 @@ In a non-depedent setting one can easily conclude the instantiation for type $A$
 $F~42 \rightarrow [[int]]$. However with the presence of dependent types,
 we are looking at the type $(\Pi x : [[int]].\, F e)$ where expression $e$
 satisfy the equation that $[42/x]\,e = 42$ according to the Rule \rref{s-app}.
-Note that, although we do not allow implicit type reduction in our system,
-so that the unification problem here stay at first-order, we still face the
-problem where we have to solve
-the unification problem involving substitution. Moreover, in this case expression
-$e$ has two solutions, namely variable $x$ and $42$. We consider coming up with
-a formal system a challenging problem to resolve the general issues that this
-example implies.
+Since we do not allow implicit type reduction in our system,
+the unification problem here stay at first-order. However, we still face the
+problem to solve the unification problem involving substitutions.
+Moreover in this case, expression $e$ has two solutions, namely variable $x$
+and $42$. We consider coming up with a formal system a challenging problem to
+resolve the general issues that this example implies.
 
 \paragraph{Inhabitation Problem}
 
@@ -141,5 +139,7 @@ therefore we encounter an ``inhabitation problem'' for our system, asking the
 inhabitant for an arbitrary type in our system. This problem is
 undecidable for System F~\cite{dudenhefner2019simpler}. We do not expect it to be
 decidable in a more complicated system with strong normalization.
-While we support general recursion in our language, so that all types are
-likely to be inhabited, we currently do not have the proof that this is the case.
+While since we support general recursion in our language with a mono-expression
+restriction, all types are
+likely to be inhabited, we currently do not have the proof backing the claim that
+this is the case.
