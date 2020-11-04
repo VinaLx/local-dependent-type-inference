@@ -1,9 +1,8 @@
 \section{Overview}
-% \bruno{Please fill in missing references.}
 
-In this section we introduce \name by going through
+In this section, we introduce \name by going through
 some interesting examples to show the expressiveness and major features of the calculus.
-Then we discuss motivation, rationale of our design and challenges.
+Then we discuss the motivation, rationale of our design, and challenges.
 The formal system of \name will be
 discussed in Sections \ref{sec:system} and \ref{sec:metatheory}.
 
@@ -39,23 +38,22 @@ $\mathrm{id}~\mathbb{N}~ 42$.
 
 \paragraph{Recursion and Dependent Types}
 
-\name is dependently typed, and universal quantification is not limited to work
+\name is dependently typed, and universal quantifications are not limited to work
 on arguments of type $\star$, but it allows arguments of other types. This is
 a key difference compared to much of the work on type-inference for higher-ranked
 polymorphism~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical}
-% \bruno{reference to many (i.e. 5+) papers on that topic},
-which has focused on System F-like
+which has been focusing on System F-like
 languages where universal quantification can only have arguments of type $\star$.
-Furthermore \name supports general recursion at both the term and the type-level.
+Furthermore, \name supports general recursion at both the term and the type-level.
 
 Using these features we can encode an indexed list, a \verb|map| operation over it
-and illustrate how implicit instantiation allows us to use the \verb|map| function
-conveniently.
+and illustrate how the implicit instantiation allows us to use the \verb|map|
+function conveniently.
 However, because \name is just a core calculus there is no built-in support
 yet for algebraic datatypes and pattern matching.
-We expect that a source language would provide a more convinient
+We expect that a source language would provide a more convenient
 way to define the \verb|map| function using pattern matching and other useful source-level
-constructs. To model algebraic datatypes and pattern matching in \name we
+constructs. To model algebraic datatypes and pattern matching in \name, we
 use an encoding by Yang and Oliveira~\cite{yang2019pure},
 which is based on Scott encodings~\cite{mogensen1992efficient}.
 Since the details of that encoding are not relevant for this paper,
@@ -75,33 +73,20 @@ for our formulation of indexed lists:
   & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n)) &&
 \end{flalign*}
 In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
-show the definition for \verb|List|, and the types for the constructors (implementation ommitted)
-next. In later subsequent examples we will just assume some Haskell-style
-syntactic sugar for datatype definitions and constructors.
+show the definition for \verb|List|, and the types for the constructors next
+(implementation ommitted). In later subsequent examples we will just assume some
+Haskell-style syntactic sugar for datatype definitions and constructors.
 \begin{flalign*}
 &\List : \star \rightarrow \Nat \rightarrow \star &&\\
 &\List = \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \forall r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r &&\\
 &\Nil : \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n &&\\
-%\Nil &=& \castup \castup (\lambda z : r.\, \lambda c : (a \rightarrow \List~a~n \rightarrow r). ~ z) \\
 &\Cons : \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n &&
-%\Cons &=& \lambda x : a.\, \lambda xs : \List~a~(\Succ ~ n).\, \castup \castup (\lambda z : r.\, (\lambda c : a \rightarrow \List~a~(\Succ ~ n) \rightarrow r). ~ c ~ x ~ xs)
 \end{flalign*}
 \noindent Then we can define a \verb|map| function over \verb|List| with the type:
 \begin{flalign*}
-%  & \map ' :: \forall a : \star.\, \forall b : \star. (a \rightarrow b) \rightarrow \Pi n : \Nat.\, (\List~a~n) \rightarrow (\List~b~n) \\
-%  & \map ' = \lambda f : a \rightarrow b.\, \mu ~ rec : (\Pi n : \Nat.\, \List~a~n \rightarrow \List~b~n).\, \lambda xs : \List~a~n. \\
-%  & \quad\qquad (\castdn \castdn \, xs) ~ \Nil ~ (\lambda x : a.\, \lambda xs' : \List~a~(\Succ~n).\, \Cons ~ (f ~ x) ~ (rec ~ (\Succ~n)~xs')) \\
-%  \\
   & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n &&
-%  & \map = \lambda f : a \rightarrow b.\, \lambda xs : \List ~ a ~ n.\, \map '~f~n~xs
 \end{flalign*}
 An example of application of \verb|map| is:
-% \bruno{You should make sure that code is formatted consistently (for instance centered or left
-%   aligned) and using the same font. This isn't the case at the moment.
-%   In this page alone there are at least 3 different variations being used.
-%   Also, please be careful not to have too much vertical white space around the examples
-%   (I've been fixing this, but please avoid it if you write/modify more code).
-% }
 \begin{flalign*}
 &\map~\Succ~(\Cons~1~(\Cons~2~\Nil)) &&
 \end{flalign*}
@@ -110,44 +95,19 @@ An example of application of \verb|map| is:
 Note that since the type parameters for \verb|map|, \verb|Cons| and \verb|Nil|
 are all implicit, they can be all omitted
 and the arguments are instantiated implicitly. Thus the \verb|map| function
-only requires two explicit arguments, making it as convininent to use
+only requires two explicit arguments, making it as convenient to use
 as in most functional language implementations.
-
-% \bruno{You are missing the most important/interesting portion of the code: i.e. show a call to
-%   the map function and discuss how implicit polymorphism avoids having to specify 3 extra arguments
-% to the function. In this page alone there are at least 3 different variations being used.}
 
 There are a few final points worth mentioning about the example.
 Firstly, \verb|List| is an example of a dependently typed function, since it is parametrized
 by a natural value. Secondly, in \name (following the design of PITS~\cite{yang2019pure}),
-fixpoint operators ($\mu$) serve a dual purposes of defining recursive types and recursive
+fixpoint operators ($\mu$) serve a dual purpose of defining recursive types and recursive
 functions. In \verb|List| the fixpoint operator is used to define a recursive type, whereas
 in the definition of \verb|map| the fixpoint operator is used to define term-level recursion.
-Moreover recursion is unrestricted and there is no termination checking, much like approaches
+Moreover, recursion is unrestricted and there is no termination checking, much like approaches
 such as Dependently Typed Haskell~\cite{dh}, and unlike various other dependently typed languages
-such as Agda~\cite{agda} or Idris~\cite{brady2013idris}.
+such as Agda~\cite{2007_norell_agda} or Idris~\cite{brady2013idris}.
 
-
-\begin{comment}
-  can not only be types, also values of other data types
-(in this case, $\Nat$). So our language is able to directly encode the behavior of
-``Datatype Promotion'' of GHC haskell. The type parameters of $\List$ at most
-positions can be implicit parameter and instantiated during application.
-
-\paragraph{Fixpoint Operators}
-In our language, fixpoint operators ($\mu$) serves a dual purposes of defining
-recursive data type and recursive functions. However we put restrictions on
-fixpoint that its type can not be poly-type. So there is an awkward indirection
-in the definition of $\map$ to make all of the type parameters implicit. The rationale
-of this restriction is discussed in later sections.
-
-\paragraph{Explicit Type-Level Computations}
-The type-level computations of our language do not happen implicitly, they happen
-explicitly when $\mathrm{cast}$ operators are used. $\castdn$ and $\castup$
-generalize the ``unfold'' and ``fold'' of Iso-Recursive Types and invoke
-one-step reduction or expansion respectively at type-level.
-They also serve a role of wrapping and unwrapping the abstraction of data types.
-\end{comment}
 
 \paragraph{Implicit Higher-Kinded Types}
 
@@ -165,7 +125,6 @@ In this case the type of $fmap$ is:
 \begin{flalign*}
   & \fmap : \forall F : \star \to \star.~\Functor~F \to \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b &&
 \end{flalign*}
-%data constructor $\MkFunctor$ has type $\forall F : \star \rightarrow \star.\, \dots \rightarrow \Functor~F$ where the dots are the type of the field.
 Importantly this example illustrates that universal variables can quantify over higher-kinds (i.e.
 $F : \star \to \star$).
 We can define instances of functor in a standard way:
@@ -179,21 +138,21 @@ and then use \verb|fmap| with three arguments:
 & \fmap~\mathrm{idFunctor}~\Succ~(\MkId~0) &&
 \end{flalign*}
 
-\noindent Note that, because our calculus has no type classes we pass the ``instance'' explicitly.
-Nonetheless three other arguments (the $F$, $a$ and $b$) are implicitly instantiated.
+\noindent Note that, because our calculus has no mechanism like type classes we pass the ``instance'' explicitly.
+Nonetheless, three other arguments (the $F$, $a$, and $b$) are implicitly instantiated.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 \label{sec:higher-ranked-poly}
 
 In calculi such as the ICC~\cite{miquel2001implicit}, a form of implicit instantiation also exists.
-However, such calculi do not employ subtyping and instead they only apply instantiation
+However, such calculi do not employ subtyping and instead, they only apply instantiation
 to top-level universal quantifiers. Our next example illustrates how subtyping enables
 instantiation to be applied also in nested universal quantifiers, thus enabling
 more types to be related.
 
 When programming with continuations~\cite{sussman1998scheme} one of the
-functions that is typically needed is call-with-current-continutation
-(\verb|callcc|). In a polymorphic language there are several types that can be
+functions that are typically needed is call-with-current-continutation
+(\verb|callcc|). In a polymorphic language, there are several types that can be
 assigned to \verb|callcc|. One of these types is a rank-3 type,
 while another one is a rank-1 type.
 Using polymorphic subtyping we can show that the rank-3
@@ -205,8 +164,8 @@ type is more general than the rank-1 type. Thus the following program type-check
 \end{flalign*}
 \noindent The type $\forall b : \star.\, a \rightarrow b$ appears in a positive position
 of the whole signature, and it is a more general signature than $a \rightarrow b$
-for an arbitrary choice of $b$. Our language capture this subtyping relation so that
-we can assign $\mathrm{callcc}'$ to $\mathrm{callcc}$ instead of the other way around.
+for an arbitrary choice of $b$. Our language captures this subtyping relation so that
+we can assign $\mathrm{callcc}'$ to $\mathrm{callcc}$ (but not the other way around).
 In contrast, in approaches like the ICC, the types of \verb|callcc| and \verb|callcc'|
 are not compatible and the example above would be rejected.
 
@@ -216,30 +175,28 @@ We briefly discuss the major features of \name itself and
 its formalization. A more formal and technical discussion will be left to
 Sections \ref{sec:system} and \ref{sec:metatheory}.
 
-\paragraph{The Polymorphic Subtyping Relation}
-% \bruno{Have a figure and introduce the original relation here, before you move to
-% giving an overview of the dependently typed version.}
+\paragraph{Polymorphic Subtyping Relation}
 Figure \ref{fig:polymorphic-subtyping} shows Odersky and L\"aufer polymorphic
 subtyping relation~\cite{odersky1996putting}.
 This relation captures a \emph{more-general-than} relation between
-types as a subtyping relation. They key rules in their
-subtyping relation are rules $\le\forall L$ and $\le\forall R$:
+types as a subtyping relation. The key rules in their
+subtyping relation are rules $\forallL$ and $\forallR$:
 
 \begin{itemize}
-  \item In rule $\le\forall L$, a polytype ($\forall x.\, A$) is considered \emph{more-general}
+  \item In rule $\forallL$, a polytype ($\forall x.\, A$) is considered \emph{more-general}
         than another type ($B$), when we can find an arbitrary monotype ($\tau$)
         so that the instantiation is more general than $B$.
         Importantly note that this relation does not guess arbitrary (poly)types,
-        but just monotypes. In other words, the relation is \emph{predicative}~
-        \cite{Martin-Lof-1973}.
-        This restriction enusres that the relation is \emph{decidable}.
-  \item In rule  $\le\forall R$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
-        when it is still more general than the head of polytype, with the type
+        but just monotypes. In other words, the relation is \emph{predicative}~\cite{Martin-Lof-1972}.
+        This restriction ensures that the relation is \emph{decidable}.
+
+  \item In rule  $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
+        when it is still more general than the head of the polytype, with the type
         parameter instantiated by an abstract variable $x$.
 \end{itemize}
 
-This semantics of subtyping relation sets a scene for our work, which
-to generalizes this relation to a dependently typed setting.
+This subtyping relation sets a scene for our work, which
+generalizes this relation to a dependently typed setting.
 
 \begin{figure}
 \centering
@@ -253,11 +210,11 @@ to generalizes this relation to a dependently typed setting.
     {\Gamma \vdash B_1 \le A_1 \\ \Gamma \vdash A_2 \le B_2}
     {\Gamma \vdash A_1 \rightarrow A_2 \le B_1 \rightarrow B_2}
   \\
-  \inferrule*[right=$\le\forall L$]
+  \inferrule*[right=$\forallL$]
     {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
     {\Gamma \vdash \forall x.\, A \le B}
   \and
-  \inferrule*[right=$\le\forall R$]
+  \inferrule*[right=$\forallR$]
     {\Gamma ,\, x \vdash A \le B}
     {\Gamma \vdash A \le \forall x.\, B}
 \end{drulepar}
@@ -265,8 +222,6 @@ to generalizes this relation to a dependently typed setting.
 \caption{The polymorphic subtyping relation by Odersky and L\"aufer~\cite{odersky1996putting}.}
 \label{fig:polymorphic-subtyping}
 \end{figure}
-% \bruno{Do not just show a few rules; show the complete relation (and the rule form).}
-
 
 \paragraph{Generalizing Polymorphic Subtyping}
 \label{sec:polymorphic-subtyping}
@@ -278,30 +233,30 @@ be can be values or other kinds of types as well.
 A first attempt at a direct generalization would be:
 
 \begin{mathpar}
-  \inferrule*[right=$\le\forall L'$]
+  \inferrule*[right=$\forallL'$]
     {\Gamma \vdash \tau \rulehl{: A} \\ \Gamma \vdash [\tau / x]\, B \le C}
     {\Gamma \vdash \forall x \rulehl{: A}.\, B \le C}
   \and
-  \inferrule*[right=$\le\forall R'$]
+  \inferrule*[right=$\forallR'$]
     {\Gamma ,\, x \rulehl{: B} \vdash A \le C}
     {\Gamma \vdash A \le \forall x \rulehl{: B}.\,C}
 \end{mathpar}
 
 \noindent Here the parameter for universal types can have any type (and not just $\star$).
 Hence, instead of requiring the monotype $\tau$ to be a well-formed type in rule
-$\le\forall L$, in rule $\le\forall L'$ it is
+$\forallL$, in rule $\forallL'$ it is
 required that $\tau$ is well-typed regarding the type of the parameter
 in the universal quantifier.
-Similarly, for rule $\le\forall R'$ the context for the subtyping rule should include typing information
-for the universaly quantified variable.
+Similarly, for rule $\forallR'$ the context for the subtyping rule should include typing information
+for the universally quantified variable.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 
 As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, these subtyping
-rules based on polymorphic subtyping, combining with the normal subtyping rules
+rules based on polymorphic subtyping, combined with other subtyping rules,
 are able to handle the subtyping relations that occur at not only top-level,
-but also higher-ranked level. This feature distinguish \name from the Implicit
-Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
+but also at a higher-ranked level. This feature distinguishes us \name from the
+Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
 implicit polymorphism on dependent type language. The ICC features the two related rules
 in the \emph{typing relation}:
 
@@ -320,17 +275,19 @@ at higher-ranked positions. The approach taken by the ICC is similar to
 Hindley-Milner type system~\cite{hindley1969principal,milner1978theory},
 which also features similar rules in typing. But Hindley-Milner is designed for
 dealing only with rank-1 polymorphism.
-In generalizations of higher-ranked polymorphic type-inference~
-\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
-it has been shown that rules like $\le\forall L$ and $\le\forall R$ generalize rules like
+In generalizations of higher-ranked polymorphic type-inference~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
+it has been shown that rules like $\forallL$ and $\forallR$ generalize rules like
 \textsc{GEN} and \textsc{INST}. Since we aim at higher-ranked polymorphic generalization,
 we follow a similar, more general, approach in \name.
 
 \paragraph{Unified Subtyping}
-However, the $\le\forall L'$ and $\le\forall R'$ rules suffer from an
-important complication, which does not exist in a System-F like setting: there is
+However, the revised subtyping relation with $\forallL'$ and $\forallR'$ rules suffers from an
+important complication compared to the Odersky and L\"aufer formulation: there is now
 a notorious mutual dependency between typing and subtyping.
-In particular, note that rule $\le\forall L'$ now mentions the typing relation
+In Odersky and L\"aufer's rules, the subtyping rules
+do not depend on typing. In particular
+the rule $\forallL$ depends only on well-formedness ($\Gamma \vdash \tau$).
+In contrast, note that rule $\forallL'$ now mentions the typing relation
 in its premise ($\Gamma \vdash \tau : A$). Moreover, as usual,
 the subsumption rule of
 typing relation (shown below) depends on the subtyping relation.
@@ -339,13 +296,9 @@ typing relation (shown below) depends on the subtyping relation.
     {\Gamma \vdash e : A \\ \Gamma \vdash A \le B}
     {\Gamma \vdash e : B}
 \end{mathpar}
-In contrast, in Odersky and L\"aufer's rules,
-the same premise in $\le\forall L$ is only well-formedness ($\Gamma \vdash \tau$),
-and thus subtyping does not depend on typing.
-This mutual dependency problem has been a significant and notorious
+This mutual dependency problem has been a significant
 problem when combining subtyping and dependent types~\cite{aspinall1996subtyping, hutchins2010pure},
-and presents itself on our way to the direct
-generalization of polymorphic subtyping.
+and presents itself on our way to the direct generalization of polymorphic subtyping.
 
 To tackle this issue, we adopt a technique called
 \emph{unified subtyping}~\cite{yang2017unifying}. Unified subtyping merges the typing relation and
@@ -355,7 +308,7 @@ subtyping relation into a single relation to avoid the mutual dependency:
 \end{mathpar}
 The interpretation of this judgement is: under context $\Gamma$, $e_1$ is a subtype
 of $e_2$ and they both are of type $A$. The judgements for subtyping and typing
-are both special form of unified subtyping with the involvement of kind $[[*]]$:
+are both special form of unified subtyping: % with the involvement of kind $[[*]]$:
 \begin{mathpar}
   \Gamma \vdash A \le B \triangleq \Gamma \vdash A \le B : [[*]]
   \and
@@ -375,9 +328,9 @@ the generalization of the polymorphic subtyping should be:
     {\Gamma \vdash A \le \forall x : B.\,C \rulehl{: [[*]]}}
 \end{mathpar}
 
-\noindent The basic idea of our own formalization essentially follows a similar design.
-However, it is not exactly like this due to various issues, the
-details will be discussed in Section \ref{sec:type-system}.
+\noindent The basic idea of our own formalization essentially follows a similar design,
+although the actual rules in \name are slightly more sophisticated.
+The details will be discussed in Section \ref{sec:type-system}.
 
 \paragraph{``Explicit'' Implicit Instantiation}
 
@@ -389,34 +342,32 @@ implicit instantiation). For example:
   (\lambda x.\, x)~42 \longrightarrow 42
 \end{mathpar}
 \noindent Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$. The implicit
-instantiation is not reflected anywhere at term level. However, in a
+instantiation is not reflected anywhere at term level. In a
 language with type annotations on parameters of binders
 (for example lambda abstractions), in order
 for the polymorphic variable to be well-scoped at type annotations of terms,
-another binder $\Lambda$ is added for terms. However instantiations are still
-implicit as shown in the following examples:
+another binder $\Lambda$ is added for terms. Nonetheless, instantiations are still
+implicit as shown in the following example:
 \begin{mathpar}
   (\Lambda A : [[*]].\, \lambda x : A.\, x) ~ 42 \longrightarrow 42
-%  (\Lambda A : [[*]].\, \lambda x : A.\, \lambda y : A.\, x) \longrightarrow \lambda y : [[int]].\, 42
 \end{mathpar}
 Here $\Lambda A : [[*]].\, \lambda x : A.\, x$ has type $\forall A : \star. \, A \rightarrow A$,
 and the polymorphic parameter $A$ is explicitly stated in the polymorphic
 term. However as the reduction shows, the instantiations are still implicit.
-We purposely omit the explicit binders for implicit parameters for all the examples
-in Section \ref{sec:examples} for clarity, since such explicit binders can
+We purposely omitted the explicit binders for implicit parameters for all the examples
+in Section \ref{sec:examples} for conciseness. Such explicit binders can
 be recovered with a simple form of syntactic sugar:
 
 \[e : \forall (x : A) . B \hateq \Lambda (x : A). e : \forall (x : A) . B\]
 
 \noindent When polymorphic parameters are used, \name provides a binder ($\Lambda (x : A). e$)
-to ensure that the parameters are well-scoped at term-level.
+to ensure that the parameters are well-scoped at the term-level.
 
 \paragraph{Type-level Computation and Casts}
-
-Since \name features a fixpoint that supports general recursion at both
+\name features a fixpoint that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
 we do not provide the congruence rule like other dependently
-typed systems such as the Calculus of Constructions \cite{CoquandThierry1988Tcoc}
+typed systems such as the Calculus of Constructions~\cite{CoquandThierry1988Tcoc}
 to support implicit type-level reduction.
 \begin{mathpar}
   \inferrule*[lab=Cong]
@@ -426,8 +377,7 @@ to support implicit type-level reduction.
 Instead, we partially adopt the
 call-by-name design of \emph{Pure Iso-Type Systems} (PITS)~\cite{yang2016unified,yang2019pure},
 and provide operators $\castdn$ and $\castup$ to explicitly trigger one-step
-type reductions or expansions.
-% \bruno{Show cast rules below.}
+type reductions or expansions as shown in the typing rules below.
 \begin{mathpar}
   \inferrule*[lab=Castup]
     {[[G |- e : B]] \\ [[A --> B]] \\ [[G |- A : k]]}
