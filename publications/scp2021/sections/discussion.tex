@@ -33,12 +33,12 @@ leave the discussion of other possibilities of design in future work.
 Currently, we impose restrictions on the kinding of polymorphic types
 ($\forall x : A. B$) to require that they only have kind $\star$ but not $[[box]]$.
 We believe that this has little impact on the usability
-of our system since we do not really polymorphic
+of our system since polymorphic
 kinds such as $\forall x : [[int]].\,\star$ do not appear frequently in practice.
 However it would be reasonable not to have this restriction, but then
 this complicates the development of the metatheory significantly.
 
-One of the obstacles of removing the kind restriction is that,
+One of the obstacles of removing the kind restriction is that
 there is a mutual dependency between the transitivity theorem and the subtyping
 reasoning of polymorphic kinds. We wish to have some lemma like this:
 \begin{mathpar}
@@ -47,13 +47,13 @@ reasoning of polymorphic kinds. We wish to have some lemma like this:
       {[[G |- * <: A : box]]}
 \end{mathpar}
 \noindent which depends on transitivity when the derivation of $[[G |- e : A]]$
-ends with subsumption rule (rule \rref{s-sub}).
+ends with subsumption rule (\rref{s-sub}).
 
 Note that the reverse variant of the lemma
 (If $[[G |- e : A]]$ and $[[G |- e : *]]$ then $[[G |- A <: * : box]]$) is not generally
 true. A counter example is $A : \star \vdash \forall a : A.\, \star \le \star$, which
 does not hold if we are unable to find a well-typed instantiation of an
-arbitrary type $A$, which breaks the transitivity, while the derivation of the
+arbitrary type $A$, which breaks transitivity, while the derivation of the
 first premise ends with \rref{s-forall-l}:
 \begin{mathpar}
     \inferrule*[]
@@ -76,13 +76,13 @@ a similar design to ICC~\cite{miquel2001implicit} and
 ICC*~\cite{barras2008implicit} to simplify the development of a direct
 operational semantics for our language. Such restriction can be lifted if we
 prove the runtime type-safety by elaboration to a second language,
-such as \emph{the Calculus of Constructions}\cite{coc},
+such as \emph{the Calculus of Constructions}~\cite{coc},
 instead of providing the direct operational semantics.
 
-We can elaborate the implicit function types (universal types) to $\Pi$ types,
+We can elaborate implicit function types (universal types) to $\Pi$ types,
 implicit abstraction to lambda expression and implicit instantiation to explicit
 application during type checking, when we have full information about the
-choice of implicit instantiations. However the the elaboration on a unified subtyping
+choice of implicit instantiations. However the elaboration on a unified subtyping
 system is not an easy task, because the subtyping relation cannot simply be interpreted
 to a coercion between values of different types, while half of our subtyping
 rules involve the subtype relation between terms instead of types.
@@ -92,11 +92,11 @@ on a unified subtyping system as future work.
 \subsection{Algorithmic System and Challenges}
 
 \name does not currently have an algorithmic system since we
-consider a formalized algorithm for dependent type system itself a challenge so it
+consider a formalized algorithm for dependent type system itself a substantial challenge so it
 is left for future work. While trying to compare to existing algorithmic systems
 for higher-ranked polymorphic type inference for System F-like languages
 ~\cite{dunfield2013complete,zhao19mechanical},
-we identify the following challenges to develop an algorithmic system for our language
+we identify the following challenges to develop an algorithmic system for \name.
 
 \paragraph{Unification Inside Binders}
 In dependent type systems, function types ($\Pi$ type) are dependent so that
@@ -109,16 +109,17 @@ depends on the value of the arguments. For an extreme example in our language:
 \end{equation*}
 
 Here the principal type of $\Lambda A : \star.\,\mu x : A.\, x$ is $\forall A : \star.\, A$.
-In a non-depedent setting one can easily conclude the instantiation for type $A$ to be
+In a non-dependent setting one can easily conclude the instantiation for type $A$ to be
 $F~42 \rightarrow [[int]]$. However with the presence of dependent types,
 we are looking at the type $(\Pi x : [[int]].\, F e)$ where expression $e$
 satisfy the equation that $[42/x]\,e = 42$ according to the Rule \rref{s-app}.
 Since we do not allow implicit type reduction in our system,
-the unification problem here stay at first-order. However, we still face the
-problem to solve the unification problem involving substitutions.
+the unification problem here stays first-order. However, we still face the
+problems involving substitutions.
 Moreover in this case, expression $e$ has two solutions, namely variable $x$
-and $42$. We consider coming up with a formal system a challenging problem to
-resolve the general issues that this example implies.
+and $42$.
+%We consider coming up with a formal system a challenging problem to
+%resolve the general issues that this example implies.
 
 \paragraph{Inhabitation Problem}
 
@@ -135,11 +136,10 @@ pose extra difficulties in \name:
     \forall A : T.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A : T.\, A \rightarrow A) \rightarrow [[int]]
 \end{equation*}
 We cannot apply \rref{s-forall-l} until we find a valid instantiation for type $A$,
-therefore we encounter an ``inhabitation problem'' for our system, asking the
-inhabitant for an arbitrary type in our system. This problem is
+therefore we encounter an \emph{inhabitation problem} for \name. This problem is
 undecidable for System F~\cite{dudenhefner2019simpler}. We do not expect it to be
 decidable in a more complicated system with strong normalization.
-While since we support general recursion in our language with a mono-expression
-restriction, all types are
-likely to be inhabited, we currently do not have the proof backing the claim that
+Since we support general recursion in our language with a mono-expression
+restriction we expect that all types are
+inhabited. However, we currently do not have the proof backing the claim that
 this is the case.
