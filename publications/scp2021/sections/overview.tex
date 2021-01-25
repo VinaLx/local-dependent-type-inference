@@ -74,7 +74,7 @@ for our formulation of indexed lists:
 \end{flalign*}
 In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
 show the definition for \verb|List|, and the types for the constructors next
-(implementation ommitted). In later subsequent examples we will just assume some
+(implementation omitted). In later subsequent examples we will just assume some
 Haskell-style syntactic sugar for datatype definitions and constructors.
 \begin{flalign*}
 &\List : \star \rightarrow \Nat \rightarrow \star &&\\
@@ -145,7 +145,7 @@ Nonetheless, three other arguments (the $F$, $a$, and $b$) are implicitly instan
 \label{sec:higher-ranked-poly}
 
 In calculi such as the ICC~\cite{miquel2001implicit}, a form of implicit instantiation also exists.
-However, such calculi do not employ subtyping and instead, they only apply instantiation
+However, such calculi do not employ subtyping, instead, they only apply instantiation
 to top-level universal quantifiers. Our next example illustrates how subtyping enables
 instantiation to be applied also in nested universal quantifiers, thus enabling
 more types to be related.
@@ -229,7 +229,7 @@ generalizes this relation to a dependently typed setting.
 The parameters of universal types can only be types in the polymorphic
 subtyping relation by Odersky and L\"aufer.
 In \name, we generalize the polymorphic parameters so that they can
-be can be values or other kinds of types as well.
+be values or other kinds of types as well.
 A first attempt at a direct generalization would be:
 
 \begin{mathpar}
@@ -255,9 +255,9 @@ for the universally quantified variable.
 As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, these subtyping
 rules based on polymorphic subtyping, combined with other subtyping rules,
 are able to handle the subtyping relations that occur at not only top-level,
-but also at a higher-ranked level. This feature distinguishes us \name from the
+but also at a higher-ranked level. This feature distinguishes our \name from the
 Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
-implicit polymorphism on dependent type language. The ICC features the two related rules
+the implicit polymorphism of dependent type languages. The ICC features the two related rules
 in the \emph{typing relation}:
 
 \begin{mathpar}
@@ -290,7 +290,7 @@ the rule $\forallL$ depends only on well-formedness ($\Gamma \vdash \tau$).
 In contrast, note that rule $\forallL'$ now mentions the typing relation
 in its premise ($\Gamma \vdash \tau : A$). Moreover, as usual,
 the subsumption rule of
-typing relation (shown below) depends on the subtyping relation.
+the typing relation (shown below) depends on the subtyping relation.
 \begin{mathpar}
   \inferrule*[right=t-sub]
     {\Gamma \vdash e : A \\ \Gamma \vdash A \le B}
@@ -301,7 +301,7 @@ problem when combining subtyping and dependent types~\cite{aspinall1996subtyping
 and presents itself on our way to the direct generalization of polymorphic subtyping.
 
 To tackle this issue, we adopt a technique called
-\emph{unified subtyping}~\cite{yang2017unifying}. Unified subtyping merges the typing relation and
+\emph{unified subtyping}~\cite{full}. Unified subtyping merges the typing relation and
 subtyping relation into a single relation to avoid the mutual dependency:
 \begin{mathpar}
   \Gamma \vdash e_1 \le e_2 : A
@@ -358,7 +358,7 @@ We purposely omitted the explicit binders for implicit parameters for all the ex
 in Section \ref{sec:examples} for conciseness. Such explicit binders can
 be recovered with a simple form of syntactic sugar:
 
-\[e : \forall (x : A) . B \hateq \Lambda (x : A). e : \forall (x : A) . B\]
+\[e : \forall x : A.\, B \triangleq \Lambda x : A.\, e : \forall x : A.\, B\]
 
 \noindent When polymorphic parameters are used, \name provides a binder ($\Lambda (x : A). e$)
 to ensure that the parameters are well-scoped at the term-level.
@@ -367,7 +367,7 @@ to ensure that the parameters are well-scoped at the term-level.
 \name features a fixpoint that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
 we do not provide the congruence rule like other dependently
-typed systems such as the Calculus of Constructions~\cite{CoquandThierry1988Tcoc}
+typed systems such as the Calculus of Constructions~\cite{coc}
 to support implicit type-level reduction.
 \begin{mathpar}
   \inferrule*[lab=Cong]
@@ -375,7 +375,7 @@ to support implicit type-level reduction.
     {[[G |- e : B]]}
 \end{mathpar}
 Instead, we partially adopt the
-call-by-name design of \emph{Pure Iso-Type Systems} (PITS)~\cite{yang2016unified,yang2019pure},
+call-by-name design of \emph{Pure Iso-Type Systems} (PITS)~\cite{isotype,yang2019pure},
 and provide operators $\castdn$ and $\castup$ to explicitly trigger one-step
 type reductions or expansions as shown in the typing rules below.
 \begin{mathpar}

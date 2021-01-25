@@ -84,7 +84,7 @@ adding \rref{s-forall}.
 \subsection{Typing Properties of \name}
 
 With our rules properly set up, we can prove most of the basic properties
-using techniques borrowed form the \emph{unifed subtyping}~\cite{yang2017unifying} approach.
+using techniques borrowed from the \emph{unifed subtyping}~\cite{full} approach.
 We introduce \emph{reflexivity}, \emph{weakening},
 \emph{context narrowing}, \emph{substitution} and \emph{type correctness}
 in this section.
@@ -155,7 +155,7 @@ derive $[[G1 , x : A ,, G2 |- x : B]]$ through \rref{s-sub}.
 being substituted with, which comes at a result of restricting the instantiation
 of polymorphic parameters to only mono-expressions in \rref{s-forall-l}.
 
-Take following derivation as an example:
+Take the following derivation as an example:
 
 \begin{mathpar}
     \inferrule*[Right=s-forall-l]
@@ -169,7 +169,7 @@ derivation stops working because \rref{s-forall-l} requires a mono-expression
 instantiation and \rref{s-app} requires the argument of both sides to be
 syntactically the same.
 
-Worth mentioning is that while substitution of poly-expressions break the
+Worth mentioning is that while substitution of poly-expressions breaks the
 subtyping aspect of the language, a special case of the substitution theorem
 that discusses the typing of one expression
 (If $[[G1 , x : A ,, G2 |- e : B]]$ and $[[G1 |- e1 : A]]$,
@@ -220,7 +220,7 @@ what appears in the position of a type are actually types.
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
 the only non-trivial case is when the derivation ends with \rref{s-app}. We make
 use of the substitution lemma and the inductive hypothesis to demonstrate the head
-of $\Pi$ type preserve its kind after the argument is applied.
+of a $\Pi$ type preserves its kind after the argument is applied.
 
 \subsection{Transitivity}
 \label{sec:transitivity}
@@ -281,7 +281,7 @@ $$
 $\mathbf{size}$ measures the size of the syntax tree of the expressions,
 $\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation trees of
 the first and the second premises respectively.
-The proof is mainly motivated by DK's transitivity proof of their subtyping
+The proof is mainly motivated by DK's transitivity proof of their declarative subtyping
 system of induction on the pair of
 $\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\cite{dunfield2013lemmas},
 with some adjustments to fit in our system.
@@ -350,7 +350,7 @@ measure is the size of the derivation trees.
 Since the reduction rules of \name do not have access to typing information, they
 cannot perform valid instantiation checks of the implicit arguments during applications.
 Thus, the runtime semantics is non-deterministic and potentially non-type-preserving.
-We tackle this issue by employ designs to make the choice of implicit instantiation
+We tackle this issue by employing designs that make the choice of implicit instantiation
 irrelevant at runtime with the restrictions in \rref{s-bind}.
 We define an erasure function (shown in Figure \ref{fig:extraction})
 that eliminates the type annotations
@@ -359,7 +359,7 @@ and keep the implicit parameter from occurring in the erased expressions.
 This way the choices of implicit instantiation only affect type annotations,
 which are not relevant for runtime computation.
 
-We show that \name is type-safe the sense that,
+We show that \name is type-safe in the sense that,
 if an expression is well-typed, then the reduction of its erased version
 does not ``go wrong''. Figure \ref{fig:extraction} shows the semantics of
 erased expressions. The erasure semantics mostly mirrors the semantics
@@ -428,7 +428,7 @@ for brevity.
 \end{figure}
 
 \noindent The theorem might look a little complicated at first glance. It breaks
-down into two aspects: a erasure-annotation process and the subtype preservation.
+down into two aspects: the erasure-annotation process and the subtype preservation.
 
 Figure \ref{fig:preservation} shows the idea of our preservation lemma without
 considering the subtyping aspect (assuming $[[G |- e : A]]$ instead of $[[G |- e1 <: e2 : A]]$).
@@ -446,7 +446,7 @@ erased expressions.
 
 Aside from the erasure aspect of our preservation lemma, we also consider the
 generalized version of preservation in our unified subtyping system, the
-\emph{subtype preservation}: reductions not only preserves the type of expression,
+\emph{subtype preservation}: reductions not only preserve the type of expression,
 the subtyping relation between expressions is preserved as well.
 
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
@@ -480,7 +480,7 @@ subtype preservation after reduction.
 And subtype preservation needs to solve the cast elimination case, causing a
 circular dependency of properties.
 This problem was also observed by the previous work on unified subtyping
-with cast operators~\cite{yang2017unifying}. They solved this situation
+with cast operators~\cite{full}. They solved this situation
 by a delicate approach with the help of an essential lemma
 \emph{Reduction Exists in the Middle} (If $[[G |- e1 <: e2 : A]]$, $[[G |- e2 <: e3 : A]]$
 and $e_1 \longrightarrow e_1'$, $e_3 \longrightarrow e_3'$, there exists $e_2'$
@@ -578,7 +578,12 @@ We prove that the two system are equivalent in terms of expressiveness.
 
 Finally we show that the subtyping aspect of \name subsumes
 Odersky and L\"aufer's polymorphic
-subtyping~\cite{odersky1996putting}.
+subtyping~\cite{odersky1996putting}
+
+by showing our system subsumes the Dunfields and Krishnaswami (DK)'s declarative
+subtyping system \cite{dunfield2013complete}, which is a implementation of
+the polymorphic subtyping.
+
 \begin{figure}
     \begin{mathpar}
         \lift{x} = x \and \lift{[[int]]} = [[int]] \and
@@ -589,26 +594,25 @@ subtyping~\cite{odersky1996putting}.
         \lift{[[nil]]} = [[nil]] \and
         \lift{\Gamma, \, x} = \lift{\Gamma},\, x : [[*]]
     \end{mathpar}
-    \caption{Lifting Types and Contexts in DK's Sutyping to \name}
+    \caption{Lifting Types and Contexts in Polymorphic Sutyping to \name}
     \label{fig:lift}
 \end{figure}
-Figure \ref{fig:lift} shows the transformation from Odersky and L\"aufer's types to \name's types. Then we prove the subsumption in terms type well-formedness and subtyping
+Figure \ref{fig:lift} shows the transformation from
+% Odersky and L\"aufer's
+DK's
+types to \name's types.
+Then we prove the subsumption in terms of type well-formedness and subtyping
 by following the interpretation of unified subtyping.
 
 \begin{theorem}[Subsumption of Type Well-formedness]
-    If $\Gamma \vdash A$, then $\lift{\Gamma} \vdash \lift{A} : [[*]]$
+    If $\Gamma \vdash_{DK} A$, then $\lift{\Gamma} \vdash \lift{A} : [[*]]$
 \end{theorem}
 
 \begin{theorem}[Subsumption of Polymorphic Subtyping]
-    If $\Gamma \vdash A \le B$, then $\lift{\Gamma} \vdash \lift{A} \le \lift{B} : [[*]]$
+    If $\Gamma \vdash_{DK} A \le B$, then $\lift{\Gamma} \vdash \lift{A} \le \lift{B} : [[*]]$
 \end{theorem}
 
 The proof is straightforward by making use of the \emph{well-formedness} lemma
 in Odersky and L\"aufer system, mentioned in Section \ref{sec:adaptation}, to conclude that
 $A$ itself is a well-formed type in $\Gamma \vdash A \le \forall x.\, B$, and
 $\forall x. A$ is well-formed in $\Gamma \vdash \forall x. \, A \le B$.
-
-% \bruno{The lemma that shows that the redundant premises are indeed redundant is not shown, right?
-%   I think it should appear somewhere in Section 3.2.}
-
-% \bruno{After reading this section, I feel that the text in Section 3.1 should come in Section 2 instead.}

@@ -86,7 +86,11 @@ TODO
 > in! Relatedly, the use of the word "binder" here to refer to the
 > forall was somewhat confusing.
 
-TODO
+IGNORE
+
+"Binder" should be a standard term to refer to the syntax construct to "bind"
+a variable in the body. And the "binder" does not refer to `forall` type itself,
+it refer to the inhabitants of `forall`.
 
 > p10L15 It took quite some time to understand that mono-expressions
 > exclude implicit foralls but not explicit pis... and allow _either_
@@ -95,31 +99,52 @@ TODO
 > one? Right? More clarity here would be very helpful! Some kind of
 > discussion should also go in "Implicit Polymorphism" on p11L24-38.
 
-TODO
+DONE?
+
+Rephrase the paragraph of implicit polymorphism, which first emphasizes the idea
+of generalization of polymorphic types
+(and emphasize that the mono-types only excludes forall types not everything else).
+Then mention the implicit lambda expression.
 
 > p10L42 I'm not sure `Castup` and `Castdn` are the best possible names
 > here. Why not just write $\mathsf{expand}$ and $\mathsf{reduce}$ for
 > the terms (or `exp` and `red`)? These would be better rule names,
 > too. The discussion here should perhaps cite Zombie.
 
-TODO
+IGNORE?
+
+We follow the convention of the iso-type system here.
 
 > p11L14 I'm not sure a 'mostly' adopted convention is worth
 > mentioning. When _don't_ you do that?
 
-TODO
+IGNORE
+
+For example the definition of transitivity we use e1, e2 and e3. Intuitively
+transitivity should be a property concerning about subtyping, but our generalized
+version talks about general terms as well. And it is not necessary in this circumstance
+where e1 e2 and e3 mention terms or types.
+So the convention is "mostly" adopted instead of "always",
+we want to emphasize that while e1, e2 or A, B express identical meaning,
+but there are subtle differences in different contexts.
 
 > p12L20 If `Castdn` triggers only one step, why does the outer cast
 > form remain in `R-Castdn`?
 
-TODO
+DONE
+
+(no change)
+
+Because castdn triggers type-level reduction,
+which is performed in the typing rules, while in R-Castdn the castdn operator
+only serves as an evaluation context.
 
 > p14L20 Maybe call out the three non-structural rules (`S-Forall-L`,
 > `S-Forall-R`, `S-Sub`)? The appearance of `S-Forall` to resolve some
 > issues (p17L51) seems to indicate that "structurality" is an important
 > property!
 
-TODO
+TODO?
 
 > p14L36 Maybe highlight the new kinding premises?
 
@@ -141,7 +166,11 @@ TODO
 > Dunfield and Krishnaswami's model of Oderskey and Läufer, and the
 > second was your judgment.
 
-TODO
+DONE
+
+Specify directly that we prove the subsumption of polymorphic subtyping, based
+on the subsumption of DK's declarative subtyping. And add DK subscript to the
+corresponding turnstiles.
 
 > p26L30-43 I didn't understand these paragraphs at all.
 
@@ -157,7 +186,13 @@ TODO
 > Calling out the difference between `S-Pi` and `S-Forall` would be a
 > key move (p15).
 
-TODO
+DONE?
+
+We add a sentence in section 3, "Implicit Polymorphism" to emphasize the
+difference between \Lambda and \lambda expressions. As for the difference
+between S-Pi and S-Forall, S-Pi is meant to be a generalization of the standard
+subtyping rule of function type, and the motivation of S-Forall is explained in
+section 4.1.
 
 ## Coq proofs
 
@@ -260,10 +295,16 @@ TODO
 TODO
 
 > Some of the papers in the bibliography are miscapitalized, e.g.,
-> "System fc" in [15]. Many citations are uneven: some just say POPL
-> (e.g., [16]), while others say "ACM SIGPLAN-SIGACT Symposium on
-> Principles of Programming Languages". I don't have a strong feeling
-> about which is better, but I think consistency is nice here.
+> "System fc" in [15].
+
+TODO?
+
+They are correct in the reference, so they are mis-auto-formated?
+
+> Many citations are uneven: some just say POPL (e.g., [16]), while others
+> say "ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages".
+> I don't have a strong feeling about which is better, but I think consistency
+> is nice here.
 
 TODO
 
@@ -273,7 +314,6 @@ TODO
 > lia---a mere warning).
 
 IGNORE
-
 
 > p2L35 "arizes" typo
 > p8L46 "subsumption rule of [the] typing relation"
@@ -297,7 +337,10 @@ IGNORE
 > p30L25 I'm not certain "hot topic" is the best choice of words here.
 > p31L12 "eliminates [the] typing relation"
 
-TODO
+DONE.
+
+"by employ designs to make" -> "by employing designs that make"
+"hot topic in research" -> "research frontier"
 
 # Recommendations
 
@@ -401,7 +444,6 @@ TODO
 > page 3 9 it results on -> it results in ?
 > page 5 line 25 ommitted -> omitted
 > page 6 line 38: and instead -> and, instead
-> callcc example: again, please use a different font for code
 > page 7 50 can be can be -> can be
 > page 8
 > 20 us -> our (?)
@@ -430,17 +472,29 @@ TODO
 > enforce -> enforces
 > page 31 line 42 of polymorphic -> on polymorphic
 
+"... using the same syntax" -> rewrite to "i.e. the types are expressed ... using the same syntax as terms"
+"in the subtyping rule (rule \forall L)" -> "in their subtyping rules (rule \forall L)"
+
+DONE.
+
+> callcc example: again, please use a different font for code
+
 TODO
 
 ## References
 
 > [1] American Matematical Society
+> [25] and [41] are the same
+
+DONE
+
 > [14] Guru
 > [15] System FC
 > [20], [35], [55] Haskell
-> [25] and [41] are the same
 
-TODO
+TODO?
+
+They are correct in the reference, so they are mis-auto-formated?
 
 # Review 3
 

@@ -42,13 +42,13 @@ additional \emph{expressiveness} and \emph{economy of concepts}.
 The key enabler for unifying terms and types in dependently typed
 calculi is the adoption of a style similar to
 Pure Type Systems (PTSs)~\cite{pts}. In PTSs there is only a single level
-of syntax for terms, and types (or kinds) that are expressed using the
-same syntax. This is in contrast with more traditional calculi, where
+of syntax for terms, i.e. the types (or kinds) are expressed using the
+same syntax as the terms. This is in contrast with more traditional calculi, where
 distinct pieces of syntax (terms, types and kinds) are separated.
 
 Unified syntax, typical of dependently typed languages,
 poses some challenges for language design and implementation.
-A first challenge arizes from the interaction between recursion and dependent types.
+A first challenge arises from the interaction between recursion and dependent types.
 Essentially recursion breaks strong normalization, which
 many common properties in dependently typed calculi depend upon.
 However, this area has been actively investigated in the
@@ -77,7 +77,7 @@ which attempt to unify syntax and the typing and well-formedness relations,
 unified subtyping suggests unifying typing
 and subtyping into a single relation. This solves the problem of dependencies
 in that now there is only a single relation that depends on itself. Furthermore
-it results on a compact specification compared to a variant with multiple
+it results in a compact specification compared to a variant with multiple
 independent relations.
 
 In this paper we investigate how polymorphic subtyping can be
@@ -87,7 +87,7 @@ to address the issues of combining dependent types with subtyping.
 The use of explicit casts
 for type-level computation means that type equality is essentially
 syntactic (or rather up-to $\alpha$-equivalence).
-This avoids some major complications that arize in the presence
+This avoids some major complications that arise in the presence
 of a conversion rule:
 a well-known result is that type-inference for systems
 with a conversion rule requires \emph{higher-order

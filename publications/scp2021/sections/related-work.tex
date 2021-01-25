@@ -27,8 +27,7 @@ type-inference.
 One important challenge for type inference in
 systems with dependent types and a conversion rule
 is that they require \emph{higher-order unification},
-which is known to be undecidable
-~\cite{goldfarb1981undecidability}. The \textit{pattern}
+which is known to be undecidable~\cite{goldfarb1981undecidability}. The \textit{pattern}
 fragment~\cite{miller1991unification} is a well-known decidable
 fragment. Much literature on unification for dependent
 types~\cite{reed2009higher,abel2011higher, gundry2013tutorial, Cockx:2016:UEP:2951913.2951917, ziliani2015unification, coen2004mathematical} is
@@ -45,8 +44,8 @@ Xie et al.~\cite{xie20kind} describes algorithms and specifications
 for the form of (dependently typed) kind-inference currently present in GHC Haskell.
 The dependently typed language of types and kinds is closely related
 to \name. In particular in both calculi type equality is based only
-on $\alpha$-equivalence. One difference is that,
-in GHC Haskell there are no type-level lambdas.
+on $\alpha$-equivalence. One difference is that in GHC Haskell there
+are no type-level lambdas.
 In our work we do allow type-level lambdas
 but lambdas can only be equal up to $\alpha$-equivalence.
 Another difference is that the kind-inference system formalized by Xie et al.
@@ -79,12 +78,12 @@ only synthesize monotypes, whereas in impredicative HRP there's no
 such restriction. However impredicative HRP is quite complex because
 the polymorphic subtyping relation for impredicative HRP is undecidable~\cite{tiuryn1996subtyping}.
 Thus reasonable restrictions that work well in practice are still
-a hot topic in research.
+a research frontier.
 The monotype restriction on predicative instantiation is considered reasonable
 and practical for most programs. It is currently in use by languages such as
 (GHC) Haskell, Unison~\cite{Unison} and PureScript~\cite{PureScript}.
-The original work of polymorphic subtyping by Odersky and L\"aufer also enforce
-the monotype restriction in the subtyping rule (rule $\forallL$) to prevent
+The original work on polymorphic subtyping by Odersky and L\"aufer also enforces
+the monotype restriction in their subtyping rules (rule $\forallL$) to prevent
 choosing a polytype in the instantiation. Based on polymorphic subtyping as
 their declarative system,
 % \bruno{mention Odersky and Laufer here before moving on to DK}
@@ -94,7 +93,7 @@ manually proved to be sound, complete, and decidable.
 With a more complex declarative system~\cite{dunfield2019sound}, DK
 extended their original work with new features.
 Recently Zhao et al.~\cite{zhao19mechanical} formalized DK's type system in the Abella
-theorem prover. 
+theorem prover.
 
 \begin{comment}
 \paragraph{MLSub} A recent breakthrough in the area of (global) type-inference
@@ -139,13 +138,11 @@ attempts to fight the entanglement between typing and subtyping. In
 contrast, \name embraces such
 tangling by collapsing the typing and subtyping
 relations into the same relation. This approach is different from
-Hutchins' technique, which eliminates typing relation and embeds it into
+Hutchins' technique, which eliminates the typing relation and embeds it into
 a combination of subtyping, well-formedness and reduction relations.
 In contrast, unified subtyping
 retains the traditional concepts of typing and subtyping, which are just two
 particular cases of the unified subtyping relation.
-% \name retains types. \bruno{Text summarizing differences from our work}
-
 
 \paragraph{Dependent Types with Explicit Casts} Previously
 discussed work is about the interaction between dependent types and

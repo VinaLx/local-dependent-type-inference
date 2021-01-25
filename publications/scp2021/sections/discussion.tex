@@ -4,19 +4,19 @@
 \label{sec:cast-design}
 
 The type reduction in cast operators is potentially under a context that
-is not empty, so it is likely that we are performing reduction to an open term.
+is not empty, so it is likely that we are performing reduction on an open term.
 Intuitively we should generalize the definition of value by introducing inert
-terms~\cite{yang2017unifying} to handle open term reduction.
+terms~\cite{full} to handle open term reduction.
 However since we adopt the call-by-name semantics of PITS~\cite{yang2019pure},
 there is no value check during the reduction. Whether the result of reduction
-inside cast operator is a value or not does not matter during the reasoning of
+inside a cast operator is a value or not does not matter during the reasoning of
 type safety. It is not necessary to complicate the metatheory by introducing inert terms.
 
 An alternative design
 around cast operators is the call-by-value (CBV) style~\cite{yang2019pure},
 by not considering all $\castup$ terms as values, and performing cast elimination only
 when the expression inside two casts is a value. Such design requires us to
-have a more general definition of value, and thus there is a need for inert terms.
+have a more general definition of value, and thus there would be a need for inert terms.
 
 However, a simple design with CBV-style cast semantics and inert terms
 potentially leads to a system where \emph{Reduction Substitution} does not hold,
@@ -33,10 +33,10 @@ leave the discussion of other possibilities of design in future work.
 Currently, we impose restrictions on the kinding of polymorphic types
 ($\forall x : A. B$) to require that they only have kind $\star$ but not $[[box]]$.
 We believe that this has little impact on the usability
-of our system since polymorphic
-kinds such as $\forall x : [[int]].\,\star$ do not appear frequently in practice.
-However it would be reasonable not to have this restriction, but then
-this complicates the development of the metatheory significantly.
+of our system since polymorphic kinds such as $\forall x : [[int]].\,\star$
+do not appear frequently in practice.
+However it would be reasonable not to have this restriction, but it would
+complicate the development of the metatheory significantly.
 
 One of the obstacles of removing the kind restriction is that
 there is a mutual dependency between the transitivity theorem and the subtyping
@@ -74,7 +74,7 @@ In our language, the implicit arguments have no computational impact at runtime
 and only provide the necessary scoping for type annotations. This is
 a similar design to ICC~\cite{miquel2001implicit} and
 ICC*~\cite{barras2008implicit} to simplify the development of a direct
-operational semantics for our language. Such restriction can be lifted if we
+operational semantics for our language. Such a restriction can be lifted if we
 prove the runtime type-safety by elaboration to a second language,
 such as \emph{the Calculus of Constructions}~\cite{coc},
 instead of providing the direct operational semantics.
@@ -99,7 +99,7 @@ for higher-ranked polymorphic type inference for System F-like languages
 we identify the following challenges to develop an algorithmic system for \name.
 
 \paragraph{Unification Inside Binders}
-In dependent type systems, function types ($\Pi$ type) are dependent so that
+In dependent type systems, function types ($\Pi$ types) are dependent so that
 the type of applications potentially depends on the values of their arguments.
 Therefore the unification problem we meet is potentially inside binders and
 depends on the value of the arguments. For an extreme example in our language:
@@ -114,7 +114,7 @@ $F~42 \rightarrow [[int]]$. However with the presence of dependent types,
 we are looking at the type $(\Pi x : [[int]].\, F e)$ where expression $e$
 satisfy the equation that $[42/x]\,e = 42$ according to the Rule \rref{s-app}.
 Since we do not allow implicit type reduction in our system,
-the unification problem here stays first-order. However, we still face the
+the unification problem here stays the first order. However, we still face the
 problems involving substitutions.
 Moreover in this case, expression $e$ has two solutions, namely variable $x$
 and $42$.

@@ -4,7 +4,7 @@
 This section introduces the static and dynamic semantics of
 \name: a dependently typed calculus with type casts
 and implicit polymorphism. The calculus employs
-\emph{unified subtyping}~\cite{CoquandThierry1988Tcoc}
+\emph{unified subtyping}~\cite{full}
 and has a single relation that generalizes both typing and subtyping.
 The calculus can be seen as a variant of the \emph{Calculus of Constructions}~\cite{coc},
 but it uses a simple form of casts~\cite{isotype,yang2019pure} instead of the
@@ -33,11 +33,11 @@ We present syntax, unified subtyping, and reduction for \name.
 \subsection{Syntax}
 
 Figure \ref{fig:syntax} shows the syntax of \name. The syntax is similar
-syntax to the Calculus of Constructions, featuring
+to the Calculus of Constructions, featuring
 $[[*]]$ and $[[box]]$ in the kind hierarchy, and unifying the concepts of terms
 and types as expressions. Due to the unified syntax, types and
 expressions ($e$, $A$ and $B$) are used
-interchangeably, although we mostly adopt the convention of using $A$ and $B$
+interchangeably, but we mostly adopt the convention of using $A$ and $B$
 for the contexts where the expressions are used as types and $e$ for contexts
 where the expressions represent terms.
 The syntax includes all the constructs of the calculus of constructions:
@@ -49,26 +49,52 @@ supporting implicit polymorphism, recursion, and explicit type-level computation
 via casts. These constructs are discussed next.
 
 \paragraph{Implicit Polymorphism}
-In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
-polymorphism.
-In contrast to universal quantification in conventional functional languages, the
-parameter $x$ ranges over all well-typed expressions besides well-formed
-types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
-In other words, ``polymorphic types'' are naturally dependent, and $\forall$
-types can be viewed as the implicit counterpart of $\Pi$ types. We also have
-implicit lambda expressions ($[[bind x : A. e]]$), which are the implicit counterpart of
-  $\lambda$ abstractions. The design used in \name
-  is similar to the design of the \emph{Implicit Calculus of Constructions} ($\text{ICC}^*$)~\cite{barras2008implicit}, which
-  employs similar constructs for implicit dependent products.
-Like conventional universal quantification, the arguments of $\forall$ types are
-deduced during applications rather than explicitly passed.
-Also, following the designs for predicative higher-ranked polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical},
-we have generalized the concept of \emph{monotypes} to
-\emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
+% In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
+% polymorphism.
+In \name, universal types $[[forall x : A. B]]$ generalizes the implicit
+polymorphic type ($\forall x.\, A$) in conventional functional languages,
 
-\paragraph{Recursion and Explicit Type-level Computation.}
+% In contrast to universal quantification in conventional functional languages, the
+% parameter $x$ ranges over all well-typed expressions besides well-formed
+% types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
+
+while the parameter $x$ ranges over all well-typed expressions besides well-formed
+types (i.e. $x$ can have any type $A$ instead of just kind $\star$). The idea of
+\emph{monomorphic types}(or monotypes) is also generalized.
+\emph{Mono-expressions} \tau exclude polymorphic types from the syntax,
+which follows a similar design in various work about predicative
+higher-ranked polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical}.
+With dependent types, we choose to only excludes the universal types, but not
+any other related expressions.
+
+Notably,
+% In other words,
+generalized ``polymorphic types'' are naturally dependent, and $\forall$
+types can be viewed as the implicit counterpart of $\Pi$ types.
+So we also have implicit lambda expressions ($[[bind x : A. e]]$),
+
+% , which are the implicit counterpart of $\lambda$ abstractions
+which is different from the ``usual'' \lambda expressions and explicit function
+types (\Pi types), for which arguments should be explicitly passed. The argument
+of implicit lambda (\Lambda) expressions are deduced during type checking.
+.
+% The design used in \name
+This is a similar design to
+
+  % is similar to the design of
+the \emph{Implicit Calculus of Constructions} ($\text{ICC}^*$)~\cite{barras2008implicit}, which
+employs similar constructs for implicit dependent products.
+% Like conventional universal quantification, the arguments of $\forall$ types are
+% deduced during applications rather than explicitly passed.
+
+% Also, following the designs for predicative higher-ranked
+% polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical},
+% we have generalized the concept of \emph{monotypes} to
+% \emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
+
+\paragraph{Recursion and Explicit Type-level Computation}
 \label{sec:cast}
-The \name calculus adopts \emph{iso-types}~\cite{yang2016unified,yang2019pure},
+The \name calculus adopts \emph{iso-types}~\cite{isotype,yang2019pure},
 featuring explicit type-level computation with cast operators
 $\castdn$ and $\castup$. These operators respectively perform one-step
 type reduction and type expansion based on the operational semantics.
@@ -94,7 +120,7 @@ which mostly follows the call-by-name variant of \emph{Pure Iso-Type Systems} (P
 Note that the arguments of the $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
 Meanwhile, we consider $\castup$ terms to be a value,
-and only perform reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unfol
+and only perform reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unfold
 operation of the fixpoint operator is supported by \rref{r-mu}.
 
 \begin{figure}[t]
@@ -180,7 +206,7 @@ this idea and is discussed in Section \ref{sec:type-safety}.
 \label{sec:type-system}
 
 Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt a
-simplified design of unified subtyping~\cite{yang2017unifying}, where the subtyping rules and
+simplified design of unified subtyping~\cite{full}, where the subtyping rules and
 typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
 
 Unified subtyping solves the challenging issue of mutual dependency between typing
@@ -264,7 +290,7 @@ dependent function types ($\Pi$ type).
 
 \paragraph{Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
-the spirit of the Odersky and L\"aufer's polymorphic subtyping~\cite{odersky1996putting,DunfieldJoshua2013Caeb},
+the spirit of the Odersky and L\"aufer's polymorphic subtyping~\cite{odersky1996putting,dunfield2013complete},
 where the subtyping relation is interpreted as a ``more-general-than'' relation.
 A polymorphic type $[[forall x : A. B]]$
 is more general than another type $C$ when its well-typed
@@ -287,13 +313,13 @@ required to be mono-expressions, which has cascading effects on typing rules of
 other expressions. The arguments for applications are required to be
 mono-expressions, and the whole fixpoint expression is required to be a
 mono-expression. We shall
-discuss the reason behind the restrictions in Section \ref{sec:metatheory}.
+discuss the reason behind these restrictions in Section \ref{sec:metatheory}.
 
 \paragraph{Kind Restriction for Universal Types}
 \label{sec:kind-restriction}
 
 For the kinding of types, we mainly follow the design of the Calculus of
-Constructions~\cite{CoquandThierry1988Tcoc}. However, we specifically restrict
+Constructions~\cite{coc}. However, we specifically restrict
 the $[[forall x : A. B]]$
 expressions to only have the kind $[[*]]$. This prevents other types of kind
 $[[*]]$ from having kinds such as $[[forall x : int. *]]$,
