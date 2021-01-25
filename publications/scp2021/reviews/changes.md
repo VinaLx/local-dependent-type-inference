@@ -43,13 +43,27 @@ TODO: In the discussion, discuss the issue with strengthening.
 > typo. It doesn't---I must have an 'understand-o'. But... what am I
 > missing? There's some invariant or idea in the system that I haven't gotten.
 
-TODO
+DONE
+
+(no change)
+
+We choose to only eliminate the type annotation, and maintain the syntax
+structure after elimination (likewise, we leave all the casts in the expression
+although they practically should not have real runtime impact) for the simplicity
+of development of metatheory. So that we can find direct correspondence between
+the reductions of unerased expressions and reductions of erased reduction,
+the type safety (subtype preservation) is much simpler to reason about this way,
+than changing the structure of expressions during erasure.
 
 > p14L50-57 I struggled with this paragraph. Can lAI handle vectors of
 > implicit length, i.e., `Λn:Nat. λx:Vec n. ...`? A concrete example
 > would really help here.
 
-TODO
+DONE?
+
+Rephrased the paragraph of "Kind Restriction for Universal Types" in section 3.
+Added two little example to illustrate the point and hopefully clarified what
+the restriction forbids.
 
 > p16L12-20 This paragraph is quite technical, but the gist of it should
 > show up much earlier in the paper.
@@ -70,7 +84,10 @@ TODO
 > and I just wonder what needs to be said to clear up my
 > confusion. Sadly, stepping through the Coq proofs didn't help me.)
 
-TODO: add little examples to illustrate the point (same for everything above)
+DONE
+
+Added a paragraph under lemma 22 to explain why such expression is not
+well-typed.
 
 ## Syntax, naming, and notation
 
@@ -213,37 +230,58 @@ TODO: but probably ignore
 > that "imposes a mono-expression restriction", but rather, the type
 > system itself.
 
-TODO: The assessment is not true
+DONE
+
+It was the substitution lemma which imposes the monotype restriction
+back to the typing rule of s-app. Because of the reason explained under
+the substitution theorem, because of the subtyping aspect of substitution, and
+the mono-type restriction imposed by s-forall-L, substutition of polytypes does
+not generally hold. So the flow of monotype restriction is:
+
+s-forall-L => Substitution Theorem => s-app / s-mu
+
+Rephrased the paragraph under substitution to better reflect this logic.
 
 > p20L49 The proof of generalized transitivity seems to go by _strong_
 > induction (i.e., due to the <= on the measures). Might be good to
 > mention this in the paper.
 
-TODO
+DONE?
+
+Added the word "strong" before the word "induction".
 
 > p21L11 Might be good to mention that Γ |- τ : A here.
 
-TODO
+DONE
 
 > p21L34 At the comment about sizes of expressions I immediately
 > wondered why you needed the derivation measure, too---and then saw it
 > a minute later below. Maybe mention up front which cases call for
 > which measures?
 
-TODO
+DONE
+
+Added high-level explanations of what those measures do when introducing them.
 
 > p22L31-33 The Coq proofs of these progress theorems are more
 > general. Maybe a short paragraph explaining the generality would be
 > helpful?
 
-TODO
+DONE
+
+Replaced the version of progress with what were proved in the script. And added
+a short paragraph talking about "generalization" very briefly.
 
 > p23L39 I was surprised that the proof of subtype preservation is able
 > to find the valid instantiation (necessarily constructively). I can't
 > see the moment where that's happening in the custom tactics for the
 > Coq proof, though. Some more intuition here would be nice.
 
-TODO: but not quite understand what does it mean
+DONE
+
+The intuition is explained the "Implicit Instantiation" paragraph under
+the "Subtype Preservation" theorem, which is rephrased a little bit to hopefully
+explain clearer.
 
 ## Other Comments
 
@@ -292,7 +330,7 @@ TODO
 
 > Can you alphabetize your bibliography? The natbib package makes this easy.
 
-TODO
+TODO?
 
 > Some of the papers in the bibliography are miscapitalized, e.g.,
 > "System fc" in [15].

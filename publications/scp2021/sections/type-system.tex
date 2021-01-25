@@ -53,15 +53,13 @@ via casts. These constructs are discussed next.
 % polymorphism.
 In \name, universal types $[[forall x : A. B]]$ generalizes the implicit
 polymorphic type ($\forall x.\, A$) in conventional functional languages,
-
 % In contrast to universal quantification in conventional functional languages, the
 % parameter $x$ ranges over all well-typed expressions besides well-formed
 % types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
-
 while the parameter $x$ ranges over all well-typed expressions besides well-formed
 types (i.e. $x$ can have any type $A$ instead of just kind $\star$). The idea of
 \emph{monomorphic types}(or monotypes) is also generalized.
-\emph{Mono-expressions} \tau exclude polymorphic types from the syntax,
+\emph{Mono-expressions} $\tau$ exclude polymorphic types from the syntax,
 which follows a similar design in various work about predicative
 higher-ranked polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical}.
 With dependent types, we choose to only excludes the universal types, but not
@@ -72,16 +70,14 @@ Notably,
 generalized ``polymorphic types'' are naturally dependent, and $\forall$
 types can be viewed as the implicit counterpart of $\Pi$ types.
 So we also have implicit lambda expressions ($[[bind x : A. e]]$),
-
 % , which are the implicit counterpart of $\lambda$ abstractions
-which is different from the ``usual'' \lambda expressions and explicit function
-types (\Pi types), for which arguments should be explicitly passed. The argument
-of implicit lambda (\Lambda) expressions are deduced during type checking.
+which is different from the ``usual'' $\lambda$ expressions and explicit function
+types ($\Pi$ types), for which arguments should be explicitly passed. The argument
+of implicit lambda ($\Lambda$) expressions are deduced during type checking.
 .
 % The design used in \name
 This is a similar design to
-
-  % is similar to the design of
+% is similar to the design of
 the \emph{Implicit Calculus of Constructions} ($\text{ICC}^*$)~\cite{barras2008implicit}, which
 employs similar constructs for implicit dependent products.
 % Like conventional universal quantification, the arguments of $\forall$ types are
@@ -320,15 +316,26 @@ discuss the reason behind these restrictions in Section \ref{sec:metatheory}.
 
 For the kinding of types, we mainly follow the design of the Calculus of
 Constructions~\cite{coc}. However, we specifically restrict
-the $[[forall x : A. B]]$
-expressions to only have the kind $[[*]]$. This prevents other types of kind
-$[[*]]$ from having kinds such as $[[forall x : int. *]]$,
-which significantly complicates the metatheory when reasoning about the kind of types.
+the polymorphic type $[[forall x : A. B]]$ to only have kind $[[*]]$, but not $[[box]]$.
+This restriction prevents types of kind $[[*]]$ from having implicit
+polymorphic kind such as $[[forall x : int. *]]$ through
+\rref{s-forall-l,s-forall-r,s-sub} (for example, $[[int]]$
+is always of kind $[[*]]$ and can never be of kind $[[forall x : int. *]]$),
+which significantly complicates the kinding reasoning of types in metatheory.
+
 This restriction propagates to the introduction rule of $\forall$ types (\rref{s-bind}),
 where $[[B]]$ is required to only have kind $[[*]]$.
-This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
-from type computations. Therefore, in cast operators,
-the possibility of non-deterministic implicit instantiations is eliminated.
+Therefore implicit polymorphic functions at type level are never well-typed.
+For example, $\Lambda n : [[int]].\, \lambda v : \mathrm{Vector}~n.\, [[int]]$ is not
+well-typed since it is a polymorphic function that returns $[[int]]$,
+which is of kind $[[*]]$.
+
+% This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
+% from type computations. Therefore, in cast operators,
+As a result of well-typed implicit instantiation not occuring at type level,
+% the possibility of non-deterministic implicit instantiations is eliminated.
+the non-deterministic well-typed type-level reductions never occur,
+although implicit instantiations seem to be allowed by the reduction rules.
 
 \paragraph{Runtime Irrelevance of Implicit Arguments}
 

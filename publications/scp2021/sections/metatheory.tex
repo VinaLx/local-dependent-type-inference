@@ -151,9 +151,9 @@ derive $[[G1 , x : A ,, G2 |- x : B]]$ through \rref{s-sub}.
     then $[[G1 ,, [t / x] G2 |- [t / x] e1 <: [t / x] e2 : [t / x] B ]]$.
 \end{theorem}
 
-\noindent Notably \emph{substitution} imposes a mono-expression restriction on the expression
-being substituted with, which comes at a result of restricting the instantiation
-of polymorphic parameters to only mono-expressions in \rref{s-forall-l}.
+\noindent Notably \emph{substitution} has a mono-expression restriction on the
+expression being substituted with. This is result from the mono-expression restriction on
+the instantiation of polymorphic parameters in \rref{s-forall-l}.
 
 Take the following derivation as an example:
 
@@ -186,10 +186,14 @@ for example:
       {A : [[*]],\, F: A \rightarrow [[*]],\, a : A,\, b : \forall x : A.\, F~x \vdash b : \rulehl{F ~ a}}
 \end{mathpar}
 
-\noindent As a result, we put mono-expression restriction on the \emph{substitution} theorem,
-as well as the typing rules involving expressions that potentially ``trigger''
-substitutions during reductions, including the arguments of applications and the
-fixpoint expressions.
+% \noindent As a result, we put mono-expression restriction on the \emph{substitution} theorem,
+% as well as the typing rules involving expressions that potentially ``trigger''
+% substitutions during reductions, including the arguments of applications and the
+% fixpoint expressions.
+\noindent As a result, \emph{substitution} only holds with the mono-expression
+restriction, It has a cascading effect on typing rules like \rref{s-app, s-mu}
+whose expressions trigger substitutions during reduction. So the mono-expression
+restriction has to be added for those rules for the system to be type-safe.
 
 \begin{lemma}[Context Well-formedness of Substitution]
 \label{thm:wf-substitution}
@@ -269,7 +273,8 @@ we ensure the equivalence of $A$ and $[[*]]$ on this and other similar situation
 
 \paragraph{The Induction}
 
-We prove \emph{Generalized Transitivity} by induction on the 3-tuple:
+We prove \emph{Generalized Transitivity} by performing the strong induction on
+the ordered 3-tuple of measures:
 
 $$
 \langle \#\forall([[e1]]) + \#\forall([[e2]]) + \#\forall([[e3]]), ~
@@ -277,13 +282,28 @@ $$
 \mathcal{D}_1 + \mathcal{D}_2 \rangle
 $$
 
-\noindent where $\#\forall$ counts the number of $\forall$s in the expression,
-$\mathbf{size}$ measures the size of the syntax tree of the expressions,
-$\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation trees of
-the first and the second premises respectively.
+\noindent where
+
+\begin{itemize}
+    \item $\#\forall(e)$ counts the number of $\forall$ quantifiers
+    in expression $e$, which solves cases when either side of the premise is
+    derived by \rref{s-forall, s-forall-l, s-forall-r}.
+    \item $\mathbf{size}(e)$ measures the size of the syntax tree of
+    expression $e$. The sum of expression sizes solves most of the other
+    standard recursive cases.
+    \item $\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation
+    trees of the first and the second premise respectively. The sum of sizes
+    of derivation tree solve the case involving \rref{s-sub} where the sizes of
+    expressions does not decrease.
+\end{itemize}
+
+% $\#\forall$ counts the number of $\forall$ quantifiers in the expression,
+% $\mathbf{size}$ measures the size of the syntax tree of the expressions,
+% $\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation trees of
+% the first and the second premises respectively.
 The proof is mainly motivated by DK's transitivity proof of their declarative subtyping
 system of induction on the pair of
-$\langle \#\forall(e2) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\cite{dunfield2013lemmas},
+$\langle \#\forall([[e2]]) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\cite{dunfield2013lemmas},
 with some adjustments to fit in our system.
 
 The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
@@ -291,15 +311,17 @@ and the second ends with \rref{s-forall-l}, essentially we have to show the foll
 
 \begin{mathpar}
     \inferrule*[]
-      {[[G , x : A |- e1 <: B : *]] \\ [[G |- [t / x] B <: e3 : *]]}
+      {[[G , x : A |- e1 <: B : *]] \\ [[G |- [t / x] B <: e3 : *]] \\ [[G |- t : A]]}
       {[[G |- e1 <: e3 : *]]}
 \end{mathpar}
 
 Here the only decreasing measure we can rely on is that
-$\#\forall([[ [t / x] B ]])$ is one less than $\#\forall([[forall x : A. B]])$.
-This case is solved by applying the inductive hypothesis after performing
-substitution on the premise $[[G , x : A |- e1 <: B : *]]$ with the help of the fact that
-$x$ does not occur in $e_1$, obtaining $[[G |- e1 <: [t / x] B : *]]$.
+$\#\forall([[ [t / x] B ]])$ is one less than $\#\forall([[forall x : A. B]])$
+(since $\tau$ is a monotype which does not contain $\forall$ quantifiers).
+To solve this case, we first performs a substitution on the premise
+$[[G , x : A |- e1 <: B : *]]$ with the help of the fact that
+$x$ does not occur in $e_1$, obtaining $[[G |- e1 <: [t / x] B : *]]$, then
+we use the inductive hypothesis provided by $\#\forall([[e2]])$.
 
 The reason why we cannot directly copy DK's proof measure is because of the case
 when both premises end with \rref{s-pi}, where we encounter the following problem:
@@ -311,9 +333,10 @@ when both premises end with \rref{s-pi}, where we encounter the following proble
 The first and the second premise above do not share the same context, which
 must be unified with the context narrowing theorem to be able to use the
 inductive hypotheses.
-However context narrowing changes the size of the derivation tree, so we are
-not able to use the inductive hypothesis of $\mathcal{D}_1 + \mathcal{D}_2$, and
-resort to the sizes of expressions ($\mathbf{size}(e_1) + \mathbf{size}(e_3)$)
+However context narrowing potentially increases the size of the
+derivation tree, so we are not able to use the inductive hypothesis of
+$\mathcal{D}_1 + \mathcal{D}_2$, and resort to the sizes of expressions
+($\mathbf{size}(e_1) + \mathbf{size}(e_3)$)
 
 And then we have to make adjustments to solve the cases which preserve the
 size of derivation tree, but not the sizes of the expressions, which is
@@ -330,11 +353,13 @@ so it can be solved by applying \rref{s-forall-l} and the inductive hypothesis o
 And $\#\forall(e_3)$ is added to make the measure ``symmetric''
 to deal with the contravariance case of \rref{s-pi}.
 
-Finally, most of the cases that do not involve $\forall$ can be
-solved with the help of the inductive hypothesis of
-$\mathbf{size}(e_1) + \mathbf{size}(e_3)$. $\mathcal{D}_1 + \mathcal{D}_2$ solves
+Then, most of the cases that do not involve $\forall$ can be
+solved by applying the inductive hypothesis corresponding to
+$\mathbf{size}(e_1) + \mathbf{size}(e_3)$.
+Finally, $\mathcal{D}_1 + \mathcal{D}_2$ solves
 the cases where either premise ends with \rref{r-sub}, where the only decreasing
-measure is the size of the derivation trees.
+measure is the size of the derivation trees when the sizes of expressions remain
+the same.
 
 \begin{corollary}[Transitivity]
     If $[[G |- e1 <: e2 : A]]$ and $[[G |- e2 <: e3 : A]]$,
@@ -371,19 +396,27 @@ parameter directly.
 the original expressions and erased expressions.
 
 \begin{theorem}[Progress]
-    If $[[nil |- e : A]]$,
-    then $\exists \, e'. \, e \longrightarrow e'$ or $e$ is a value.
+    If $[[nil |- e1 <: e2 : A]]$,
+    then $\exists \, e_1'. \, e_1 \longrightarrow e_1'$ or $e_1$ is a value.
+    And $\exists \, e_2'. \, e_2 \longrightarrow e_2'$ or $e_2$ is a value.
 \end{theorem}
 
 \begin{theorem}[Progress on erased expressions]
-    If $[[nil |- e : A]]$,
-    then $\exists \, E'. \, \extract{e} \longrightarrow_E E'$ or $\extract{e}$ is an erased value.
+    If $[[nil |- e1 <: e2 : A]]$,
+    then $\exists \, E_1'. \, \extract{e_1} \longrightarrow_E E_1'$ or $\extract{e_1}$ is an erased value.
+    And $\exists \, E_2'. \, \extract{e_2} \longrightarrow_E E_2'$ or $\extract{e_2}$ is an erased value.
 \end{theorem}
 
-\noindent Both theorems are proved by induction on the derivation of $[[nil |- e : A]]$.
-The proof is mostly straightforward except when the derivation ends with $\castdn$.
-We use another fact to solve the situation:
-for a well-typed expression whose type can reduce, that expression
+\noindent We prove a generalized version of \emph{progress} that talks about both sides
+of the expressions with unified subtyping. Note that they are not necessarily
+simultaneously reducible or not reducible due to the presence of \rref{s-forall-l, s-forall-r}.
+The left-hand-side may be reducible with the right-hand-side being a value or vice versa.
+
+Both theorems are proved by induction on the derivation of $[[nil |- e1 <: e2 : A]]$.
+The proof is mostly straightforward except when the derivation ends with $\castdn$,
+where we have to show that the inner expressions $e$ of $\castdn~e$ either reduces, or
+is $\castup$ or $\Lambda$ expressions. We prove another fact to solve the situation:
+for a well-typed expression whose type reduces, that expression
 cannot be a value unless it is a $\castup$ or $\Lambda$ expression.
 
 \begin{lemma}[Reducible Type]
@@ -528,8 +561,19 @@ we have the following lemma.
 
 \begin{lemma}[Expressions of kind $[[box]]$ are never reduced]
     If $[[A --> B]]$ and $[[G |- e : A]]$,
-    then $B$ does not have type $[[box]]$.
+    then $B$ does not have kind $[[box]]$.
 \end{lemma}
+
+The result of this lemma is interesting, because it seems that we can construct
+a reducible expression like: $([[lambda x : int. *]])~42$ which has kind $[[box]]$.
+But in reality, the lambda expression must be of type $[[int]] \rightarrow [[box]]$
+for the application to be well-typed. But as the conventional typing rule for
+lambda abstractions in Calculus of Constructions~\cite{coc}.
+The function types of the lambda abstractions themselves
+must be well-kinded (see \rref{s-abs}), since $[[box]]$ itself does not have a kind,
+$[[int]] \rightarrow [[box]]$ is not well-kinded, therefore the whole application
+is not well-typed. And for similar reason, the position of occurence of $[[*]]$
+in a well-typed expression is very restricted, hence the lemma is possible to prove.
 
 And then the subtype preservation of type computation can be easily shown.
 
@@ -540,13 +584,16 @@ And then the subtype preservation of type computation can be easily shown.
 
 \paragraph{Implicit Instantiations}
 The proof of two cases for implicit instantiations (\rref{r-inst,r-cast-inst})
-are quite similar. The implicit
-instantiations are only triggered by \rref{s-forall-l}, which is where
-polymorphic types are instantiated. The implicit arguments are the
-mono-expressions that instantiate polymorphic types. The types of the results of
-the implicit instantiations are the instantiation of the polymorphic types.
-Then the rest of the proofs are finished by standard inversion lemmas,
-with the help of the substitution lemma for the instantiations.
+are quite similar. In our language, implicit instantiations are only triggered by
+\rref{s-forall-l}, which is exactly where polymorphic types are instantiated.
+And the implicit argument is the same mono-expression ($\tau$) that
+instantiates the polymorphic type in \rref{s-forall-l}.
+The type of the instantiation result of $\Lambda$ expression is the same as the
+instantiation of the polymorphic types, with the same argument.
+
+With the observations above, the rest of the proofs are finished by standard
+inversion lemmas, with the help of the \emph{substitution} theorem to handle type
+preservation after the instantiations.
 
 \subsection{Equivalence to a Simplified System}
 We mentioned in Section \ref{sec:type-system} that the premises marked in gray in the
