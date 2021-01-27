@@ -59,18 +59,28 @@ instance, map at line 34 is different from map at line 35.
 
 line 52: However, you do not show the definition of map
 
-page 6: In the Functor example, it took me a lot of time to understand what is going on since you do not provide some simple explanation on Haskell-like syntax which I did not remember. It would be enough to recall that at line 13 Functor is defined by a record type, fmap is the name of the field selector, and field selection is written as application of the field selector.
-It will also be useful to point out exactly what could not be expressed in, e.g., Haskell.
-You say (line 33) that F is implicitly instantiated, but F is not Functor Id here?
+page 6:
+In the Functor example, it took me a lot of time to understand what is
+going on since you do not provide some simple explanation on
+Haskell-like syntax which I did not remember. It would be enough to
+recall that at line 13 Functor is defined by a record type, fmap is
+the name of the field selector, and field selection is written as
+application of the field selector.  It will also be useful to point
+out exactly what could not be expressed in, e.g., Haskell.  You say
+(line 33) that F is implicitly instantiated, but F is not Functor Id
+here?
 
-page 7 you should explain which is the role of the type variables in Gamma; that is, what is only allowed if the type variable is available in Gamma
+page 7 you should explain which is the role of the type variables in Gamma;
+that is, what is only allowed if the type variable is available in
+Gamma
 
 page 10 line 50: should reference [42] be [41]? (that is, [25])
 Figure 2: you should at least mention the meaning of the "box" kind
 
 page 12: perhaps you should justify better why upcasts are values
 
-Figure 4: to use E both as metavariable and as index of the relation is a very bad choice (I was confused at the beginning)
+Figure 4: to use E both as metavariable and as index of the relation is a very
+bad choice (I was confused at the beginning)
 
 page 17 line 34 you use "fresh in A" to mean "not occurring in A", right?
 

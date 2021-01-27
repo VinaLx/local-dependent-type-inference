@@ -37,14 +37,25 @@ But reading is needed to double-check this.
 > Clearer indication up front that implicits are necessarily proof irrelevant,
 > and some concrete examples of programs your regime _disallows_.
 
-TODO: Add a sentence/note in the introduction and some text with
-examples in the overview.
+DONE: We added the following sentence in the introduction:
+
+"Similarly to ICC we adopt the restriction that arguments for implicit
+function types are computationally irrelevant (i.e. they cannot be
+used in runtime computation)."
+
+We have also added a paragraph and an example in Section 2,
+at the end of: ``Explicit'' Implicit Instantiation
+
 
 > A stronger conclusion. Rather than just summarizing the ideas and
 > listing future work, can you give a broader outlook? Supposing you
 > had an algorithmic system... what would you be able to do now?
 
-TODO
+DONE:
+
+We added one more paragraph to the conclusion (at the end) where
+we describe what we think could be achieved now (if an implementation
+would be available).
 
 > Are there well formed types that are uninhabited? The monotype
 > restriction on fixpoints may mean that diverging inhabitants can't

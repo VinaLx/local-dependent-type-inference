@@ -12,9 +12,27 @@ proof assistant.
 
 In the future, we will attempt to lift various restrictions that originally simplify
 the metatheory, such as the kind restriction on polymorphic
-types and the runtime irrelevance of implicit arguments. Also we would like to
+types and the runtime irrelevance of implicit arguments. We would also like to
 study the impact to the metatheory of adding $\top$ types to our language,
 which is a common feature of a subtyping relation.
 Most importantly, we consider the development
 of a well-specified algorithmic system a major challenge in our future
 work. The current formulation of \name is declarative due to the mono-expression guesses.
+
+\bruno{Add references}
+While \name still has some limitations, we believe that it already includes many
+of the core features that are important for typed functional languages.
+Assumming that we have an implementation of a core language based on \name,
+we expect that interesting and expressive functional languages can be built
+on top of such core language. For instance, all the features of Haskell 98,
+including higher-kinds, algebraic datatypes and type classes~\cite{}
+should be easily encodable
+in \name. Furthermore, some features not in Haskell 98, but available in modern
+versions of GHC Haskell, such as higher-ranked polymorphism or certain
+kinds of dependent types are also supported in \name. GADTs~\cite{} and
+type-families~\cite{} are more challenging as they require a more powerful
+form of casts and additional support for equality. Previous work on PITS
+has shown how some forms of GADTs and equality can be modelled using
+a variant of cast operators that employ a more powerful parallel reduction
+relation. We believe that \name can also employ such variant of casts,
+although this also remains future work.

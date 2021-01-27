@@ -363,6 +363,26 @@ be recovered with a simple form of syntactic sugar:
 \noindent When polymorphic parameters are used, \name provides a binder ($\Lambda (x : A). e$)
 to ensure that the parameters are well-scoped at the term-level.
 
+Implicit parameters in traditional languages with polymorphic subtyping,
+the ICC~\cite{}\bruno{references} and \name are computationaly irrelevant.
+In traditional (non-dependently) typed languages, types cannot affect computation,
+thus computational irrelevance is quite natural and widely adopted.
+In dependently typed systems, however, there can be some programs where
+it is useful to have computationaly relevant implicit parameters. 
+For example:
+
+\bruno{example and short explanation}
+
+\noindent Languages like Agda, Coq or Idris support such programs. However,
+computationaly relevant implicit parameters are challenging for proofs of
+type soundness. Due to such challenges (see also the discussion in
+Section~\ref{subsec:semantics}),
+the ICC has a restriction that parameters for implicit function types
+must be computationally irrelevant. Since we adopt a similar technique,
+we also have a similar restriction and thus cannot encode programs such
+as the above.
+
+
 \paragraph{Type-level Computation and Casts}
 \name features a fixpoint that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
