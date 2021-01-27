@@ -9,15 +9,36 @@
 
 TODO
 
+This is one is a good suggestion and perhaps the one that involves more work
+out of all suggestions. The suggested table format from the reviewer is
+a good starting point.
+
 > The related work section omits two significant areas of inquiry:
-> refinement type systems like F* and Liquid Haskell, and Amin's DOT theory...
+> refinement type systems like F* and Liquid Haskell, and Amin's DOT theory,
+> "DOT with Implicit Functions" from Jeffery, Scala Symposium 2019
 
 TODO? But I know almost nothing about it.
+
+I guess what's there to be said is that those also involve subtyping.
+In DOT there's no work on type inference yet (it is an explicitly typed calculus),
+and the forms of dependent types are more limited: DOT has path-dependent types.
+
+In Liquid Haskell there's also some form of dependencies and subtyping I think.
+Some reading will be needed here, especially trying to look for work
+where type-inference is also discussed. I suppose that no work on Liquid
+Haskell considers higher-ranked polymorphism.
+
+For F*, more reading is needed here. In particular figuring out if they
+have some work/discussion on type inference. Again I suspect that
+there won't be any formalization of higher-ranked type-inference in F*.
+But reading is needed to double-check this.
+
 
 > Clearer indication up front that implicits are necessarily proof irrelevant,
 > and some concrete examples of programs your regime _disallows_.
 
-TODO
+TODO: Add a sentence/note in the introduction and some text with
+examples in the overview.
 
 > A stronger conclusion. Rather than just summarizing the ideas and
 > listing future work, can you give a broader outlook? Supposing you
@@ -55,14 +76,16 @@ the reductions of unerased expressions and reductions of erased reduction,
 the type safety (subtype preservation) is much simpler to reason about this way,
 than changing the structure of expressions during erasure.
 
+TODO: Add an explanation like the above into the paper when talking about erasure.
+
 > p14L50-57 I struggled with this paragraph. Can lAI handle vectors of
 > implicit length, i.e., `Λn:Nat. λx:Vec n. ...`? A concrete example
 > would really help here.
 
 DONE?
 
-Rephrased the paragraph of "Kind Restriction for Universal Types" in section 3.
-Added two little example to illustrate the point and hopefully clarified what
+Rephrased the paragraph of "Kind Restriction for Universal Types" in Section 3.
+Added two little examples to illustrate the point and hopefully clarified what
 the restriction forbids.
 
 > p16L12-20 This paragraph is quite technical, but the gist of it should
@@ -218,6 +241,11 @@ section 4.1.
 
 TODO
 
+Look, for example, at Yaoda's OOPSLA paper. There's a small section
+that illustrates the correspondence. Alternatively, you can also improve
+the documentation of the proofs. Again you can probably look at Yaoda's
+documentation.
+
 > p18L20-23 These lemmas have identical proof scripts. Why can't you
 > prove it in one go? (You'd have to generalize your fancy tactic...)
 
@@ -271,6 +299,8 @@ DONE
 
 Replaced the version of progress with what were proved in the script. And added
 a short paragraph talking about "generalization" very briefly.
+
+(Bruno) Make sure that the usual progress theorem is still described in the paper.
 
 > p23L39 I was surprised that the proof of subtype preservation is able
 > to find the valid instantiation (necessarily constructively). I can't
@@ -406,11 +436,21 @@ TODO: discuss it in the discussion
 
 ## Detail Comments
 
-> For what I understand, the idea of unified subtyping has been the main novelty of reference [25], and also casts where already introduced there. Here the main novelty is the integration with polymorphism, however a more detailed comparison with [25] would be useful, also in technical aspects such as choices in the syntax, etc. Also, I had a look at [25] and some aspects (e.g, the role of casts in avoiding to have to compute type equality) are explained much bettere there, perhaps you could import some of these explanations.
+> For what I understand, the idea of unified subtyping has been the main
+> novelty of reference [25], and also casts where already introduced
+> there. Here the main novelty is the integration with polymorphism,
+> however a more detailed comparison with [25] would be useful, also in
+> technical aspects such as choices in the syntax, etc. Also, I had a
+> look at [25] and some aspects (e.g, the role of casts in avoiding to
+> have to compute type equality) are explained much bettere there,
+> perhaps you could import some of these explanations.
 
 TODO
 
-> page 2 41-42 Here it is not clear which is the relation between strong normalization and explicit casts. Could you explain how explicit casts solve the problem? (see comment above, this is explained in [25])
+> page 2 41-42
+> Here it is not clear which is the relation between strong
+> normalization and explicit casts. Could you explain how explicit casts
+> solve the problem? (see comment above, this is explained in [25])
 
 TODO
 
@@ -418,12 +458,18 @@ TODO
 
 TODO
 
-> page 5 the example of indexed lists is not completely clear. Is the n:N parameter the initial index of the list? if it is the case can you say this? because the role of indexes is never shown
+> page 5
+> the example of indexed lists is not completely clear. Is the n:N
+> parameter the initial index of the list? if it is the case can you say
+> this? because the role of indexes is never shown
 
 TODO
 
-> 29 I do not understand the role of the "r" parameter in the definition of List, can you explain?
-> Please use a uniform font for code everywhere. For instance, map at line 34 is different from map at line 35.
+> 29
+> I do not understand the role of the "r" parameter in the definition of
+> List, can you explain?  Please use a uniform font for code
+> everywhere. For instance, map at line 34 is different from map at line
+> 35.
 
 TODO
 
@@ -431,9 +477,17 @@ TODO
 
 TODO: but probably ignore
 
-> page 6: In the Functor example, it took me a lot of time to understand what is going on since you do not provide some simple explanation on Haskell-like syntax which I did not remember. It would be enough to recall that at line 13 Functor is defined by a record type, fmap is the name of the field selector, and field selection is written as application of the field selector.
+> page 6:
+> In the Functor example, it took me a lot of time to understand what is
+> going on since you do not provide some simple explanation on
+> Haskell-like syntax which I did not remember. It would be enough to
+> recall that at line 13 Functor is defined by a record type, fmap is
+> the name of the field selector, and field selection is written as
+> application of the field selector.
 
-TODO: but probably ignore
+TODO: Do not ignore this one, just use the explanation of the reviewer and add
+such an explanation to the paper to clarify things better to non-Haskell
+programmers.
 
 > It will also be useful to point out exactly what could not be expressed in, e.g., Haskell.
 > You say (line 33) that F is implicitly instantiated, but F is not Functor Id here?
@@ -456,13 +510,16 @@ TODO
 
 TODO
 
-> Figure 4: to use E both as metavariable and as index of the relation is a very bad choice (I was confused at the beginning)
+> Figure 4: to use E both as metavariable and as index of the relation
+> is a very bad choice (I was confused at the beginning)
 
 TODO
 
 > page 17 line 34 you use "fresh in A" to mean "not occurring in A", right?
 
-TODO: probably ignore
+Answer: Yes, that's what we mean.
+
+TODO: Change the wording in the paper to "not occurring in A".
 
 > page 20 line 56 motivated by -> you mean "similar to"?
 
@@ -538,15 +595,43 @@ They are correct in the reference, so they are mis-auto-formated?
 
 ## Analysis
 
->   The actual argument for the approach, though, wasn't great.  The indexed lists example seems super weird--it appears that indexes increase as the list goes on?  But I would expect the index to be the size of the list, and thus to decrease.  Consing onto a list won't work once you get to zero, which kind of defeats the purpose...or perhaps I'm not understanding something.
+> The actual argument for the approach, though, wasn't great.  The
+> indexed lists example seems super weird--it appears that indexes
+> increase as the list goes on?  But I would expect the index to be the
+> size of the list, and thus to decrease.  Consing onto a list won't
+> work once you get to zero, which kind of defeats the purpose...or
+> perhaps I'm not understanding something.
+
+TODO: Probably mention that the example is a little artificial. The example
+is a (dependently) typed nested datatype, which is easier to encode than a GADT.
+
 >
->   I also didn't understand the encoding technique in the list/map example.  What is r in the encoding of List?  Is this from Yang and Oliveira?
+> I also didn't understand the encoding technique in the list/map
+> example.  What is r in the encoding of List?  Is this from Yang and
+> Oliveira?
+
+TODO: Add explanation.
+
 >
->   The functor example didn't do anything for me.  I expected this to mean functors in ML, but it wasn't.  I guess Haskell people will get it, but the example will be obscure for anyone not fully initiated into typed functional programming.
+> The functor example didn't do anything for me.  I expected this to
+> mean functors in ML, but it wasn't.  I guess Haskell people will get
+> it, but the example will be obscure for anyone not fully initiated
+> into typed functional programming.
 
 TODO?
 
-> My biggest concern is the algorithmics of the system.  I understand this is a big challenge and the authors want to stage their work and leave that for another paper.  But to me it seems hopeless.  I know the Krishnaswami and Dunfield result was very difficult to obtain; at first glance this looks *much* harder.  And without automation, I can't see this system doing anyone any good; after all, the whole point of polymorphic subtyping is exactly so that type parameters can be automatically inferred.  So there's a gaping whole here--the approach is motivated mostly by practical concerns, but it isn't close to practical until the algorithmic issues are solved.  I do think the theory alone has some interest, though; so this is not a fatal flaw, but it is something that decreases my enthusiasm considerably.
+> My biggest concern is the algorithmics of the system.  I understand
+> this is a big challenge and the authors want to stage their work and
+> leave that for another paper.  But to me it seems hopeless.  I know
+> the Krishnaswami and Dunfield result was very difficult to obtain; at
+> first glance this looks *much* harder.  And without automation, I
+> can't see this system doing anyone any good; after all, the whole
+> point of polymorphic subtyping is exactly so that type parameters can
+> be automatically inferred.  So there's a gaping whole here--the
+> approach is motivated mostly by practical concerns, but it isn't close
+> to practical until the algorithmic issues are solved.  I do think the
+> theory alone has some interest, though; so this is not a fatal flaw,
+> but it is something that decreases my enthusiasm considerably.
 
 TODO? Probably explain a little bit to the reviewer?
 

@@ -1,27 +1,62 @@
 Summary of the submission:
-The paper presents a calculus supporting polymorphic subtyping and dependent types, and with explicit casts rather than a conversion rule. The main challenge is, indeed, to adapt polymorphic subtyping to dependent types, and the main idea is to use the approach of "unified subtyping", that is, to have a unique judgment for both typing and subtyping. Some important properties of the calculus are proved, and such proofs are mechanized in Coq.
+
+The paper presents a calculus supporting polymorphic subtyping and
+dependent types, and with explicit casts rather than a conversion
+rule. The main challenge is, indeed, to adapt polymorphic subtyping to
+dependent types, and the main idea is to use the approach of "unified
+subtyping", that is, to have a unique judgment for both typing and
+subtyping. Some important properties of the calculus are proved, and
+such proofs are mechanized in Coq.
 
 Analysis of the submission:
-The paper deals with an important issue (integration of subtyping and dependent types), and I find the idea of unified subtyping very good and coherent with the fact that dependent types unify, in a sense, terms and types. For what I am able to check the technical treatment is sound and sophisticated, moroever there are mechanized proofs and the authors make an effort in explaining the difficulties of the proofs.
-Unfortunately I only have a medium expertise on the topic, so my understanding of the formalism is rather "syntactic", that is, I cannot deeply judge/appreciate all details. Also, also I cannot judge as an expert of the field the relevance with respect to previous work, which however seems significant to me.
 
-The paper is very technical, and in my opinion the authors could make more effort in trying to make it understandable for a wider audience.
+The paper deals with an important issue (integration of subtyping and
+dependent types), and I find the idea of unified subtyping very good
+and coherent with the fact that dependent types unify, in a sense,
+terms and types. For what I am able to check the technical treatment
+is sound and sophisticated, moroever there are mechanized proofs and
+the authors make an effort in explaining the difficulties of the
+proofs.  Unfortunately I only have a medium expertise on the topic, so
+my understanding of the formalism is rather "syntactic", that is, I
+cannot deeply judge/appreciate all details. Also, also I cannot judge
+as an expert of the field the relevance with respect to previous work,
+which however seems significant to me.
+
+The paper is very technical, and in my opinion the authors could make
+more effort in trying to make it understandable for a wider audience.
 
 Recommendation:
-I recommend to accept the paper with minor revision. My suggestions are mainly intended to add clarifications for a non-expert reader.
+
+I recommend to accept the paper with minor revision. My suggestions
+are mainly intended to add clarifications for a non-expert reader.
 
 Detailed comments:
 
-For what I understand, the idea of unified subtyping has been the main novelty of reference [25], and also casts where already introduced there. Here the main novelty is the integration with polymorphism, however a more detailed comparison with [25] would be useful, also in technical aspects such as choices in the syntax, etc. Also, I had a look at [25] and some aspects (e.g, the role of casts in avoiding to have to compute type equality) are explained much bettere there, perhaps you could import some of these explanations.
+For what I understand, the idea of unified subtyping has been the main
+novelty of reference [25], and also casts where already introduced
+there. Here the main novelty is the integration with polymorphism,
+however a more detailed comparison with [25] would be useful, also in
+technical aspects such as choices in the syntax, etc. Also, I had a
+look at [25] and some aspects (e.g, the role of casts in avoiding to
+have to compute type equality) are explained much bettere there,
+perhaps you could import some of these explanations.
 
-page 2 41-42 Here it is not clear which is the relation between strong normalization and explicit casts. Could you explain how explicit casts solve the problem? (see comment above, this is explained in [25])
+page 2 41-42 Here it is not clear which is the relation between strong
+normalization and explicit casts. Could you explain how explicit casts
+solve the problem? (see comment above, this is explained in [25])
 
 17 at this point it is not clear what you mean by "conversion rule"
 
-page 5 the example of indexed lists is not completely clear. Is the n:N parameter the initial index of the list? if it is the case can you say this? because the role of indexes is never shown
-29 I do not understand the role of the "r" parameter in the definition of List, can you explain?
-Please use a uniform font for code everywhere. For instance, map at line 34 is different from map at
-line 35.
+page 5
+the example of indexed lists is not completely clear. Is the n:N
+parameter the initial index of the list? if it is the case can you say
+this? because the role of indexes is never shown
+
+29 I do not
+understand the role of the "r" parameter in the definition of List,
+can you explain?  Please use a uniform font for code everywhere. For
+instance, map at line 34 is different from map at line 35.
+
 line 52: However, you do not show the definition of map
 
 page 6: In the Functor example, it took me a lot of time to understand what is going on since you do not provide some simple explanation on Haskell-like syntax which I did not remember. It would be enough to recall that at line 13 Functor is defined by a record type, fmap is the name of the field selector, and field selection is written as application of the field selector.
