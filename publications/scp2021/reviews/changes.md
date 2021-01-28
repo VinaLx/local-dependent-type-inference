@@ -366,26 +366,25 @@ TODO
 
 TODO
 
-
 ## Trivia
 
 > Can you alphabetize your bibliography? The natbib package makes this easy.
 
-TODO?
+IGNORE?
+
+The elsarticle-num seems to have its own idea of bibliography sorting.
 
 > Some of the papers in the bibliography are miscapitalized, e.g.,
 > "System fc" in [15].
 
-TODO?
-
-They are correct in the reference, so they are mis-auto-formated?
+DONE
 
 > Many citations are uneven: some just say POPL (e.g., [16]), while others
 > say "ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages".
 > I don't have a strong feeling about which is better, but I think consistency
 > is nice here.
 
-TODO
+DONE
 
 > Your Coq development works just fine on 8.12.0 (nice work, considering
 > your heavy automation!), though your install instructions are missing
@@ -416,7 +415,7 @@ IGNORE
 > p30L25 I'm not certain "hot topic" is the best choice of words here.
 > p31L12 "eliminates [the] typing relation"
 
-DONE.
+DONE
 
 "by employ designs to make" -> "by employing designs that make"
 "hot topic in research" -> "research frontier"
@@ -591,16 +590,11 @@ TODO
 
 > [1] American Matematical Society
 > [25] and [41] are the same
-
-DONE
-
 > [14] Guru
 > [15] System FC
 > [20], [35], [55] Haskell
 
-TODO?
-
-They are correct in the reference, so they are mis-auto-formated?
+DONE
 
 # Review 3
 

@@ -297,7 +297,7 @@ the typing relation (shown below) depends on the subtyping relation.
     {\Gamma \vdash e : B}
 \end{mathpar}
 This mutual dependency problem has been a significant
-problem when combining subtyping and dependent types~\cite{aspinall1996subtyping, hutchins2010pure},
+problem when combining subtyping and dependent types~\cite{subdep, hutchins},
 and presents itself on our way to the direct generalization of polymorphic subtyping.
 
 To tackle this issue, we adopt a technique called
@@ -368,7 +368,7 @@ the ICC~\cite{}\bruno{references} and \name are computationaly irrelevant.
 In traditional (non-dependently) typed languages, types cannot affect computation,
 thus computational irrelevance is quite natural and widely adopted.
 In dependently typed systems, however, there can be some programs where
-it is useful to have computationaly relevant implicit parameters. 
+it is useful to have computationaly relevant implicit parameters.
 For example:
 
 \bruno{example and short explanation}
