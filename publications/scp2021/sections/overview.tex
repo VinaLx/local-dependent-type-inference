@@ -27,14 +27,16 @@ function:
 which is $\star$. The type $\star$ is the type of types (also known as
 \emph{kind}). In \name, the parameters of lambda abstractions are annotated
 with their types, and the \verb|A| in the definition refers back to the
-polymorphic parameter. Similarly to implicit polymorphism in other languages,
+polymorphic parameter. In the examples below, we drop the parentheses around
+variables and their type annotations such as $[[lambda x : A. x]]$ for conciseness.
+
+Similar to implicit polymorphism in other languages,
 the polymorphic parameters of the $\forall$ types are implicitly instantiated
 during applications. Thus, in the call of the identity function, we
 do not need to specify the argument used for instantiation. In contrast,
 in an explicitly polymorphic language (such as System F) we would need
 to call $id$ with an extra argument that specifies the instantiation of $A$:
 $\mathrm{id}~\mathbb{N}~ 42$.
-
 
 \paragraph{Recursion and Dependent Types}
 
@@ -230,7 +232,7 @@ The parameters of universal types can only be types in the polymorphic
 subtyping relation by Odersky and L\"aufer.
 In \name, we generalize the polymorphic parameters so that they can
 be values or other kinds of types as well.
-A first attempt at a direct generalization would be:
+The idea of a direct generalization is:
 
 \begin{mathpar}
   \inferrule*[right=$\forallL'$]
@@ -242,13 +244,17 @@ A first attempt at a direct generalization would be:
     {\Gamma \vdash A \le \forall x \rulehl{: B}.\,C}
 \end{mathpar}
 
-\noindent Here the parameter for universal types can have any type (and not just $\star$).
+\noindent The parameters for universal types can have any type (and not just $\star$).
 Hence, instead of requiring the monotype $\tau$ to be a well-formed type in rule
 $\forallL$, in rule $\forallL'$ it is
 required that $\tau$ is well-typed regarding the type of the parameter
 in the universal quantifier.
 Similarly, for rule $\forallR'$ the context for the subtyping rule should include typing information
 for the universally quantified variable.
+However, this idea introduces the issue of potential mutual dependency between
+subtyping and typing judgements, so further adjustments have to be made to formalize
+this idea, which is discussed later in this section and section
+\ref{sec:type-system} and \ref{sec:adaptation}.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 
@@ -345,7 +351,7 @@ implicit instantiation). For example:
 instantiation is not reflected anywhere at term level. In a
 language with type annotations on parameters of binders
 (for example lambda abstractions), in order
-for the polymorphic variable to be well-scoped at type annotations of terms,
+for the polymorphic variables to be well-scoped at type annotations of terms,
 another binder $\Lambda$ is added for terms. Nonetheless, instantiations are still
 implicit as shown in the following example:
 \begin{mathpar}
@@ -360,20 +366,26 @@ be recovered with a simple form of syntactic sugar:
 
 \[e : \forall x : A.\, B \triangleq \Lambda x : A.\, e : \forall x : A.\, B\]
 
-\noindent When polymorphic parameters are used, \name provides a binder ($\Lambda (x : A). e$)
+\noindent When polymorphic parameters are used, \name provides a binder ($\Lambda x : A.\, e$)
 to ensure that the parameters are well-scoped at the term-level.
 
+\paragraph{Computational Irrelevance}
+\label{sec:computational-irrelevance-overview}
+
 Implicit parameters in traditional languages with polymorphic subtyping,
-the ICC~\cite{}\bruno{references} and \name are computationaly irrelevant.
+the ICC~\cite{miquel2001implicit,barras2008implicit} and \name are computationaly irrelevant.
 In traditional (non-dependently) typed languages, types cannot affect computation,
 thus computational irrelevance is quite natural and widely adopted.
 In dependently typed systems, however, there can be some programs where
 it is useful to have computationaly relevant implicit parameters.
-For example:
-
-\bruno{example and short explanation}
-
-\noindent Languages like Agda, Coq or Idris support such programs. However,
+For example, accessing the length of a length indexed vector in constant time:
+\begin{flalign*}
+  &\mathrm{length} : \forall n : [[int]].\, \mathrm{Vector}~n \rightarrow [[int]] &&\\
+  &\mathrm{length} = \Lambda n : [[int]].\, \lambda v : \mathrm{Vector}~n.\, n
+\end{flalign*}
+\noindent Here the implicit parameter $n$ is computationally relevant as it is used as
+the return value of the function which is likely to be executed at runtime.
+Languages like Agda, Coq or Idris support such programs. However,
 computationaly relevant implicit parameters are challenging for proofs of
 type soundness. Due to such challenges (see also the discussion in
 Section~\ref{subsec:semantics}),
@@ -381,7 +393,6 @@ the ICC has a restriction that parameters for implicit function types
 must be computationally irrelevant. Since we adopt a similar technique,
 we also have a similar restriction and thus cannot encode programs such
 as the above.
-
 
 \paragraph{Type-level Computation and Casts}
 \name features a fixpoint that supports general recursion at both

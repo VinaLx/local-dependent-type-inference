@@ -180,7 +180,7 @@ information in the dynamic semantics.
   \label{fig:extraction}
 \end{figure}
 
-\paragraph{Deterministic Reduction}
+\paragraph{Deterministic Erased Reduction}
 We address the issue of determinacy of the dynamic semantics with
 a design similar to $\mathrm{ICC}^*$~\cite{barras2008implicit},
 employing type-erased expressions. The erased expressions
@@ -188,15 +188,19 @@ essentially mirror the syntax and semantics
 of normal expressions, except for the elimination of type annotations in $\lambda$,
 $\Lambda$, $\mu$ and $\castup$ expressions.
 Figure \ref{fig:extraction} shows the syntax of the erased expressions and
-the companion operational semantics. Note that restrictions are imposed in the
+the companion operational semantics. Restrictions are imposed in the
 typing rules to forbid the implicit parameter occurring in runtime-relevant part
 of the expression, i.e. the erased expressions (see Section \ref{sec:type-system}).
 With such restriction, implicit parameters can be directly eliminated in
-\rref{er-elim,er-cast-inst}. For a well-typed expression, the reduction of
-its erasure is deterministic. The type safety of our system is built around
-this idea and is discussed in Section \ref{sec:type-safety}.
-
-
+\rref{er-elim,er-cast-inst}.
+For a well-typed expression, the reduction of
+its erasure is deterministic.
+Although the implicit parameter does not matter at runtime, the erasure
+function preserves the structure of the original syntax
+by not eliminating the implicit binder altogether, so that the correspondence
+between the original and the erased expression can be established easier.
+The type safety of our system is built around the erased expressions and the
+correspondence to their unerased counterpart, which is discussed in Section \ref{sec:type-safety}.
 
 \subsection{Unified Subtyping}
 \label{sec:type-system}
@@ -297,7 +301,7 @@ is instantiated abstractly (\rref{s-forall-r}).
 
 Notably, our formalization is not a direct generalization of Odersky and L\"aufer's
 polymorphic subtyping:
-\rref{s-forall} axiomatizes the subtyping relation between two polymorphic types.
+\rref{s-forall} axiomatizes the subtyping relation between two universal types.
 Furthermore, additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
 ones we previously mentioned in Section \ref{sec:polymorphic-subtyping}.
 The motivations for these changes are discussed in more detail in Section \ref{sec:adaptation}.
@@ -317,31 +321,42 @@ discuss the reason behind these restrictions in Section \ref{sec:metatheory}.
 For the kinding of types, we mainly follow the design of the Calculus of
 Constructions~\cite{coc}. However, we specifically restrict
 the polymorphic type $[[forall x : A. B]]$ to only have kind $[[*]]$, but not $[[box]]$.
-This restriction prevents types of kind $[[*]]$ from having implicit
-polymorphic kind such as $[[forall x : int. *]]$ through
-\rref{s-forall-l,s-forall-r,s-sub} (for example, $[[int]]$
-is always of kind $[[*]]$ and can never be of kind $[[forall x : int. *]]$),
-which significantly complicates the kinding reasoning of types in metatheory.
+% This restriction prevents types of kind $[[*]]$ from having implicit
+% polymorphic kind such as $[[forall x : int. *]]$ through
+% \rref{s-forall-l,s-forall-r,s-sub} (for example, $[[int]]$
+% is always of kind $[[*]]$ and can never be of kind $[[forall x : int. *]]$),
+% which significantly complicates the kinding reasoning of types in metatheory.
+Without this restriction, types of kind $[[*]]$ (such as $[[int]]$) are able to
+obtain ``polymorphic kinds'' like $[[forall x : int. *]]$ through \rref{s-forall-l,s-forall-r,s-sub},
+which significantly complicates the kinding reasoning in the metatheory.
+Practically speaking, ``polymorphic kinds'' are not very common, so this
+restriction has little impact on the expressiveness of our language.
 
-This restriction propagates to the introduction rule of $\forall$ types (\rref{s-bind}),
-where $[[B]]$ is required to only have kind $[[*]]$.
-Therefore implicit polymorphic functions at type level are never well-typed.
-For example, $\Lambda n : [[int]].\, \lambda v : \mathrm{Vector}~n.\, [[int]]$ is not
-well-typed since it is a polymorphic function that returns $[[int]]$,
-which is of kind $[[*]]$.
-
+Since we expect the types of well-typed expressions to be well-kinded,
+the restriction propagates to the introduction rule of $\forall$ types, \rref{s-bind},
+where $[[B]]$ is required to only have kind $[[*]]$ but not $[[box]]$,
+in contrast to \rref{s-pi} where $[[B]]$ at a similar position can be of any kind.
+As a result, implicit polymorphic functions at type level are never well-typed.
+For example, $\Lambda a : [[*]].\, \lambda b : n.\, a$ is not
+well-typed since it would have been a polymorphic function of type
+$\forall a : [[*]].\, a \rightarrow [[*]]$, which is not well-kinded due to the
+kinding restriction of universal types.
 % This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
 % from type computations. Therefore, in cast operators,
-As a result of well-typed implicit instantiation not occuring at type level,
 % the possibility of non-deterministic implicit instantiations is eliminated.
-the non-deterministic well-typed type-level reductions never occur,
-although implicit instantiations seem to be allowed by the reduction rules.
+Moreover, type-level function applications that involves implicit
+abstractions ($\Lambda$ expressions) are also never well-typed
+because of the restriction. So well-typed non-deterministic implicit instantiation at
+type-level can never occur.
 
-\paragraph{Runtime Irrelevance of Implicit Arguments}
+\paragraph{Computational Irrelevance of Implicit Parameters}
 
-Our direct operational semantics chooses arbitrary mono-expressions to instantiate
-the implicit arguments, which potentially breaks type safety. Thus, we adopt a
-restriction in \rref{s-bind} that is similar to the
+As mentioned in section \ref{sec:computational-irrelevance-overview}, our language
+does not handle computationally relevant implicit variables.
+The direct operational semantics shown in figure \ref{fig:semantics} chooses
+arbitrary mono-expressions to instantiate the implicit arguments,
+which potentially breaks type safety.
+Thus, we adopt a restriction in \rref{s-bind} that is similar to the
 Implicit Calculus of Constructions (ICC)~\cite{miquel2001implicit}.
 We only allow the implicit parameters to occur in type annotations in the
 body of implicit abstraction, so that the choices of implicit parameters are not

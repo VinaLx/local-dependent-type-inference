@@ -77,8 +77,6 @@ TODO: In the discussion, discuss the issue with strengthening.
 
 DONE
 
-(no change)
-
 We choose to only eliminate the type annotation, and maintain the syntax
 structure after elimination (likewise, we leave all the casts in the expression
 although they practically should not have real runtime impact) for the simplicity
@@ -87,7 +85,8 @@ the reductions of unerased expressions and reductions of erased reduction,
 the type safety (subtype preservation) is much simpler to reason about this way,
 than changing the structure of expressions during erasure.
 
-TODO: Add an explanation like the above into the paper when talking about erasure.
+A brief explanation of this idea is added to the paragraph
+"Deterministic Erased Reduction" in section 3.1.
 
 > p14L50-57 I struggled with this paragraph. Can lAI handle vectors of
 > implicit length, i.e., `Λn:Nat. λx:Vec n. ...`? A concrete example
@@ -102,7 +101,11 @@ the restriction forbids.
 > p16L12-20 This paragraph is quite technical, but the gist of it should
 > show up much earlier in the paper.
 
-TODO
+DONE
+
+We added another subsection in section 2.2 that talks about the computational
+irrelevance of implicit parameters. And the related paragraph in section 3 refers
+back to the added section.
 
 > p24L40 When you say "Implicit abstractions do not occur in type
 > computation due to the kind restriction of universal types", it would
@@ -110,7 +113,9 @@ TODO
 > forbidden... such an example would go a long way towards making it
 > clear what your system can and can't handle!
 
-TODO
+DONE?
+
+Refer back to the paragraph "Kind Restriction for Universal Types" in section 3.
 
 > p24L56 I didn't understand this lemma. Shouldn't it be the case that
 > `castdown N` has type `(\x:box. x) *`, and doesn't that type have kind
@@ -177,7 +182,7 @@ version talks about general terms as well. And it is not necessary in this circu
 where e1 e2 and e3 mention terms or types.
 So the convention is "mostly" adopted instead of "always",
 we want to emphasize that while e1, e2 or A, B express identical meaning,
-but there are subtle differences in different contexts.
+but there are subtle differences in different contexts where it may matter.
 
 > p12L20 If `Castdn` triggers only one step, why does the outer cast
 > form remain in `R-Castdn`?
@@ -311,8 +316,6 @@ DONE
 Replaced the version of progress with what were proved in the script. And added
 a short paragraph talking about "generalization" very briefly.
 
-(Bruno) Make sure that the usual progress theorem is still described in the paper.
-
 > p23L39 I was surprised that the proof of subtype preservation is able
 > to find the valid instantiation (necessarily constructively). I can't
 > see the moment where that's happening in the custom tactics for the
@@ -339,7 +342,13 @@ TODO
 > 'metatheory'. Can you give a short indication that this is the case?
 > Relatedly, are these rules admissible in the final system?
 
-TODO
+"A first attempt at direct generalization would be" -> "The idea of a direct generalization is"
+
+And we added a paragraph mention the direct generalization is not suitable for
+formalization for the reasons discussed in later sections.
+
+The admissible rules in the final system are mentioned in subsection
+"Equivalence to a Simplified System" in section 4.
 
 > p8L32 Can you explain how Hindley-Milner relates to the ICC rules
 > (i.e., INST at variables and GEN at `let`s)?
@@ -349,12 +358,13 @@ TODO
 > p17L18 You should indicate up front that this "possible
 > generalization" is incorrect!
 
-TODO
+DONE
 
 > p17L29 This premise `Γ,x:A |- B : *` just gives us what we would have
 > tried to get by inversion... right?
 
-TODO
+The purpose is to make the well-formedness `G |- A <: B -> G |- A /\ G |- B` hold,
+which is not true for rule s-forall-L without this premise.
 
 > p17L43 The core issue here is that the type A may be bottom, i.e.,
 > uninhabited... right?
@@ -372,7 +382,7 @@ TODO
 
 IGNORE?
 
-The elsarticle-num seems to have its own idea of bibliography sorting.
+The elsarticle-num style seems to have its own idea of bibliography sorting.
 
 > Some of the papers in the bibliography are miscapitalized, e.g.,
 > "System fc" in [15].
