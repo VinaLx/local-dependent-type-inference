@@ -62,10 +62,10 @@ ensure the well-formedness of types in the conclusion.
 \subsubsection{Strengthening of Contexts.}
 
 Rule $\forallR$ relies on a strenghtening lemma:
-\emph{if $\Gamma,\, x \vdash A$ and $x ~\text{is fresh in}~ A$, then $\Gamma \vdash A$}, which
+\emph{if $\Gamma,\, x \vdash A$ and $x ~\text{does not occur in}~ A$, then $\Gamma \vdash A$}, which
 is trivial to prove.
 However its generalization:
-\emph{if $[[G, x : B |- A : *]]$ and $x ~\text{is fresh in}~ A$, then $[[G |- A : *]]$},
+\emph{if $[[G, x : B |- A : *]]$ and $x ~\text{does not occur in}~ A$, then $[[G |- A : *]]$},
 does not hold in our system. We can construct the following example:
 \begin{equation*}
     F : [[int]] \rightarrow [[*]],\, A : [[*]],\, \rulehl{a : A} \vdash F ~ ([[(bind x : A. lambda y : int. y)]]~ 42) : [[*]]
@@ -303,7 +303,7 @@ $$
 % $\mathbf{size}$ measures the size of the syntax tree of the expressions,
 % $\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation trees of
 % the first and the second premises respectively.
-The proof is mainly motivated by DK's transitivity proof of their declarative subtyping
+The proof is mainly inspired by DK's transitivity proof of their declarative subtyping
 system of induction on the pair of
 $\langle \#\forall([[e2]]) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\cite{dunfield2013lemmas},
 with some adjustments to fit in our system.
@@ -516,7 +516,7 @@ The main issue of the cast elimination case can be demonstrated by the following
       {[[G]] \vdash [[castdn (castup [A1] e)]] : \rulehl{B_2}}
 \end{mathpar}
 
-Here the typing of the inner $\castdn$ does not directly follow
+Here the typing of the inner $\castup$ is not directly derived by
 \rref{r-castup}, but the subsumption rule instead. We want to show that after
 the cast elimination (following \rref{r-cast-elim}), expression $e$ has type $B_2$,
 while in reality it has type $A_2$ (as highlighted).

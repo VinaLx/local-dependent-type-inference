@@ -276,12 +276,18 @@ in the \emph{typing relation}:
     {[[G |- e : forall x : A. B]]}
 \end{mathpar}
 
-\noindent Without an explicit subtyping relation, the ICC is not always able to handle subtyping
-at higher-ranked positions. The approach taken by the ICC is similar to
-Hindley-Milner type system~\cite{hindley1969principal,milner1978theory},
-which also features similar rules in typing. But Hindley-Milner is designed for
-dealing only with rank-1 polymorphism.
-In generalizations of higher-ranked polymorphic type-inference~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
+\noindent Without an explicit subtyping relation, the ICC is not always able
+to handle subtyping at higher-ranked positions. The approach taken by the ICC
+is similar to Hindley-Milner type system~\cite{hindley1969principal,damas1982principal},
+which is also designed for dealing only with rank-1 polymorphism.
+The Hindley-Milner's declarative system also have the \textsc{GEN} rule to
+convert expressions to polymorphic types, and
+\textsc{INST} rule to instantiate polymorphic parameters. Both rules work only
+for polymorphic types at top-level positions.
+% which also features similar rules in typing.
+% But Hindley-Milner is designed for dealing only with rank-1 polymorphism.
+In generalizations of higher-ranked polymorphic
+type-inference~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
 it has been shown that rules like $\forallL$ and $\forallR$ generalize rules like
 \textsc{GEN} and \textsc{INST}. Since we aim at higher-ranked polymorphic generalization,
 we follow a similar, more general, approach in \name.
@@ -348,7 +354,7 @@ implicit instantiation). For example:
   (\lambda x.\, x)~42 \longrightarrow 42
 \end{mathpar}
 \noindent Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$, and
-instantiation implicitly discovers that $A = Int$. 
+instantiation implicitly discovers that $A = Int$.
 Notably, and in contrast with explicitly polymorphic languages like System F, implicit
 instantiation is not reflected anywhere at term level.
 The design that we adopt still provides implicit instantiation, but
@@ -380,7 +386,7 @@ the ICC~\cite{miquel2001implicit,barras2008implicit} and \name are computational
 In traditional (non-dependently) typed languages, types cannot affect computation,
 thus computational irrelevance is quite natural and widely adopted.
 Furthermore, computational irrelevance can benefit performance, since
-irrelevant arguments can simply be erased at runtime. 
+irrelevant arguments can simply be erased at runtime.
 In dependently typed systems, however, there can be some programs where
 it is useful to have computationaly relevant implicit parameters.
 For example, accessing the length of a length indexed vector in constant time:

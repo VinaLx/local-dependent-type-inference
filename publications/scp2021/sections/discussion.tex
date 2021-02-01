@@ -57,12 +57,12 @@ arbitrary type $A$, which breaks transitivity, while the derivation of the
 first premise ends with \rref{s-forall-l}:
 \begin{mathpar}
     \inferrule*[]
-      {[[G |- [t / x] e1 <: e2 : *]] \\ [[G |- e2 <: e3 : A]]}
+      {[[G |- [t / x] e1 <: e2 : *]] \\ [[G |- e2 <: e3 : B]] \\ [[G |- t : A]]}
       {[[G |- forall x : A. e1 <: e3 : *]]}
 \end{mathpar}
-We cannot apply \rref{s-forall-l} unless $e_3$ is of type $[[*]]$,
-i.e. $[[G |- A <: * : box]]$, which does not always holds, or the principal
-type of $e_3$ is $[[*]]$ and $[[G |- * <: A : box]]$.
+We cannot apply \rref{s-forall-l} unless we can show $e_3$ is of type $[[*]]$.
+One of the possiblities in this scenario is to show $[[G |- B <: * : box]]$,
+which does not always hold for the reason discussed above.
 
 Moreover, we expect complexities while reasoning about the kinding of types
 after we lose the kinding uniqueness in other parts of the metatheory, therefore
@@ -99,7 +99,7 @@ for higher-ranked polymorphic type inference for System F-like languages
 we identify the following challenges to develop an algorithmic system for \name.
 
 \paragraph{Unification Inside Binders}
-In dependent type systems, function types ($\Pi$ types) are dependent: 
+In dependent type systems, function types ($\Pi$ types) are dependent:
 the type of applications potentially depends on the values of their arguments.
 Therefore the unification problem we meet is potentially inside binders and
 depends on the value of the arguments. For an extreme example in our language:

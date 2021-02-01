@@ -103,9 +103,7 @@ is regarding *kinds*. Now that the type of the "map" function is at the type lev
 (like in the map function) then that's fine, but if it is a type, then that's not allowed
 (since its kind cannot be polymorphic).
 
-PLEASE DOUBLE CHECK TEXT ABOVE ALVIN
-
-Rephrased the paragraph of "Kind Restriction for Universal Types" in Section 3.
+And we rephrased the paragraph of "Kind Restriction for Universal Types" in Section 3.
 Added two little examples to illustrate the point and hopefully clarified what
 the restriction forbids.
 
@@ -160,7 +158,7 @@ definition of monotypes here is standard).
 
 ANSWER: We rephrased the text in this paragraph significantly. We now show
 the syntax of the new binder, but we prefer not to introduce the full grammar
-at this point. 
+at this point.
 
 "Binder" should be a standard term to refer to the syntax construct to "bind"
 a variable in the body. And the "binder" does not refer to `forall` type itself,
@@ -256,7 +254,6 @@ TODO
 TODO
 
 (Bruno: I added a comment in the paper to help a bit with the text (i.e. what may be missing)).
-
 
 > It would be good to emphasize up front that pi and forall are
 > different---the former explicitly takes an argument and the latter is
@@ -373,7 +370,10 @@ The admissible rules in the final system are mentioned in subsection
 > p8L32 Can you explain how Hindley-Milner relates to the ICC rules
 > (i.e., INST at variables and GEN at `let`s)?
 
-TODO
+DONE?
+
+We add some sentences to point out the similar rules (INST and GEN) in HM's
+declarative system that talks about first rank polymorphic types.
 
 > p17L18 You should indicate up front that this "possible
 > generalization" is incorrect!
@@ -540,7 +540,7 @@ TODO
 
 > page 10 line 50: should reference [42] be [41]? (that is, [25])
 
-TODO
+DONE
 
 > Figure 2: you should at least mention the meaning of the "box" kind
 
@@ -557,21 +557,31 @@ TODO
 
 > page 17 line 34 you use "fresh in A" to mean "not occurring in A", right?
 
-Answer: Yes, that's what we mean.
+DONE
 
-TODO: Change the wording in the paper to "not occurring in A".
+"fresh in A" -> "does not occur in A"
+
+But yes, that's what we meant.
 
 > page 20 line 56 motivated by -> you mean "similar to"?
 
-TODO
+DONE
+
+"motivated by" -> "inspired by"
 
 > page 24 line 18: which is the "inner" downcast?
 
-TODO
+DONE
+
+It was a typo and sorry for that.
+"castdn" -> "castup"
 
 > page 27 line 40: is it the first time that you mention principal type, perhaps should be defined
 
-TODO
+DONE
+
+We rephrased that paragraph a little and deleted reference of "principal type"
+to avoid confusion.
 
 ## Typos and minor comments
 
