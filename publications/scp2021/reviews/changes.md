@@ -81,18 +81,29 @@ We choose to only eliminate the type annotation, and maintain the syntax
 structure after elimination (likewise, we leave all the casts in the expression
 although they practically should not have real runtime impact) for the simplicity
 of development of metatheory. So that we can find direct correspondence between
-the reductions of unerased expressions and reductions of erased reduction,
+the reductions of unerased expressions and reductions of erased expressions,
 the type safety (subtype preservation) is much simpler to reason about this way,
 than changing the structure of expressions during erasure.
 
 A brief explanation of this idea is added to the paragraph
-"Deterministic Erased Reduction" in section 3.1.
+"Deterministic Erased Reduction" in section 3.2.
 
 > p14L50-57 I struggled with this paragraph. Can lAI handle vectors of
 > implicit length, i.e., `Λn:Nat. λx:Vec n. ...`? A concrete example
 > would really help here.
 
 DONE?
+
+ANSWER: The "map" function in page 5 (assuming that the arguments are flipped)
+is of a similar form. So the answer is yes: functions taking Vector-like
+types with implicit length work. The restriction that we are talking about
+is regarding *kinds*. Now that the type of the "map" function is at the type level
+(not the kind level). What we are saying in that paragraph is that implicit polymorphic
+*kinds* are forbidden. So, if the "..." in `Λn:Nat. λx:Vec n. ...` is a term
+(like in the map function) then that's fine, but if it is a type, then that's not allowed
+(since its kind cannot be polymorphic).
+
+PLEASE DOUBLE CHECK TEXT ABOVE ALVIN
 
 Rephrased the paragraph of "Kind Restriction for Universal Types" in Section 3.
 Added two little examples to illustrate the point and hopefully clarified what
@@ -103,7 +114,8 @@ the restriction forbids.
 
 DONE
 
-We added another subsection in section 2.2 that talks about the computational
+We added another paragraph called
+"Computational Irrelevance" in Section 2.2 that talks about the computational
 irrelevance of implicit parameters. And the related paragraph in section 3 refers
 back to the added section.
 
@@ -137,16 +149,22 @@ well-typed.
 
 TODO
 
+(Bruno) In Figure 1 show the syntax of types and monotypes and in the text that
+explains the figure briefly explain types and monotypes (and say that the
+definition of monotypes here is standard).
+
 > p9L55 We still haven't seen the grammar... I had to flip forward at
 > this point to be able to know which direction the definition was going
 > in! Relatedly, the use of the word "binder" here to refer to the
 > forall was somewhat confusing.
 
-IGNORE
+ANSWER: We rephrased the text in this paragraph significantly. We now show
+the syntax of the new binder, but we prefer not to introduce the full grammar
+at this point. 
 
 "Binder" should be a standard term to refer to the syntax construct to "bind"
 a variable in the body. And the "binder" does not refer to `forall` type itself,
-it refer to the inhabitants of `forall`.
+it refer to the inhabitants of `forall` types.
 
 > p10L15 It took quite some time to understand that mono-expressions
 > exclude implicit foralls but not explicit pis... and allow _either_
@@ -157,7 +175,7 @@ it refer to the inhabitants of `forall`.
 
 DONE?
 
-Rephrase the paragraph of implicit polymorphism, which first emphasizes the idea
+Rephrased the paragraph of implicit polymorphism, which first emphasizes the idea
 of generalization of polymorphic types
 (and emphasize that the mono-types only excludes forall types not everything else).
 Then mention the implicit lambda expression.
@@ -167,15 +185,15 @@ Then mention the implicit lambda expression.
 > the terms (or `exp` and `red`)? These would be better rule names,
 > too. The discussion here should perhaps cite Zombie.
 
-IGNORE?
+ANSWER: We follow the convention of the iso-type systems here.
 
-We follow the convention of the iso-type system here.
+We added a couple of sentences explaining that there are some other cast
+designs, such as those from Zombie.
 
 > p11L14 I'm not sure a 'mostly' adopted convention is worth
 > mentioning. When _don't_ you do that?
 
-IGNORE
-
+ANSWER:
 For example the definition of transitivity we use e1, e2 and e3. Intuitively
 transitivity should be a property concerning about subtyping, but our generalized
 version talks about general terms as well. And it is not necessary in this circumstance
@@ -187,9 +205,7 @@ but there are subtle differences in different contexts where it may matter.
 > p12L20 If `Castdn` triggers only one step, why does the outer cast
 > form remain in `R-Castdn`?
 
-DONE
-
-(no change)
+ANSWER:
 
 Because castdn triggers type-level reduction,
 which is performed in the typing rules, while in R-Castdn the castdn operator
@@ -232,9 +248,15 @@ corresponding turnstiles.
 
 TODO
 
+(Bruno) Regarding 30-33 I think we should expand the explanation a bit. why is concluding that these
+2 types are well-formed useful for the proof? State the answer to this explicitly in the text.
+
 > p28L37-38 "However, we still face..." didn't make any sense to me.
 
 TODO
+
+(Bruno: I added a comment in the paper to help a bit with the text (i.e. what may be missing)).
+
 
 > It would be good to emphasize up front that pi and forall are
 > different---the former explicitly takes an argument and the latter is
