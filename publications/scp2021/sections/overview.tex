@@ -347,12 +347,15 @@ implicit instantiation). For example:
 \begin{mathpar}
   (\lambda x.\, x)~42 \longrightarrow 42
 \end{mathpar}
-\noindent Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$. The implicit
-instantiation is not reflected anywhere at term level. In a
-language with type annotations on parameters of binders
-(for example lambda abstractions), in order
-for the polymorphic variables to be well-scoped at type annotations of terms,
-another binder $\Lambda$ is added for terms. Nonetheless, instantiations are still
+\noindent Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$, and
+instantiation implicitly discovers that $A = Int$. 
+Notably, and in contrast with explicitly polymorphic languages like System F, implicit
+instantiation is not reflected anywhere at term level.
+The design that we adopt still provides implicit instantiation, but
+it is more explicit regarding the binding of implicit parameters.
+We adopt this design to ensure that polymorphic variables are well-scoped in
+type annotations of terms. Thus we use another binder, of the form $\Lambda(x : A). e$, for terms.
+Nonetheless, instantiations are still
 implicit as shown in the following example:
 \begin{mathpar}
   (\Lambda A : [[*]].\, \lambda x : A.\, x) ~ 42 \longrightarrow 42
@@ -366,8 +369,8 @@ be recovered with a simple form of syntactic sugar:
 
 \[e : \forall x : A.\, B \triangleq \Lambda x : A.\, e : \forall x : A.\, B\]
 
-\noindent When polymorphic parameters are used, \name provides a binder ($\Lambda x : A.\, e$)
-to ensure that the parameters are well-scoped at the term-level.
+%\noindent When polymorphic parameters are used, \name provides a binder ($\Lambda x : A.\, e$)
+%to ensure that the parameters are well-scoped at the term-level.
 
 \paragraph{Computational Irrelevance}
 \label{sec:computational-irrelevance-overview}
@@ -376,6 +379,8 @@ Implicit parameters in traditional languages with polymorphic subtyping,
 the ICC~\cite{miquel2001implicit,barras2008implicit} and \name are computationaly irrelevant.
 In traditional (non-dependently) typed languages, types cannot affect computation,
 thus computational irrelevance is quite natural and widely adopted.
+Furthermore, computational irrelevance can benefit performance, since
+irrelevant arguments can simply be erased at runtime. 
 In dependently typed systems, however, there can be some programs where
 it is useful to have computationaly relevant implicit parameters.
 For example, accessing the length of a length indexed vector in constant time:
@@ -390,8 +395,8 @@ computationaly relevant implicit parameters are challenging for proofs of
 type soundness. Due to such challenges (see also the discussion in
 Section~\ref{subsec:semantics}),
 the ICC has a restriction that parameters for implicit function types
-must be computationally irrelevant. Since we adopt a similar technique,
-we also have a similar restriction and thus cannot encode programs such
+must be computationally irrelevant. Since we adopt a similar technique for the type
+soundness proof, we also have a similar restriction and thus cannot encode programs such
 as the above.
 
 \paragraph{Type-level Computation and Casts}
@@ -418,3 +423,7 @@ type reductions or expansions as shown in the typing rules below.
     {[[G |- e : A]] \\ [[A --> B]] \\ [[G |- B : k]]}
     {[[G |- castdn e : B]]}
 \end{mathpar}
+
+\noindent Note that there are some other cast designs in the literature~\cite{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15}, but
+we adopt the PITS design here for simplicity. We believe that other cast designs could
+also be adopted instead, but leave this for future work.

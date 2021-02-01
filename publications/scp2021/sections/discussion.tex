@@ -99,7 +99,7 @@ for higher-ranked polymorphic type inference for System F-like languages
 we identify the following challenges to develop an algorithmic system for \name.
 
 \paragraph{Unification Inside Binders}
-In dependent type systems, function types ($\Pi$ types) are dependent so that
+In dependent type systems, function types ($\Pi$ types) are dependent: 
 the type of applications potentially depends on the values of their arguments.
 Therefore the unification problem we meet is potentially inside binders and
 depends on the value of the arguments. For an extreme example in our language:
@@ -112,12 +112,14 @@ Here the principal type of $\Lambda A : \star.\,\mu x : A.\, x$ is $\forall A : 
 In a non-dependent setting one can easily conclude the instantiation for type $A$ to be
 $F~42 \rightarrow [[int]]$. However with the presence of dependent types,
 we are looking at the type $(\Pi x : [[int]].\, F e)$ where expression $e$
-satisfy the equation that $[42/x]\,e = 42$ according to the Rule \rref{s-app}.
+satisfies the equation $[42/x]\,e = 42$ according to the Rule \rref{s-app}.
 Since we do not allow implicit type reduction in our system,
-the unification problem here stays the first order. However, we still face the
-problems involving substitutions.
-Moreover in this case, expression $e$ has two solutions, namely variable $x$
-and $42$.
+the unification problem here is still first order. However, we still face the
+problems with substitutions. For example, in the program above,
+the expression $e$ has two solutions, namely variable $x$
+and $42$.\bruno{So what's the problem of multiple solutions: explain that here.
+  No principal type? The two types are incomparable? If we pick one over the other then
+something may not type-check afterwards?}
 %We consider coming up with a formal system a challenging problem to
 %resolve the general issues that this example implies.
 

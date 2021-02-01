@@ -58,8 +58,8 @@ polymorphic type ($\forall x.\, A$) in conventional functional languages,
 % types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
 while the parameter $x$ ranges over all well-typed expressions besides well-formed
 types (i.e. $x$ can have any type $A$ instead of just kind $\star$). The idea of
-\emph{monomorphic types}(or monotypes) is also generalized.
-\emph{Mono-expressions} $\tau$ exclude polymorphic types from the syntax,
+\emph{monomorphic types} (or monotypes) is also generalized.
+\emph{Mono-expressions} $\tau$ exclude polymorphic types ($[[forall x : A. B]]$) from the syntax,
 which follows a similar design in various work about predicative
 higher-ranked polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical}.
 With dependent types, we choose to only excludes the universal types, but not
@@ -197,8 +197,11 @@ For a well-typed expression, the reduction of
 its erasure is deterministic.
 Although the implicit parameter does not matter at runtime, the erasure
 function preserves the structure of the original syntax
-by not eliminating the implicit binder altogether, so that the correspondence
-between the original and the erased expression can be established easier.
+by not eliminating the implicit binder altogether. This design
+has the advantage that the correspondence
+between the original and the erased expression can be established more easily,
+since we can find a direct correspondence between
+the reductions of unerased expressions and reductions of erased expressions.
 The type safety of our system is built around the erased expressions and the
 correspondence to their unerased counterpart, which is discussed in Section \ref{sec:type-safety}.
 
@@ -327,16 +330,16 @@ the polymorphic type $[[forall x : A. B]]$ to only have kind $[[*]]$, but not $[
 % is always of kind $[[*]]$ and can never be of kind $[[forall x : int. *]]$),
 % which significantly complicates the kinding reasoning of types in metatheory.
 Without this restriction, types of kind $[[*]]$ (such as $[[int]]$) are able to
-obtain ``polymorphic kinds'' like $[[forall x : int. *]]$ through \rref{s-forall-l,s-forall-r,s-sub},
+have ``polymorphic kinds'' like $[[forall x : int. *]]$ through \rref{s-forall-l,s-forall-r,s-sub},
 which significantly complicates the kinding reasoning in the metatheory.
 Practically speaking, ``polymorphic kinds'' are not very common, so this
 restriction has little impact on the expressiveness of our language.
 
 Since we expect the types of well-typed expressions to be well-kinded,
-the restriction propagates to the introduction rule of $\forall$ types, \rref{s-bind},
-where $[[B]]$ is required to only have kind $[[*]]$ but not $[[box]]$,
-in contrast to \rref{s-pi} where $[[B]]$ at a similar position can be of any kind.
-As a result, implicit polymorphic functions at type level are never well-typed.
+the restriction propagates to the introduction rule of $\forall$ types (\rref{s-bind}).
+In this rule, $[[B]]$ is required to only have kind $[[*]]$ but not $[[box]]$.
+In contrast, for \rref{s-pi}, the $[[B]]$ at a similar position can be of any kind.
+As a result, implicit polymorphic functions at type level are \emph{never well-typed}.
 For example, $\Lambda a : [[*]].\, \lambda b : n.\, a$ is not
 well-typed since it would have been a polymorphic function of type
 $\forall a : [[*]].\, a \rightarrow [[*]]$, which is not well-kinded due to the
@@ -344,10 +347,10 @@ kinding restriction of universal types.
 % This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
 % from type computations. Therefore, in cast operators,
 % the possibility of non-deterministic implicit instantiations is eliminated.
-Moreover, type-level function applications that involves implicit
+Moreover, type-level function applications that involve implicit
 abstractions ($\Lambda$ expressions) are also never well-typed
-because of the restriction. So well-typed non-deterministic implicit instantiation at
-type-level can never occur.
+because of the restriction. So well-typed non-deterministic implicit instantiation can never occur
+at the type-level.
 
 \paragraph{Computational Irrelevance of Implicit Parameters}
 

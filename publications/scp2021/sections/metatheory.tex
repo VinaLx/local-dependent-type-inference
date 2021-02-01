@@ -579,18 +579,19 @@ we have the following lemma.
     then $B$ does not have kind $[[box]]$.
 \end{lemma}
 
-The result of this lemma is interesting, because it seems that we can construct
+Note that the result of this lemma may, at first sight, be surprising
+because it means that we cannot construct
 a reducible expression like: $([[lambda x : int. *]])~42$ which has kind $[[box]]$.
-But in reality, the lambda expression must be of type $[[int]] \rightarrow [[box]]$
-for the application to be well-typed. But as the conventional typing rule for
-lambda abstractions in Calculus of Constructions~\cite{coc}.
-The function types of the lambda abstractions themselves
-must be well-kinded (see \rref{s-abs}), since $[[box]]$ itself does not have a kind,
+In reality, the lambda expression must be of type $[[int]] \rightarrow [[box]]$
+for the application to be well-typed. However, the conventional typing rule for
+lambda abstractions in Calculus of Constructions~\cite{coc}, which we also employ,
+forbids this. The function types of the lambda abstractions themselves
+must be well-kinded (see \rref{s-abs}). Since $[[box]]$ itself does not have a kind,
 $[[int]] \rightarrow [[box]]$ is not well-kinded, therefore the whole application
-is not well-typed. And for similar reason, the position of occurence of $[[*]]$
-in a well-typed expression is very restricted, hence the lemma is possible to prove.
+is not well-typed. For a similar reason, the position of occurence of $[[*]]$
+in a well-typed expression is very restricted, hence the lemma is provable.
 
-And then the subtype preservation of type computation can be easily shown.
+With the previous lemmas, the subtype preservation lemma for type computation is easily shown.
 
 \begin{lemma}[Subtype Preservation for Types]
     If $[[G |- A1 <: B1 : k]]$, $[[A1 ==> A2]]$ and $[[B1 ==> B2]]$,
