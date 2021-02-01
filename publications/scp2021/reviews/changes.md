@@ -255,12 +255,10 @@ section 4.1.
 > It would be great to relate each theorem in the paper to its name in
 > Coq and the file its proven in---I had to dig around a bit.
 
-TODO
+DONE
 
-Look, for example, at Yaoda's OOPSLA paper. There's a small section
-that illustrates the correspondence. Alternatively, you can also improve
-the documentation of the proofs. Again you can probably look at Yaoda's
-documentation.
+Renamed some of the names in the implementation to better match the name in the
+paper. And there was a Readme that state the correspondence between the names.
 
 > p18L20-23 These lemmas have identical proof scripts. Why can't you
 > prove it in one go? (You'd have to generalize your fancy tactic...)
