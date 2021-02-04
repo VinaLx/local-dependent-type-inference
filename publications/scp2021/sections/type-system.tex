@@ -7,8 +7,8 @@ and implicit polymorphism. The calculus employs
 \emph{unified subtyping}~\cite{full}
 and has a single relation that generalizes both typing and subtyping.
 The calculus can be seen as a variant of the \emph{Calculus of Constructions}~\cite{coc},
-but it uses a simple form of casts~\cite{isotype,yang2019pure} instead of the
-conversion rule and features unrestricted recursion.
+but it uses a simple form of casts~\cite{isotype,yang2019pure} with \castup and \castdn operators
+instead of the conversion rule and features unrestricted recursion with the fixpoint operator.
 We present syntax, unified subtyping, and reduction for \name.
 
 \begin{figure}[t]
@@ -33,9 +33,13 @@ We present syntax, unified subtyping, and reduction for \name.
 \subsection{Syntax}
 
 Figure \ref{fig:syntax} shows the syntax of \name. The syntax is similar
-to the Calculus of Constructions, featuring
-$[[*]]$ and $[[box]]$ in the kind hierarchy, and unifying the concepts of terms
-and types as expressions. Due to the unified syntax, types and
+to the Calculus of Constructions, featuring the unified concept of terms and types,
+and the kind hierarchy of $[[*]]$ and $[[box]]$.
+% $[[*]]$ and $[[box]]$ in the kind hierarchy,
+where $[[*]]$ is the type (or kind) of other types like $[[int]]$ and $\Pi$ types,
+the type of $[[*]]$ itself is $[[box]]$, but $[[box]]$ as a kind is not well-kinded.
+% , and unifying the concepts of terms and types as expressions.
+Due to the unified syntax, types and
 expressions ($e$, $A$ and $B$) are used
 interchangeably, but we mostly adopt the convention of using $A$ and $B$
 for the contexts where the expressions are used as types and $e$ for contexts
@@ -111,13 +115,18 @@ is employed to give the run-time semantics of expressions.
 
 \paragraph{Nondeterministic Reduction}
 Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
-which mostly follows the call-by-name variant of \emph{Pure Iso-Type Systems} (PITS)
-~\cite{yang2019pure} corresponding to the calculus of constructions.
-Note that the arguments of the $\beta$-reduction (\rref{r-beta}) and expressions in
+which mostly follows the ``call-by-name'' variant of \emph{Pure Iso-Type Systems} (PITS)
+~\cite{yang2019pure} corresponding to the calculus of constructions, where
+the arguments of the $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
-Meanwhile, we consider $\castup$ terms to be a value,
-and only perform reduction inside $\castdn$ terms (\rref{r-castdn}). Also, the unfold
-operation of the fixpoint operator is supported by \rref{r-mu}.
+Meanwhile, since reductions can be performed inside $\castdn$ terms (\rref{r-castdn}),
+$\castup$ terms are considered to be values to avoid nondeterministic reduction of
+terms like $\castup [A] \castdn ~e$, where $e$ is reducible
+(either the reduction of the inside $\castdn$ term, or the reduction via
+\rref{r-cast-elim} could be the choice, should $\castup$ terms be reducible).
+There is an alternative design following the ``call-by-value'' variant of PITS, we
+will discuss that in section \rref{sec:cast-design}.
+Also, the unfold operation of the fixpoint operator is supported by \rref{r-mu}.
 
 \begin{figure}[t]
     \centering
@@ -281,7 +290,6 @@ dependent function types ($\Pi$ type).
         {[[G |- e1 <: e2 : A]] \\ [[G |- A <: B : k]]}
         {[[G |- e1 <: e2 : B]]}
     \end{drulepar}
-
     % \drules[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}{
     %     var,lit,int,star,abs,pi,app,bind,mu,castup,castdn,forallXXl,forallXXr,forall,sub}
     \begin{equation*}

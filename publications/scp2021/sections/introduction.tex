@@ -50,13 +50,18 @@ Unified syntax, typical of dependently typed languages,
 poses some challenges for language design and implementation.
 A first challenge arises from the interaction between recursion and dependent types.
 Essentially recursion breaks strong normalization, which
-many common properties in dependently typed calculi depend upon.
+many common properties in dependently typed calculi depend upon. One of the most
+typical properties among them is the decidability of type checking,
+which simply cannot be guaranteed if the termination of
+type-level computations involving recursions cannot be guaranteed.
 However, this area has been actively investigated in the
 last few years, and a general approach~\cite{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15,
-  isotype}, based on explicit
-casts for type-level computation, has emerged as an interesting
-solution for integrating general recursion in dependently typed
-calculi. Current proposals for dependently typed versions of Haskell~\cite{dependenthaskell},
+  isotype} based on explicit casts for type-level computations,
+has emerged as an interesting solution for integrating general recursion
+in dependently typed calculi. By avoiding the implicit type-level computation
+entirely, whether programs strongly normalize or not no longer matters for the
+decidability of type checking.
+Current proposals for dependently typed versions of Haskell~\cite{dependenthaskell},
 for instance, adopt explicit casts for type-level computation.
 
 A second challenge, for calculi that employ subtyping, is that
@@ -87,10 +92,12 @@ to address the issues of combining dependent types with subtyping.
 The use of explicit casts
 for type-level computation means that type equality is essentially
 syntactic (or rather up-to $\alpha$-equivalence).
-This avoids some major complications that arise in the presence
-of a conversion rule:
-a well-known result is that type-inference for systems
-with a conversion rule requires \emph{higher-order
+This avoids the use of a traditional conversion rule that concludes
+$\beta$-equivalent types to be equal,
+which essentially allows implicit type-level computation.
+Dependent type systems with a conversion rule has some major complications,
+% that arise in the presence of a conversion rule
+a well-known one is that type-inference for such systems requires \emph{higher-order
   unification}, which is known to be \emph{undecidable}~\cite{goldfarb1981undecidability}.
 By employing a system with $\alpha$-equivalence only we stay closer to existing
 languages like Haskell, where type equality (at least at the core language level)
@@ -108,12 +115,12 @@ elaboration to System F. In essence elaboration into a target language
 brings significant complications to the metatheory in a dependently typed setting.
 Thus, instead of an elaboration, we use a direct operational semantics approach, which
 is partly inspired by the approach used in the \emph{Implicit Calculus of Constructions} (ICC)~\cite{miquel2001implicit,barras2008implicit},
-to prove type soundness. 
+to prove type soundness.
 Similarly to ICC we adopt the restriction that arguments for implicit function types
 are computationally irrelevant (i.e. they cannot be used in runtime computation).
 However, our unified subtyping setting is significantly
 different from ICC due to the presence of subtyping,
-which brings complications not in the ICC. 
+which brings complications not in the ICC.
 We also prove that any valid subtyping statement in the Odersky and L\"aufer relation
 is valid in \name. Thus \name's unified subtyping subsumes the polymorphic subtyping
 relation by Odersky and L\"aufer.

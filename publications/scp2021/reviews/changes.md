@@ -282,7 +282,10 @@ paper. And there was a Readme that state the correspondence between the names.
 > p18L20-23 These lemmas have identical proof scripts. Why can't you
 > prove it in one go? (You'd have to generalize your fancy tactic...)
 
-TODO: but probably ignore
+ANSWER: The problem of left reflexivity and right reflexivity have been
+different before the introduction of s-forall. And the separation of left refl
+and right refl is a tradition from the original work of unified subtyping so
+we prefer to leave them this way.
 
 > p18L49 The substitution theorem here was quite surprising: only
 > monotypes? Looking back at the rules, it's obvious: argument positions
@@ -423,6 +426,8 @@ DONE
 
 IGNORE
 
+Thanks for the prompt of omega!
+
 > p2L35 "arizes" typo
 > p8L46 "subsumption rule of [the] typing relation"
 > p15 Figure 5 is too tall.
@@ -492,11 +497,16 @@ TODO
 > normalization and explicit casts. Could you explain how explicit casts
 > solve the problem? (see comment above, this is explained in [25])
 
-TODO
+DONE
+
+We added explanantions around the suggested position (P2L41-42) trying to connect
+the relations among strongly normalization, explicit casts and type checking.
 
 > 17 at this point it is not clear what you mean by "conversion rule"
 
-TODO
+DONE
+
+We rephrased the paragraph and included a brief explanation of "conversion rule".
 
 > page 5
 > the example of indexed lists is not completely clear. Is the n:N
@@ -507,7 +517,14 @@ TODO
 
 > 29
 > I do not understand the role of the "r" parameter in the definition of
-> List, can you explain?  Please use a uniform font for code
+> List, can you explain?
+
+DONE: We added a short explanation of the Scott Encoding with an analogy of the
+continuation passing style.
+
+The parameter `r` is the "final return type" of the CPS functions.
+
+> Please use a uniform font for code
 > everywhere. For instance, map at line 34 is different from map at line
 > 35.
 
@@ -515,7 +532,10 @@ TODO
 
 > line 52: However, you do not show the definition of map
 
-TODO: but probably ignore
+DONE
+
+We rephrased the paragraph to avoid the mentioning of the omitted definition
+of `map`.
 
 > page 6:
 > In the Functor example, it took me a lot of time to understand what is
@@ -544,11 +564,18 @@ DONE
 
 > Figure 2: you should at least mention the meaning of the "box" kind
 
-TODO
+DONE
+
+We added a brief explanation to the role of star and box kind to the first
+paragraph in section 3.1.
 
 > page 12: perhaps you should justify better why upcasts are values
 
-TODO
+DONE
+
+We added the intuitive motivation of why upcasts are values in the call-by-name
+design of Pure Iso-type System, and a reference to the discussion section about
+why we did not choose an alternative design.
 
 > Figure 4: to use E both as metavariable and as index of the relation
 > is a very bad choice (I was confused at the beginning)
