@@ -732,5 +732,14 @@ example may not be very intuitive for someone not very familiar with
 > theory alone has some interest, though; so this is not a fatal flaw,
 > but it is something that decreases my enthusiasm considerably.
 
-TODO? Probably explain a little bit to the reviewer?
-
+We certainly agree that the algorithmic aspects are a big challenge.
+However we are indeed a bit more hopeful than the reviewer. One reason
+is that, with our proposal, we can avoid one of the biggest challenges
+of type-inference work done previously for dependently typed languages:
+higher-order unification. Because we do not allow implicit type-level
+computation we can remain in the realm of first-order unification
+(see the discussion in Section 5.4). Besides that, while we agree
+that there may be some questions of whether a sound&complete algorithm
+is possible, we think that, even if that is not feasible,
+having a sound (but not complete) is a perfectly reasonable, useful
+and achievable goal. 
