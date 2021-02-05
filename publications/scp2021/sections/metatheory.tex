@@ -669,14 +669,29 @@ Then we prove the subsumption in terms of type well-formedness and subtyping
 by following the interpretation of unified subtyping.
 
 \begin{theorem}[Subsumption of Type Well-formedness]
-    If $\Gamma \vdash_{DK} A$, then $\lift{\Gamma} \vdash \lift{A} : [[*]]$
+\label{thm:type-wellformedness}
+    If $\Gamma \vdash_{\text{DK}} A$, then $\lift{\Gamma} \vdash \lift{A} : [[*]]$
 \end{theorem}
+
+Straightforward. For the case where $A = \forall x. B$, \rref{s-forall} can be
+used directly bypassing the complications of \rref{s-forall-l} and
+\rref{s-forall-r}.
 
 \begin{theorem}[Subsumption of Polymorphic Subtyping]
-    If $\Gamma \vdash_{DK} A \le B$, then $\lift{\Gamma} \vdash \lift{A} \le \lift{B} : [[*]]$
+    If $\Gamma \vdash_{\text{DK}} A \le B$, then $\lift{\Gamma} \vdash \lift{A} \le \lift{B} : [[*]]$
 \end{theorem}
 
-The proof is straightforward by making use of the \emph{well-formedness} lemma
-in Odersky and L\"aufer system, mentioned in Section \ref{sec:adaptation}, to conclude that
-$A$ itself is a well-formed type in $\Gamma \vdash A \le \forall x.\, B$, and
-$\forall x. A$ is well-formed in $\Gamma \vdash \forall x. \, A \le B$.
+The interesting cases are when the premise is derived by $\forallL$ or $\forallR$,
+because of the addition of premises in our generalized system
+($[[G, x : A |- B : *]]$ in \rref{s-forall-l}, $[[G |- A : *]]$ in \rref{s-forall-r}).
+Both cases can be solved with the help of the \emph{well-formedness} lemma in
+DK's system. We can conclude $\Gamma, x \vdash_{\text{DK}} A$ from
+$\Gamma \vdash_{\text{DK}} \forall x.\, A \le B$ for the $\forallL$ case,
+and conclude $\Gamma \vdash_{\text{DK}} A$ from $\Gamma \vdash_{\text{DK}} A \le \forall x.\, B$ for the $\forallR$ case.
+Then theorem \ref{thm:type-wellformedness} can be used to solve the additional
+premises in our system.
+
+% The proof is straightforward by making use of the \emph{well-formedness} lemma
+% in Odersky and L\"aufer system, mentioned in Section \ref{sec:adaptation}, to conclude that
+% $A$ itself is a well-formed type in $\Gamma \vdash A \le \forall x.\, B$, and
+% $\forall x. A$ is well-formed in $\Gamma \vdash \forall x. \, A \le B$.

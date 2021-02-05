@@ -185,11 +185,15 @@ its formalization. A more formal and technical discussion will be left to
 Sections \ref{sec:system} and \ref{sec:metatheory}.
 
 \paragraph{Polymorphic Subtyping Relation}
-Figure \ref{fig:polymorphic-subtyping} shows Odersky and L\"aufer polymorphic
-subtyping relation~\cite{odersky1996putting}.
-This relation captures a \emph{more-general-than} relation between
-types as a subtyping relation. The key rules in their
-subtyping relation are rules $\forallL$ and $\forallR$:
+Figure \ref{fig:polymorphic-subtyping} shows the syntax of types, monomorphic types (or monotypes),
+and the polymorphic subtyping relation in
+Odersky and L\"aufer's declarative type system \cite{odersky1996putting}.
+Here the syntax includes types that are universally quantified over type parameters
+($\forall$ types) as "polymorphic types" (or polytypes). The definition of monotypes
+is standard, which includes all types without occurences of universal quantifiers.
+The polymorphic subtyping relation captures a \emph{more-general-than} relation
+between types. The key rules in their subtyping relation are rules $\forallL$
+and $\forallR$:
 
 \begin{itemize}
   \item In rule $\forallL$, a polytype ($\forall x.\, A$) is considered \emph{more-general}
@@ -209,7 +213,12 @@ generalizes this relation to a dependently typed setting.
 
 \begin{figure}
 \centering
-
+\begin{equation*}
+\begin{array}{llcl}
+  \text{Types} & A, B & ~\Coloneqq~ & [[x]] \mid [[int]] \mid A \rightarrow B \mid \forall x.\, A \\
+  \text{Monotypes} & \tau, \sigma & ~\Coloneqq~ & [[x]] \mid [[int]] \mid \tau \rightarrow \sigma
+\end{array}
+\end{equation*}
 \begin{drulepar}{$\Gamma \vdash A \le B$}{Polymorphic Subtyping}
   \inferrule*[right=$\tau$]
     { }

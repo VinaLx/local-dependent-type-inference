@@ -1,22 +1,41 @@
 \section{Discussions and Future Work}
 
+\subsection{Open Terms Reduction}
+\label{sec:open-term-reduction}
+
+Usually only close terms are considered when designing the operational semantics,
+and irreducible terms like variable are not considered as values.
+But since the reduction relation $e_1 \longrightarrow e_2$ is also
+used in typing relations, the reduced expressions can be open terms and well-typed under contexts.
+\citet{full} observed this issue and included \emph{inert terms} as values
+to capture the scenario that open terms like $x e$
+(applying variable $x$ to the argument $e$) is also irreducible, which considerably
+complicates their metatheory around operational semantics.
+However since our call-by-name reduction relation only concerns when a term \emph{can} reduce
+instead of when it \emph{can not} reduce
+(there is no rule like ``if $e$ is a value, then $e_1 \longrightarrow e_2$'').
+The definition of values does not matter when reasoning about
+type-level reductions, we do not have to complicates the metatheory of our system
+with inert terms.
+
+% The type reduction in cast operators is potentially under a context that
+% is not empty, so it is likely that we are performing reduction on an open term.
+% Intuitively we should generalize the definition of value by introducing inert
+% terms~\cite{full} to handle open term reduction.
+% However since we adopt the call-by-name semantics of PITS~\cite{yang2019pure},
+% there is no value check during the reduction. Whether the result of reduction
+% inside a cast operator is a value or not does not matter during the reasoning of
+% type safety. It is not necessary to complicate the metatheory by introducing inert terms.
+
 \subsection{Design Choices of the Semantics around Cast Operators}
 \label{sec:cast-design}
 
-The type reduction in cast operators is potentially under a context that
-is not empty, so it is likely that we are performing reduction on an open term.
-Intuitively we should generalize the definition of value by introducing inert
-terms~\cite{full} to handle open term reduction.
-However since we adopt the call-by-name semantics of PITS~\cite{yang2019pure},
-there is no value check during the reduction. Whether the result of reduction
-inside a cast operator is a value or not does not matter during the reasoning of
-type safety. It is not necessary to complicate the metatheory by introducing inert terms.
-
-An alternative design
-around cast operators is the call-by-value (CBV) style~\cite{yang2019pure},
-by not considering all $\castup$ terms as values, and performing cast elimination only
-when the expression inside two casts is a value. Such design requires us to
-have a more general definition of value, and thus there would be a need for inert terms.
+An alternative design around cast operators is the
+call-by-value (CBV) style~\cite{yang2019pure},
+by not considering all $\castup$ terms as values, and performing cast
+elimination only when the expression inside two casts is a value.
+Such design requires us to have a more general definition of value, and there would
+be a need for inert terms as described in section \ref{sec:open-term-reduction}
 
 However, a simple design with CBV-style cast semantics and inert terms
 potentially leads to a system where \emph{Reduction Substitution} does not hold,
@@ -25,6 +44,7 @@ for example:
     \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow f ~ x \\
     [\lambda x : B. \, x / f] \, \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow \castdn \, \castup \, [A] \, x
 \end{gather*}
+
 So we stick with the call-by-name style semantics around cast operators and
 leave the discussion of other possibilities of design in future work.
 
@@ -105,21 +125,43 @@ Therefore the unification problem we meet is potentially inside binders and
 depends on the value of the arguments. For an extreme example in our language:
 
 \begin{equation*}
-    \lambda F : [[int]] \rightarrow F.\, \lambda f : F~42 \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
+    \lambda F : [[int]] \rightarrow [[*]].\, \lambda f : F~42 \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
 \end{equation*}
 
-Here the principal type of $\Lambda A : \star.\,\mu x : A.\, x$ is $\forall A : \star.\, A$.
-In a non-dependent setting one can easily conclude the instantiation for type $A$ to be
-$F~42 \rightarrow [[int]]$. However with the presence of dependent types,
-we are looking at the type $(\Pi x : [[int]].\, F e)$ where expression $e$
-satisfies the equation $[42/x]\,e = 42$ according to the Rule \rref{s-app}.
-Since we do not allow implicit type reduction in our system,
-the unification problem here is still first order. However, we still face the
-problems with substitutions. For example, in the program above,
-the expression $e$ has two solutions, namely variable $x$
-and $42$.\bruno{So what's the problem of multiple solutions: explain that here.
-  No principal type? The two types are incomparable? If we pick one over the other then
-something may not type-check afterwards?}
+Here the type of $\Lambda A : \star.\,\mu x : A.\, x$ should be $\forall A : \star.\, A$.
+In a non-dependent setting, one can easily conclude the instantiation for type $A$ to be
+$F~42 \rightarrow [[int]]$. However in our system, the type of $A$ is a
+dependent function type, with the shape of $(\Pi x : [[int]].\, F~e)$,
+where expression $e$ satisfies the equation $[42/x]\,e = 42$ according to \rref{s-app}.
+% Since implicit type-level computation is not allowed in our system,
+% the unification problem here remains to be first order.
+Here we have two choices for the instantiation of $e$, namely $x$ and $42$,
+but neither choice ($\Pi x.\, F~x$ or $\Pi x.\, F~42$) for type $A$ leads to a more general
+solution than choosing the other.
+
+Notably for a similar reason, the decidable
+fragment of higher-order unification~\cite{patternunification} specifically
+forbids scenarios where a unification variable applies to constants.
+The case shown above is similar, where the ``application'' is $A~42$
+(dependent function type $A$ ``applies'' to 42) with unification variable $A$,
+while slightly different, because our system do not allow implicit type-level
+computation (hence unifications remain at first-order),
+the choices of $A$ are restricted to $\Pi x : [[int]].\,F~e_1$ where $[42/x]\,e_1 = 42$,
+rather than $\Pi x : [[int]].\, e_2$ where $[42/x]\,e_2 = F~42$ in
+higher-order unification.
+
+There are potentially multiple approaches to this problem. For example, we can
+impose a similar restriction to the pattern unification and refuse to solve
+this kind of conflicts entirely, or we can only infer non-dependent function types when
+facing a unification variable, which is the choice by \citet{dh}. But which is
+the proper method for our system remains to be studied.
+
+% However, we still face the
+% problems with substitutions. For example, in the program above,
+% the expression $e$ has two solutions, namely variable $x$
+% and $42$.\bruno{So what's the problem of multiple solutions: explain that here.
+%   No principal type? The two types are incomparable? If we pick one over the other then
+% something may not type-check afterwards?}
 %We consider coming up with a formal system a challenging problem to
 %resolve the general issues that this example implies.
 

@@ -145,11 +145,13 @@ well-typed.
 > (or that the distinction matters, depending on their familiarity with
 > polymorphic subtyping and/or implicits!).
 
-TODO
+DONE
 
-(Bruno) In Figure 1 show the syntax of types and monotypes and in the text that
-explains the figure briefly explain types and monotypes (and say that the
-definition of monotypes here is standard).
+We added the syntax of types and monotypes to figure 1, briefly introduced it in
+the first paragraph of section 2.2.
+
+The role of monotypes is mentioned just below in the introduction of the forall-L
+rule (for the predicativity of relation).
 
 > p9L55 We still haven't seen the grammar... I had to flip forward at
 > this point to be able to know which direction the definition was going
@@ -214,7 +216,13 @@ TODO: Add some explanation in the paper regarding this point.
 > issues (p17L51) seems to indicate that "structurality" is an important
 > property!
 
-TODO?
+IGNORE?
+
+We are not sure that rules being structural or not is an important property
+to mention, while the orginal polymorphic subtyping rules are already non-structural,
+and subsumption rule is very common in a system with subtyping. And it does not
+seem to be a common tradition to highlight structurality of rules in programming
+languages either.
 
 > p14L36 Maybe highlight the new kinding premises?
 
@@ -244,16 +252,20 @@ corresponding turnstiles.
 
 > p26L30-43 I didn't understand these paragraphs at all.
 
-TODO
+DONE
 
-(Bruno) Regarding 30-33 I think we should expand the explanation a bit. why is concluding that these
-2 types are well-formed useful for the proof? State the answer to this explicitly in the text.
+For 30-33, we expanded the discussion of proofs of the subsumption of the
+polymorphic subtyping and hopefully it makes more sense.
+
+For 38-43, we rephrased the discussion of the possibility of the reduction of
+open terms and made it a standalong subsection.
 
 > p28L37-38 "However, we still face..." didn't make any sense to me.
 
-TODO
+DONE
 
-(Bruno: I added a comment in the paper to help a bit with the text (i.e. what may be missing)).
+We rephrased and detailed the said discussion, by specifying that the two choices
+of instantiation is not more general than the other.
 
 > It would be good to emphasize up front that pi and forall are
 > different---the former explicitly takes an argument and the latter is
