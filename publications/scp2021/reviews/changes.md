@@ -704,13 +704,20 @@ is a (dependently) typed nested datatype, which is easier to encode than a GADT.
 
 TODO: Add explanation.
 
+Yes, the encoding comes from Yang and Oliveira.
+
 >
 > The functor example didn't do anything for me.  I expected this to
 > mean functors in ML, but it wasn't.  I guess Haskell people will get
 > it, but the example will be obscure for anyone not fully initiated
 > into typed functional programming.
 
-TODO?
+We have tried to improve the examplanation to at least clarify the syntax,
+following some suggestions from reviewer 2. We admit that the Functor
+example may not be very intuitive for someone not very familiar with
+ typed functional programming. However, we do think it is a fairly common one
+ and these days Haskell-style Functors are used by programmers in various
+ other languages, like Scala or PureScript.
 
 > My biggest concern is the algorithmics of the system.  I understand
 > this is a big challenge and the authors want to stage their work and
