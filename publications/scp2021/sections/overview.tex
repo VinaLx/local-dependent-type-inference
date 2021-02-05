@@ -285,12 +285,15 @@ in the \emph{typing relation}:
 
 \noindent Without an explicit subtyping relation, the ICC is not always able
 to handle subtyping at higher-ranked positions. The approach taken by the ICC
-is similar to Hindley-Milner type system~\cite{hindley1969principal,damas1982principal},
+is similar to that of the Hindley-Milner type system~\cite{hindley1969principal,damas1982principal},
 which is also designed for dealing only with rank-1 polymorphism.
-The Hindley-Milner's declarative system also have the \textsc{GEN} rule to
-convert expressions to polymorphic types, and
-\textsc{INST} rule to instantiate polymorphic parameters. Both rules work only
-for polymorphic types at top-level positions.
+The Hindley-Milner's declarative system also has a \textsc{GEN} rule to
+convert expressions to polymorphic types, and a
+\textsc{INST} rule to instantiate polymorphic parameters.
+Both rules work only
+for polymorphic types at top-level positions. In Hindley-Milner
+the universal quantifier can only quantify over types, whereas in the ICC
+it can quantify over terms of an arbitrary type (including types themselves).
 % which also features similar rules in typing.
 % But Hindley-Milner is designed for dealing only with rank-1 polymorphism.
 In generalizations of higher-ranked polymorphic

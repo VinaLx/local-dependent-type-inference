@@ -154,7 +154,7 @@ derive $[[G1 , x : A ,, G2 |- x : B]]$ through \rref{s-sub}.
 \end{theorem}
 
 \noindent Notably \emph{substitution} has a mono-expression restriction on the
-expression being substituted with. This is result from the mono-expression restriction on
+expression being substituted with. This is due to the mono-expression restriction on
 the instantiation of polymorphic parameters in \rref{s-forall-l}.
 
 Take the following derivation as an example:
@@ -193,7 +193,7 @@ for example:
 % substitutions during reductions, including the arguments of applications and the
 % fixpoint expressions.
 \noindent As a result, \emph{substitution} only holds with the mono-expression
-restriction, It has a cascading effect on typing rules like \rref{s-app, s-mu}
+restriction. This has a cascading effect on typing rules like \rref{s-app, s-mu}
 whose expressions trigger substitutions during reduction. So the mono-expression
 restriction has to be added for those rules for the system to be type-safe.
 
@@ -275,7 +275,7 @@ we ensure the equivalence of $A$ and $[[*]]$ on this and other similar situation
 
 \paragraph{The Induction}
 
-We prove \emph{Generalized Transitivity} by performing the strong induction on
+We prove \emph{Generalized Transitivity} by performing a strong induction on
 the ordered 3-tuple of measures:
 
 $$
@@ -320,7 +320,7 @@ and the second ends with \rref{s-forall-l}, essentially we have to show the foll
 Here the only decreasing measure we can rely on is that
 $\#\forall([[ [t / x] B ]])$ is one less than $\#\forall([[forall x : A. B]])$
 (since $\tau$ is a monotype which does not contain $\forall$ quantifiers).
-To solve this case, we first performs a substitution on the premise
+To solve this case, we first perform a substitution on the premise
 $[[G , x : A |- e1 <: B : *]]$ with the help of the fact that
 $x$ does not occur in $e_1$, obtaining $[[G |- e1 <: [t / x] B : *]]$, then
 we use the inductive hypothesis provided by $\#\forall([[e2]])$.
@@ -340,7 +340,7 @@ derivation tree, so we are not able to use the inductive hypothesis of
 $\mathcal{D}_1 + \mathcal{D}_2$, and resort to the sizes of expressions
 ($\mathbf{size}(e_1) + \mathbf{size}(e_3)$)
 
-And then we have to make adjustments to solve the cases which preserve the
+We have to make adjustments to solve the cases which preserve the
 size of derivation tree, but not the sizes of the expressions, which is
 when the first premise ends with \rref{s-forall-l}:
 
@@ -399,14 +399,14 @@ the original expressions and erased expressions.
 
 \begin{theorem}[Generalized progress]
     If $[[nil |- e1 <: e2 : A]]$,
-    then $\exists \, e_1'. \, e_1 \longrightarrow e_1'$ or $e_1$ is a value.
-    And $\exists \, e_2'. \, e_2 \longrightarrow e_2'$ or $e_2$ is a value.
+    then $\exists \, e_1'. \, e_1 \longrightarrow e_1'$ or $e_1$ is a value,
+    and $\exists \, e_2'. \, e_2 \longrightarrow e_2'$ or $e_2$ is a value.
 \end{theorem}
 
 \begin{theorem}[Generalized progress on erased expressions]
     If $[[nil |- e1 <: e2 : A]]$,
-    then $\exists \, E_1'. \, \extract{e_1} \longrightarrow_E E_1'$ or $\extract{e_1}$ is an erased value.
-    And $\exists \, E_2'. \, \extract{e_2} \longrightarrow_E E_2'$ or $\extract{e_2}$ is an erased value.
+    then $\exists \, E_1'. \, \extract{e_1} \longrightarrow_E E_1'$ or $\extract{e_1}$ is an erased value,
+    and $\exists \, E_2'. \, \extract{e_2} \longrightarrow_E E_2'$ or $\extract{e_2}$ is an erased value.
 \end{theorem}
 
 \noindent We prove a generalized version of \emph{progress} that talks about both sides
@@ -417,12 +417,12 @@ The left-hand-side may be reducible with the right-hand-side being a value or vi
 Both theorems are proved by induction on the derivation of $[[nil |- e1 <: e2 : A]]$.
 The proof is mostly straightforward except when the derivation ends with $\castdn$,
 where we have to show that the inner expressions $e$ of $\castdn~e$ either reduces, or
-is $\castup$ or $\Lambda$ expressions. We prove another fact to solve the situation:
+is $\castup$ or a $\Lambda$-expression. We prove another fact to solve the situation:
 for a well-typed expression whose type reduces, that expression
-cannot be a value unless it is a $\castup$ or $\Lambda$ expression.
+cannot be a value unless it is a $\castup$ or $\Lambda$-expression.
 
 \begin{lemma}[Reducible Type]
-    If $[[G |- e : A]]$, $[[A --> B]]$ and $e$ is not $\castup$ or $\Lambda$ expressions,
+    If $[[G |- e : A]]$, $[[A --> B]]$ and $e$ is not $\castup$ or a $\Lambda$-expression,
     then $e$ is not a value.
 \end{lemma}
 
@@ -448,7 +448,7 @@ on erased values.
     then $\exists \, E'. \, \extract{e} \longrightarrow_E E'$ or $\extract{e}$ is an erased value.
 \end{corollary}
 
-Both corollaries directly follow their generalized version.
+Both corollaries directly follow from their generalized versions.
 
 \paragraph{Preservation}
 The direct operational semantics is not generally type-preserving and

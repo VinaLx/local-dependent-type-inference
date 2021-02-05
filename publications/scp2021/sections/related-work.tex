@@ -44,8 +44,17 @@ Xie et al.~\cite{xie20kind} describes algorithms and specifications
 for the form of (dependently typed) kind-inference currently present in GHC Haskell.
 The dependently typed language of types and kinds is closely related
 to \name. In particular in both calculi type equality is based only
-on $\alpha$-equivalence. One difference is that in GHC Haskell there
-are no type-level lambdas.
+on $\alpha$-equivalence. One difference is that in GHC Haskell and, more precisely,
+in the core language employed by GHC, there
+are no type-level lambdas. The GHC Haskell source language does allow
+type families~\cite{assoctypes}, which mimick type-level functions. However,
+type families, unlike lambda functions, are not first class, and do not support partial application.
+They are encoded
+in terms of equality constraints, casts and mechanisms similar to those
+employed by type classes. There is some work to make type-level functions
+provided type families first-class~\cite{kiss19higher} and also partially applied, but this
+still does not enable full type-level lambdas (see also the discussion in Section~8.1
+of ~\cite{kiss19higher} for more details).
 In our work we do allow type-level lambdas
 but lambdas can only be equal up to $\alpha$-equivalence.
 Another difference is that the kind-inference system formalized by Xie et al.

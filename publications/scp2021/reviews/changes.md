@@ -194,7 +194,7 @@ designs, such as those from Zombie.
 ANSWER:
 For example the definition of transitivity we use e1, e2 and e3. Intuitively
 transitivity should be a property concerning about subtyping, but our generalized
-version talks about general terms as well. And it is not necessary in this circumstance
+version talks about general terms as well. It is not necessary in this circumstance
 where e1 e2 and e3 mention terms or types.
 So the convention is "mostly" adopted instead of "always",
 we want to emphasize that while e1, e2 or A, B express identical meaning,
@@ -203,11 +203,11 @@ but there are subtle differences in different contexts where it may matter.
 > p12L20 If `Castdn` triggers only one step, why does the outer cast
 > form remain in `R-Castdn`?
 
-ANSWER:
-
-Because castdn triggers type-level reduction,
+ANSWER: Because castdn triggers type-level reduction,
 which is performed in the typing rules, while in R-Castdn the castdn operator
 only serves as an evaluation context.
+
+TODO: Add some explanation in the paper regarding this point.
 
 > p14L20 Maybe call out the three non-structural rules (`S-Forall-L`,
 > `S-Forall-R`, `S-Sub`)? The appearance of `S-Forall` to resolve some
@@ -277,14 +277,15 @@ section 4.1.
 DONE
 
 Renamed some of the names in the implementation to better match the name in the
-paper. And there was a Readme that state the correspondence between the names.
+paper. And is a Readme file that states the correspondence between the theorems
+in the paper and the theorems in Coq.
 
 > p18L20-23 These lemmas have identical proof scripts. Why can't you
 > prove it in one go? (You'd have to generalize your fancy tactic...)
 
 ANSWER: The problem of left reflexivity and right reflexivity have been
 different before the introduction of s-forall. And the separation of left refl
-and right refl is a tradition from the original work of unified subtyping so
+and right refl follows from the original work of unified subtyping, so
 we prefer to leave them this way.
 
 > p18L49 The substitution theorem here was quite surprising: only
@@ -364,7 +365,7 @@ TODO
 
 "A first attempt at direct generalization would be" -> "The idea of a direct generalization is"
 
-And we added a paragraph mention the direct generalization is not suitable for
+We added a paragraph mention the direct generalization is not suitable for
 formalization for the reasons discussed in later sections.
 
 The admissible rules in the final system are mentioned in subsection
@@ -373,7 +374,7 @@ The admissible rules in the final system are mentioned in subsection
 > p8L32 Can you explain how Hindley-Milner relates to the ICC rules
 > (i.e., INST at variables and GEN at `let`s)?
 
-DONE?
+DONE
 
 We add some sentences to point out the similar rules (INST and GEN) in HM's
 declarative system that talks about first rank polymorphic types.
@@ -397,7 +398,8 @@ TODO
 > p29L54 GHC has type families, which certainly _feel_ like type-level
 > lambdas. What do you mean here?
 
-TODO
+DONE: We expanded the text and discussed type families and how the type
+functions enabled by type families are not lambdas.
 
 ## Trivia
 
@@ -406,6 +408,16 @@ TODO
 IGNORE?
 
 The elsarticle-num style seems to have its own idea of bibliography sorting.
+
+TODO: I think what the reviewer wants is that references use the style
+
+"The subtyping relation (Odersky and Laufer 1999) ..."
+
+instead of
+
+"The subtyping relation [53] ..."
+
+I think we should do this.
 
 > Some of the papers in the bibliography are miscapitalized, e.g.,
 > "System fc" in [15].
@@ -427,6 +439,9 @@ DONE
 IGNORE
 
 Thanks for the prompt of omega!
+
+TODO: Why not add instructions about coq-ott, or at least a pointer to
+how to install coq-ott?
 
 > p2L35 "arizes" typo
 > p8L46 "subsumption rule of [the] typing relation"
@@ -461,7 +476,8 @@ DONE
 > irrelevant---perhaps even in the title! Given the various kinding
 > and occurrence restrictions, what programs do you disallow?
 
-TODO
+DONE: We did not go as far as the title, but we now mention this
+in the introduction as well as the overview in more detail.
 
 > A feature table comparing related systems.
 
@@ -471,7 +487,7 @@ TODO: together with similar entry above
 > application. What can we _do_ now (or when we have an algorithmic
 > version of your system)?
 
-TODO
+DONE
 
 > Consider proving whether or not all types are inhabited.
 
