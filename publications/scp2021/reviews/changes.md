@@ -506,7 +506,11 @@ TODO: discuss it in the discussion
 > have to compute type equality) are explained much bettere there,
 > perhaps you could import some of these explanations.
 
-TODO
+DONE: We added one paragraph in related work at the end of "Dependent types 
+and subtyping". There we give more details on the differences between the
+calculus formalized by us and that formalized in [25].
+
+(TODO) We tried to improve our explanations.
 
 > page 2 41-42
 > Here it is not clear which is the relation between strong

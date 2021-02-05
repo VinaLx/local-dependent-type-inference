@@ -153,6 +153,19 @@ In contrast, unified subtyping
 retains the traditional concepts of typing and subtyping, which are just two
 particular cases of the unified subtyping relation.
 
+Although the $\lambda_{I}$ calculus formalized by Yang and Oliveira shares the use
+of unified subtyping with \name, there are substantial differences between the two calculi.
+Most importantly, $\lambda_{I}$ only has explicit polymorphism via $\Pi$ types. There
+are no implicit functions and universal quantification ($\forall$ types) in $\lambda_{I}$,
+and also no guessing of monotypes. \name supports implicit polymorphism, and
+guessing the monotypes used for instantiation brings significant complications, for instance
+for proving type safety (as discussed in Section~\ref{sec:type-safety}).
+The subtyping rules for universal quantification (which do not exist in $\lambda_{I}$) also
+bring considerable challenges for transitivity, and the proof technique used by
+\name differs considerably from the proof technique used in $\lambda{I}$.
+Unlike $\lambda_{I}$, \name does not support bounded quantification, which brings
+some welcome simplifications to some of the unified subtyping rules. 
+
 \paragraph{Dependent Types with Explicit Casts} Previously
 discussed work is about the interaction between dependent types and
 subtyping. However, the other problem is the
