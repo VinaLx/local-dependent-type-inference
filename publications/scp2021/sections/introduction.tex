@@ -92,9 +92,10 @@ to address the issues of combining dependent types with subtyping.
 The use of explicit casts
 for type-level computation means that type equality is essentially
 syntactic (or rather up-to $\alpha$-equivalence).
-This avoids the use of a traditional conversion rule that concludes
-$\beta$-equivalent types to be equal,
-which essentially allows implicit type-level computation.
+This avoids the use of a traditional conversion rule that allows concluding
+$\beta$-equivalent types to be equal. In essence, the use of the conversion
+rule requires (implicit) type-level computation, since terms have to be normalized
+using $\beta$-reduction to conclude whether or not they are equal.
 Dependent type systems with a conversion rule has some major complications,
 % that arise in the presence of a conversion rule
 a well-known one is that type-inference for such systems requires \emph{higher-order

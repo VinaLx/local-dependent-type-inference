@@ -518,7 +518,11 @@ TODO: discuss it in the discussion
 > have to compute type equality) are explained much bettere there,
 > perhaps you could import some of these explanations.
 
-TODO
+DONE: We added one paragraph in related work at the end of "Dependent types 
+and subtyping". There we give more details on the differences between the
+calculus formalized by us and that formalized in [25].
+
+(TODO) We tried to improve our explanations.
 
 > page 2 41-42
 > Here it is not clear which is the relation between strong
@@ -712,13 +716,20 @@ is a (dependently) typed nested datatype, which is easier to encode than a GADT.
 
 TODO: Add explanation.
 
+Yes, the encoding comes from Yang and Oliveira.
+
 >
 > The functor example didn't do anything for me.  I expected this to
 > mean functors in ML, but it wasn't.  I guess Haskell people will get
 > it, but the example will be obscure for anyone not fully initiated
 > into typed functional programming.
 
-TODO?
+We have tried to improve the examplanation to at least clarify the syntax,
+following some suggestions from reviewer 2. We admit that the Functor
+example may not be very intuitive for someone not very familiar with
+ typed functional programming. However, we do think it is a fairly common one
+ and these days Haskell-style Functors are used by programmers in various
+ other languages, like Scala or PureScript.
 
 > My biggest concern is the algorithmics of the system.  I understand
 > this is a big challenge and the authors want to stage their work and
@@ -733,5 +744,14 @@ TODO?
 > theory alone has some interest, though; so this is not a fatal flaw,
 > but it is something that decreases my enthusiasm considerably.
 
-TODO? Probably explain a little bit to the reviewer?
-
+We certainly agree that the algorithmic aspects are a big challenge.
+However we are indeed a bit more hopeful than the reviewer. One reason
+is that, with our proposal, we can avoid one of the biggest challenges
+of type-inference work done previously for dependently typed languages:
+higher-order unification. Because we do not allow implicit type-level
+computation we can remain in the realm of first-order unification
+(see the discussion in Section 5.4). Besides that, while we agree
+that there may be some questions of whether a sound&complete algorithm
+is possible, we think that, even if that is not feasible,
+having a sound (but not complete) is a perfectly reasonable, useful
+and achievable goal. 
