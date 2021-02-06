@@ -78,9 +78,15 @@ for our formulation of indexed lists:
   & \mathbf{data} ~ \Nat = \Zero ~|~ \Succ~\Nat &&\\
   & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n)) &&
 \end{flalign*}
-In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
+\noindent In this definition, the index grows towards the tail of the list,
+which is admittedly not the most useful definition.
+But the reason we did not choose the more practical
+example, where the index represents the length of the list, is that it requires
+language facilities like the GADT\cite{gadt1,gadt2} which \name does not support.
+Here we encode $\mathrm{List}$ and its constructors as conventional terms. We
 show the definition for \verb|List|, and the types for the constructors next
 (implementation omitted):
+
 \begin{flalign*}
 &\List : \star \rightarrow \Nat \rightarrow \star &&\\
 &\List = \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \Pi r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r &&\\
@@ -123,7 +129,8 @@ such as Agda~\cite{2007_norell_agda} or Idris~\cite{brady2013idris}.
 \paragraph{Implicit Higher-Kinded Types}
 
 The implicit capabilities also extend to the realm of higher-kinded types~\cite{tapl}.
-For example we can define a \verb|Functor| datatype as:
+For example we can define a record type \verb|Functor|,
+to mimic the typeclass\cite{typeclasseswadler,typeclasseskaes} \verb|Functor| in Haskell:
 \newcommand{\Functor}[0]{\mathrm{Functor}}
 \newcommand{\MkFunctor}[0]{\mathrm{MkF}}
 \newcommand{\Id}[0]{\mathrm{Id}}
@@ -132,7 +139,9 @@ For example we can define a \verb|Functor| datatype as:
 \begin{flalign*}
   &\mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~\{\fmap : \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b\} &&
 \end{flalign*}
-In this case the type of $fmap$ is:
+\noindent Since its a record type, $\MkFunctor$ is the data constructor,
+and $\fmap$ is the field accessor.
+The type of $fmap$ is:
 \begin{flalign*}
   & \fmap : \forall F : \star \to \star.~\Functor~F \to \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b &&
 \end{flalign*}
@@ -148,8 +157,7 @@ and then use \verb|fmap| with three arguments:
 \begin{flalign*}
 & \fmap~\mathrm{idFunctor}~\Succ~(\MkId~0) &&
 \end{flalign*}
-
-\noindent Note that, because our calculus has no mechanism like type classes we pass the ``instance'' explicitly.
+\noindent Note that, because our calculus has no mechanism like typeclasses we pass the ``instance'' explicitly.
 Nonetheless, three other arguments (the $F$, $a$, and $b$) are implicitly instantiated.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
@@ -193,6 +201,8 @@ Odersky and L\"aufer's declarative type system \cite{odersky1996putting}.
 Here the syntax includes polymorphic types (or polytypes), which are universally quantified over type parameters
 ($\forall$ types). The definition of monotypes
 is standard, and includes all types without occurences of universal quantifiers.
+Context $\Gamma$ is a list of variables that are allowed to occur free in types
+$A$ and $B$ in the subtyping relation.
 The polymorphic subtyping relation captures a \emph{more-general-than} relation
 between types. The key rules in their subtyping relation are rules $\forallL$
 and $\forallR$:
@@ -205,7 +215,7 @@ and $\forallR$:
         but just monotypes. In other words, the relation is \emph{predicative}~\cite{Martin-Lof-1972}.
         This restriction ensures that the relation is \emph{decidable}.
 
-  \item In rule  $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
+  \item In rule $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
         when it is still more general than the head of the polytype, with the type
         parameter instantiated by an abstract variable $x$.
 \end{itemize}
@@ -427,30 +437,41 @@ soundness proof, we also have a similar restriction and thus cannot encode progr
 as the above.
 
 \paragraph{Type-level Computation and Casts}
-\name features a fixpoint that supports general recursion at both
+\name features a fixpoint operator that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
-we do not provide the congruence rule like other dependently
-typed systems such as the Calculus of Constructions~\cite{coc}
+we do not provide the conversion rule (or congruence rule) like other
+dependently typed systems such as the Calculus of Constructions~\cite{coc}
 to support implicit type-level reduction.
 \begin{mathpar}
   \inferrule*[lab=Cong]
-    {[[G |- e : A]] \\ A =_\beta B}
+    {[[G |- e : A]] \\ \rulehl{A =_\beta B}}
     {[[G |- e : B]]}
 \end{mathpar}
-Instead, we partially adopt the
-call-by-name design of \emph{Pure Iso-Type Systems} (PITS)~\cite{isotype,yang2019pure},
-and provide operators $\castdn$ and $\castup$ to explicitly trigger one-step
+
+\noindent The presence of the conversion rule makes the decidability of
+type checking rely on the strong normalization of type-level computation
+(to determine whether two types are $\beta$-equivalent).
+But the presence of general recursion denies the strong normalization property
+of our language.
+
+Instead of using a conversion rule, we adopt the call-by-name design of
+\emph{Pure Iso-Type Systems} (PITS)~\cite{isotype,yang2019pure},
+and provide $\castdn$ and $\castup$ operators to explicitly trigger one-step
 type reductions or expansions as shown in the typing rules below.
 \begin{mathpar}
   \inferrule*[lab=Castup]
-    {[[G |- e : B]] \\ [[A --> B]] \\ [[G |- A : k]]}
+    {[[G |- e : B]] \\ \rulehl{[[A --> B]]} \\ [[G |- A : k]]}
     {[[G |- castup [A] e : A]]}
   \and
   \inferrule*[lab=Castdn]
-    {[[G |- e : A]] \\ [[A --> B]] \\ [[G |- B : k]]}
+    {[[G |- e : A]] \\ \rulehl{[[A --> B]]} \\ [[G |- B : k]]}
     {[[G |- castdn e : B]]}
 \end{mathpar}
 
-\noindent Note that there are some other cast designs in the literature~\cite{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15}, but
-we adopt the PITS design here for simplicity. We believe that other cast designs could
-also be adopted instead, but leave this for future work.
+\noindent Now since reductions only perform one step per use of cast
+operators, whether a term is strongly normalizing no longer affects the
+decidability of type checking.
+Note that there are some other cast designs in the
+literature~\cite{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15}, but
+we adopt the PITS design here for simplicity. We believe that other cast
+designs could also be adopted instead, but leave this for future work.

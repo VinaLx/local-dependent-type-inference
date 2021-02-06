@@ -364,11 +364,17 @@ explain clearer.
 
 > p6L13 Maybe say earlier that `MkF` is constructing typeclass
 > dictionaries? It's clear by the end of the page, but it will be easier
-> for readers to know it up front. I would also explicitly mention that
+> for readers to know it up front.
+
+DONE
+
+> I would also explicitly mention that
 > typeclass instantiation---a form of implicit argument in Haskell!---is
 > out of scope here, due to proof irrelevance.
 
-TODO
+DONE
+
+We add a sentence explaining that we have to pass the "typeclass" instance explicitly.
 
 > p7L51 When you say "first attempt", it would be nice to give a clue as
 > to what goes wrong... we find out later that the answer is
@@ -518,11 +524,12 @@ TODO: discuss it in the discussion
 > have to compute type equality) are explained much bettere there,
 > perhaps you could import some of these explanations.
 
-DONE: We added one paragraph in related work at the end of "Dependent types 
+DONE: We added one paragraph in related work at the end of "Dependent types
 and subtyping". There we give more details on the differences between the
 calculus formalized by us and that formalized in [25].
 
-(TODO) We tried to improve our explanations.
+And we extended the paragraph in overview discussing the addition
+of cast operators over a conversion rule, hopefully it makes more sense now.
 
 > page 2 41-42
 > Here it is not clear which is the relation between strong
@@ -545,7 +552,11 @@ We rephrased the paragraph and included a brief explanation of "conversion rule"
 > parameter the initial index of the list? if it is the case can you say
 > this? because the role of indexes is never shown
 
-TODO
+DONE
+
+We added an explanation after showing the definition that we did not choose a
+more intuitive example is because it would require the GADT which our language
+does not currently support.
 
 > 29
 > I do not understand the role of the "r" parameter in the definition of
@@ -577,18 +588,27 @@ of `map`.
 > the name of the field selector, and field selection is written as
 > application of the field selector.
 
-TODO: Do not ignore this one, just use the explanation of the reviewer and add
-such an explanation to the paper to clarify things better to non-Haskell
-programmers.
+DONE
+
+You are right, the Functor here is a record type that mimic the typeclass, which
+we added explanations to point out.
 
 > It will also be useful to point out exactly what could not be expressed in, e.g., Haskell.
 > You say (line 33) that F is implicitly instantiated, but F is not Functor Id here?
 
-TODO
+DONE
+
+We added a sentence to explain this Functor, unlike the typeclass, the instance
+has to be explicitly passed as argument.
+
+The parameter `F`, as shown in the type of fmap, refers to the higher-kinded
+type parameter of `Functor`, in this case, `Id`.
 
 > page 7 you should explain which is the role of the type variables in Gamma; that is, what is only allowed if the type variable is available in Gamma
 
-TODO
+DONE
+
+We added a sentence to explain the role of \Gamma in section 2.2.
 
 > page 10 line 50: should reference [42] be [41]? (that is, [25])
 
@@ -706,17 +726,20 @@ DONE
 > work once you get to zero, which kind of defeats the purpose...or
 > perhaps I'm not understanding something.
 
-TODO: Probably mention that the example is a little artificial. The example
-is a (dependently) typed nested datatype, which is easier to encode than a GADT.
+DONE
 
->
+We added an explanation after showing the definition that we did not choose a
+more intuitive example is because it would require the GADT which our language
+does not currently support.
+
 > I also didn't understand the encoding technique in the list/map
 > example.  What is r in the encoding of List?  Is this from Yang and
 > Oliveira?
 
-TODO: Add explanation.
+DONE: We added a short explanation of the Scott Encoding with an analogy of the
+continuation passing style.
 
-Yes, the encoding comes from Yang and Oliveira.
+The parameter `r` is the "final return type" of the CPS functions.
 
 >
 > The functor example didn't do anything for me.  I expected this to
@@ -754,4 +777,4 @@ computation we can remain in the realm of first-order unification
 that there may be some questions of whether a sound&complete algorithm
 is possible, we think that, even if that is not feasible,
 having a sound (but not complete) is a perfectly reasonable, useful
-and achievable goal. 
+and achievable goal.
