@@ -52,8 +52,8 @@ A first challenge arises from the interaction between recursion and dependent ty
 Essentially recursion breaks strong normalization, which
 many common properties in dependently typed calculi depend upon. One of the most
 typical properties among them is the decidability of type checking,
-which simply cannot be guaranteed if the termination of
-type-level computations involving recursions cannot be guaranteed.
+which simply cannot be guaranteed if some
+type-level computations are non-terminating.
 However, this area has been actively investigated in the
 last few years, and a general approach~\cite{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15,
   isotype} based on explicit casts for type-level computations,
@@ -96,9 +96,9 @@ This avoids the use of a traditional conversion rule that allows concluding
 $\beta$-equivalent types to be equal. In essence, the use of the conversion
 rule requires (implicit) type-level computation, since terms have to be normalized
 using $\beta$-reduction to conclude whether or not they are equal.
-Dependent type systems with a conversion rule has some major complications,
+Dependent type systems with a conversion rule have some major complications.
 % that arise in the presence of a conversion rule
-a well-known one is that type-inference for such systems requires \emph{higher-order
+A well-known one is that type-inference for such systems requires \emph{higher-order
   unification}, which is known to be \emph{undecidable}~\cite{goldfarb1981undecidability}.
 By employing a system with $\alpha$-equivalence only we stay closer to existing
 languages like Haskell, where type equality (at least at the core language level)

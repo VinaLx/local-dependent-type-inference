@@ -36,8 +36,8 @@ Figure \ref{fig:syntax} shows the syntax of \name. The syntax is similar
 to the Calculus of Constructions, featuring the unified concept of terms and types,
 and the kind hierarchy of $[[*]]$ and $[[box]]$.
 % $[[*]]$ and $[[box]]$ in the kind hierarchy,
-where $[[*]]$ is the type (or kind) of other types like $[[int]]$ and $\Pi$ types,
-the type of $[[*]]$ itself is $[[box]]$, but $[[box]]$ as a kind is not well-kinded.
+The term $[[*]]$ is the type (or kind) of other types like $[[int]]$ and $\Pi$ types,
+the type of $[[*]]$ itself is $[[box]]$, but $[[box]]$ itself has no type/kind.
 % , and unifying the concepts of terms and types as expressions.
 Due to the unified syntax, types and
 expressions ($e$, $A$ and $B$) are used
@@ -66,7 +66,7 @@ types (i.e. $x$ can have any type $A$ instead of just kind $\star$). The idea of
 \emph{Mono-expressions} $\tau$ exclude polymorphic types ($[[forall x : A. B]]$) from the syntax,
 which follows a similar design in various work about predicative
 higher-ranked polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical}.
-With dependent types, we choose to only excludes the universal types, but not
+With dependent types, we choose to only exclude universal types, but not
 any other related expressions.
 
 Notably,
@@ -76,9 +76,8 @@ types can be viewed as the implicit counterpart of $\Pi$ types.
 So we also have implicit lambda expressions ($[[bind x : A. e]]$),
 % , which are the implicit counterpart of $\lambda$ abstractions
 which is different from the ``usual'' $\lambda$ expressions and explicit function
-types ($\Pi$ types), for which arguments should be explicitly passed. The argument
+types ($\Pi$ types), for which arguments should be explicitly passed. The arguments
 of implicit lambda ($\Lambda$) expressions are deduced during type checking.
-.
 % The design used in \name
 This is a similar design to
 % is similar to the design of
@@ -114,18 +113,18 @@ by the cast operators. The second reduction relation is deterministic and
 is employed to give the run-time semantics of expressions.
 
 \paragraph{Nondeterministic Reduction}
-Figure \ref{fig:semantics} presents the small-step operational semantics of our system,
-which mostly follows the ``call-by-name'' variant of \emph{Pure Iso-Type Systems} (PITS)
-~\cite{yang2019pure} corresponding to the calculus of constructions, where
+Figure \ref{fig:semantics} presents the small-step operational semantics of \name.
+It mostly follows the ``call-by-name'' variant of \emph{Pure Iso-Type Systems} (PITS)
+~\cite{yang2019pure} corresponding to the calculus of constructions:
 the arguments of the $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
 Meanwhile, since reductions can be performed inside $\castdn$ terms (\rref{r-castdn}),
 $\castup$ terms are considered to be values to avoid nondeterministic reduction of
-terms like $\castup [A] \castdn ~e$, where $e$ is reducible
+terms like $\castup [A] (\castdn ~e)$, where $e$ is reducible
 (either the reduction of the inside $\castdn$ term, or the reduction via
 \rref{r-cast-elim} could be the choice, should $\castup$ terms be reducible).
 There is an alternative design following the ``call-by-value'' variant of PITS, we
-will discuss that in section \rref{sec:cast-design}.
+will discuss that in Section~\ref{sec:cast-design}.
 Also, the unfold operation of the fixpoint operator is supported by \rref{r-mu}.
 
 \begin{figure}[t]
@@ -147,7 +146,7 @@ Also, the unfold operation of the fixpoint operator is supported by \rref{r-mu}.
     \label{fig:semantics}
 \end{figure}
 
-Due to the presence of the instantiation of implicit parameters, the direct operational
+Due to the presence of instantiation of implicit parameters, the direct operational
 semantics is not deterministic, and potentially not type-preserving because of
 \rref{r-inst,r-cast-inst}. The indeterminacy is caused by the guess of $\tau$,
 which can be an arbitrary mono-expression, since we do not have access to any typing
@@ -218,7 +217,7 @@ correspondence to their unerased counterpart, which is discussed in Section \ref
 \label{sec:type-system}
 
 Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt a
-simplified design of unified subtyping~\cite{full}, where the subtyping rules and
+simplified design based on unified subtyping~\cite{full}. The subtyping rules and
 typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
 
 Unified subtyping solves the challenging issue of mutual dependency between typing
@@ -235,6 +234,9 @@ Although unified, the typing rules can still be viewed as two parts, the ``typin
 (\rref{s-pi,s-forall,s-forall-l,s-forall-r}). We follow a usual design for
 typing rules for lambda abstraction and application, and the subtyping rule of
 dependent function types ($\Pi$ type).
+\bruno{I don't agree with this last paragraph. If you have a language with recursive types,
+  type applications and type functions then you need subtyping rules similar to s-abs, s-app or s-mu,
+even when you have a design not based on unified subtyping. I suggest omitting this paragraph.}
 
 \begin{figure}
     \centering
@@ -298,6 +300,7 @@ dependent function types ($\Pi$ type).
     \caption{(Sub)Typing Rules of \name.}
     \label{fig:typing}
 \end{figure}
+\bruno{Add syntactic sugar also for subtyping and well-formedness.}
 
 \paragraph{Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
@@ -362,9 +365,9 @@ at the type-level.
 
 \paragraph{Computational Irrelevance of Implicit Parameters}
 
-As mentioned in section \ref{sec:computational-irrelevance-overview}, our language
+As mentioned in Section \ref{sec:computational-irrelevance-overview}, our language
 does not handle computationally relevant implicit variables.
-The direct operational semantics shown in figure \ref{fig:semantics} chooses
+The direct operational semantics shown in Figure \ref{fig:semantics} chooses
 arbitrary mono-expressions to instantiate the implicit arguments,
 which potentially breaks type safety.
 Thus, we adopt a restriction in \rref{s-bind} that is similar to the

@@ -30,9 +30,9 @@ with their types, and the \verb|A| in the definition refers back to the
 polymorphic parameter. In the examples below, we drop the parentheses around
 variables and their type annotations such as $[[lambda x : A. x]]$ for conciseness.
 
-Similar to implicit polymorphism in other languages,
+Similarly to implicit polymorphism in other languages,
 the polymorphic parameters of the $\forall$ types are implicitly instantiated
-during applications. Thus, in the call of the identity function, we
+during applications. Thus, in the call of the identity function ($id~42$), we
 do not need to specify the argument used for instantiation. In contrast,
 in an explicitly polymorphic language (such as System F) we would need
 to call $id$ with an extra argument that specifies the instantiation of $A$:
@@ -80,15 +80,17 @@ for our formulation of indexed lists:
 \end{flalign*}
 In \name we can encode the $\mathrm{List}$ and the constructors as conventional terms. We
 show the definition for \verb|List|, and the types for the constructors next
-(implementation omitted). In later subsequent examples we will just assume some
-Haskell-style syntactic sugar for datatype definitions and constructors.
+(implementation omitted):
 \begin{flalign*}
 &\List : \star \rightarrow \Nat \rightarrow \star &&\\
 &\List = \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \Pi r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r &&\\
 &\Nil : \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n &&\\
 &\Cons : \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n &&
 \end{flalign*}
-\noindent Then we can define a \verb|map| function over \verb|List| with the type:
+\noindent
+In later subsequent examples we will just assume some
+Haskell-style syntactic sugar for datatype definitions and constructors.
+Using the above definitions, we can define a \verb|map| function over \verb|List| with the type:
 \begin{flalign*}
   & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n &&
 \end{flalign*}
@@ -188,9 +190,9 @@ Sections \ref{sec:system} and \ref{sec:metatheory}.
 Figure \ref{fig:polymorphic-subtyping} shows the syntax of types, monomorphic types (or monotypes),
 and the polymorphic subtyping relation in
 Odersky and L\"aufer's declarative type system \cite{odersky1996putting}.
-Here the syntax includes types that are universally quantified over type parameters
-($\forall$ types) as "polymorphic types" (or polytypes). The definition of monotypes
-is standard, which includes all types without occurences of universal quantifiers.
+Here the syntax includes polymorphic types (or polytypes), which are universally quantified over type parameters
+($\forall$ types). The definition of monotypes
+is standard, and includes all types without occurences of universal quantifiers.
 The polymorphic subtyping relation captures a \emph{more-general-than} relation
 between types. The key rules in their subtyping relation are rules $\forallL$
 and $\forallR$:
@@ -248,7 +250,7 @@ The parameters of universal types can only be types in the polymorphic
 subtyping relation by Odersky and L\"aufer.
 In \name, we generalize the polymorphic parameters so that they can
 be values or other kinds of types as well.
-The idea of a direct generalization is:
+A first idea of a direct generalization is:
 
 \begin{mathpar}
   \inferrule*[right=$\forallL'$]
@@ -269,7 +271,7 @@ Similarly, for rule $\forallR'$ the context for the subtyping rule should includ
 for the universally quantified variable.
 However, this idea introduces the issue of potential mutual dependency between
 subtyping and typing judgements, so further adjustments have to be made to formalize
-this idea, which is discussed later in this section and section
+this idea, which is discussed later in this section and Sections
 \ref{sec:type-system} and \ref{sec:adaptation}.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
@@ -296,7 +298,7 @@ in the \emph{typing relation}:
 to handle subtyping at higher-ranked positions. The approach taken by the ICC
 is similar to that of the Hindley-Milner type system~\cite{hindley1969principal,damas1982principal},
 which is also designed for dealing only with rank-1 polymorphism.
-The Hindley-Milner's declarative system also has a \textsc{GEN} rule to
+Hindley-Milner's declarative system also has a \textsc{GEN} rule to
 convert expressions to polymorphic types, and a
 \textsc{INST} rule to instantiate polymorphic parameters.
 Both rules work only
@@ -312,7 +314,7 @@ it has been shown that rules like $\forallL$ and $\forallR$ generalize rules lik
 we follow a similar, more general, approach in \name.
 
 \paragraph{Unified Subtyping}
-However, the revised subtyping relation with $\forallL'$ and $\forallR'$ rules suffers from an
+The revised subtyping relation with $\forallL'$ and $\forallR'$ rules suffers from an
 important complication compared to the Odersky and L\"aufer formulation: there is now
 a notorious mutual dependency between typing and subtyping.
 In Odersky and L\"aufer's rules, the subtyping rules
@@ -339,7 +341,7 @@ subtyping relation into a single relation to avoid the mutual dependency:
 \end{mathpar}
 The interpretation of this judgement is: under context $\Gamma$, $e_1$ is a subtype
 of $e_2$ and they both are of type $A$. The judgements for subtyping and typing
-are both special form of unified subtyping: % with the involvement of kind $[[*]]$:
+are both special forms of unified subtyping: % with the involvement of kind $[[*]]$:
 \begin{mathpar}
   \Gamma \vdash A \le B \triangleq \Gamma \vdash A \le B : [[*]]
   \and
