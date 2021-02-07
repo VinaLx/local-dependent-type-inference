@@ -66,7 +66,11 @@ would be available).
 > metatheoretical concerns would be well justified. But if all types
 > are inhabited, perhaps the theory can be made a touch simpler!
 
-TODO: In the discussion, discuss the issue with strengthening.
+DONE
+
+We rewrote the discussion around the problem of habitability and strengthening,
+to hopefully clarify why we do not have the strengthening lemma for now, which
+leads to a series of changes during the generalization of polymorphic subtyping.
 
 ## Proof Irrelevance
 
@@ -411,7 +415,9 @@ which is not true for rule s-forall-L without this premise.
 > p17L43 The core issue here is that the type A may be bottom, i.e.,
 > uninhabited... right?
 
-TODO
+DONE
+
+We rewrote discussion related to the habitability and strengthening.
 
 > p29L54 GHC has type families, which certainly _feel_ like type-level
 > lambdas. What do you mean here?
@@ -454,12 +460,10 @@ DONE
 > the coq-ott package (and the omega tactic is deprecated in favor of
 > lia---a mere warning).
 
-IGNORE
+DONE
 
-Thanks for the prompt of omega!
-
-TODO: Why not add instructions about coq-ott, or at least a pointer to
-how to install coq-ott?
+We added the dependency of coq-ott in the README of implementation repository.
+And Thanks for the prompt of omega!
 
 > p2L35 "arizes" typo
 > p8L46 "subsumption rule of [the] typing relation"
@@ -509,7 +513,11 @@ DONE
 
 > Consider proving whether or not all types are inhabited.
 
-TODO: discuss it in the discussion
+DONE
+
+We rewrote the discussion around the problem of habitability and strengthening,
+to hopefully clarify why we do not have the strengthening lemma for now, which
+leads to a series of changes during the generalization of polymorphic subtyping.
 
 # Review 2
 

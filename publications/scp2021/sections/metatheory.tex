@@ -35,6 +35,7 @@ in our adaptation to combat these issues, which result in the difference between
 our current system and a direct generalization.
 
 \subsubsection{Reverse Substitution of Well-Formedness.}
+\label{sec:reverse-subst}
 Rule $\forallL$ relies on the \emph{reverse substitution} property, but this property
 does not hold in a dependently typed setting. Thus we need an alternative design that
 still ensures well-formedness, but without relying on the reverse substitution property.
@@ -60,24 +61,32 @@ So we add a premise $[[G , x : A |- B : *]]$ in \rref{s-forall-l} to directly
 ensure the well-formedness of types in the conclusion.
 
 \subsubsection{Strengthening of Contexts.}
+\label{sec:strengthening}
 
 Rule $\forallR$ relies on a strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{does not occur in}~ A$, then $\Gamma \vdash A$}, which
 is trivial to prove.
-However its generalization:
+However the admissibility of its generalization:
 \emph{if $[[G, x : B |- A : *]]$ and $x ~\text{does not occur in}~ A$, then $[[G |- A : *]]$},
-does not hold in our system. We can construct the following example:
+% does not hold in our system.
+is much more complicated to reason about. We can construct the following example:
 \begin{equation*}
     F : [[int]] \rightarrow [[*]],\, A : [[*]],\, \rulehl{a : A} \vdash F ~ ([[(bind x : A. lambda y : int. y)]]~ 42) : [[*]]
 \end{equation*}
 The variable $a$ does not appear in any expression, but plays a
-crucial role when considering the subtyping relation $\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$.
+crucial role when considering the subtyping relation
+$\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$.
 In this case, we cannot apply \rref{s-forall-l} while we are not able to find a
 well-typed instance for the polymorphic parameter, so the variable in the context
-is needed even though it does not occur anywhere.
+is needed even though it does not occur anywhere in the final judgement.
+But since our system has the fixpoint operator, theoretically we could construct
+a diverging program $[[mu x : A. x]]$ to instantiate the implicit parameter, but
+this possibility leads to several other issues which we are going to discuss in
+section \ref{sec:habitability}.
 
-To counter the lack of strenghtening, we add a premise $[[G |- A : *]]$ to \rref{s-forall-r},
-requiring $A$ to be a well-typed type without the help of the fresh variable.
+Due to the complications, we assume that strengthening does not hold in our system for now.
+We add a premise $[[G |- A : *]]$ to \rref{s-forall-r} to workaround this issue,
+requiring $A$ to be a well-kinded type without the help of the fresh variable.
 A consequence of adding this premise is that we will encounter a circular proof
 while trying to prove $[[G |- forall x : A. B <: forall x : A . B : *]]$ for
 arbitrary $A$ and $B$ by first applying \rref{s-forall-r}. We resolve this issue by

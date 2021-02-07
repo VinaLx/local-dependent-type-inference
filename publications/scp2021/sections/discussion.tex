@@ -112,13 +112,15 @@ on a unified subtyping system as future work.
 \subsection{Algorithmic System and Challenges}
 
 \name does not currently have an algorithmic system since we
-consider a formalized algorithm for dependent type system itself a substantial challenge so it
-is left for future work. While trying to compare to existing algorithmic systems
+consider a formalized algorithm for dependent type system itself a
+substantial challenge so it is left for future work.
+While comparing to existing algorithmic systems
 for higher-ranked polymorphic type inference for System F-like languages
 ~\cite{dunfield2013complete,zhao19mechanical},
-we identify the following challenges to develop an algorithmic system for \name.
+we identify one of the interesting challenges to develop an algorithmic system for \name.
+% the following challenges to develop an algorithmic system for \name.
 
-\paragraph{Unification Inside Binders}
+% \paragraph{Unification Inside Binders}
 In dependent type systems, function types ($\Pi$ types) are dependent:
 the type of applications potentially depends on the values of their arguments.
 Therefore the unification problem we meet is potentially inside binders and
@@ -165,25 +167,89 @@ the proper method for our system remains to be studied.
 %We consider coming up with a formal system a challenging problem to
 %resolve the general issues that this example implies.
 
-\paragraph{Inhabitation Problem}
+\subsection{The Issues of Strengthening Property}
+\label{sec:habitability}
 
-In polymorphic subtyping, we do not need a ``real'' instantiation to conclude
-that a subtyping relation holds. For example, in polymorphic subtyping:
+The current lack of proof of \emph{strengthening} property leads to non-trivial
+changes during the generalization of polymorphic subtyping relation as
+described in section \ref{sec:strengthening}. It would be nice to be able to
+have it so the system could be simplified. However the issues around it are
+quite tricky.
+
+\paragraph{Habitability of types}
+One of the issues, as we mentioned earlier, is around not being able to find an
+well-typed instantiation for an arbitrary type, without the presence of certain
+seemingly unused variable, for example:
+
 \begin{equation*}
-    \forall A.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A.\, A \rightarrow A) \rightarrow [[int]]
+    A : [[*]], \rulehl{a : A} \vdash [[(bind x : A. lambda y : int. y)]]~42 : [[int]]
 \end{equation*}
-\noindent holds by first applying rule $\forallL$ with a dummy instantiation,
-say $[[int]]$, and then showing $\forall A.\, A \rightarrow A \le [[int]] \rightarrow [[int]]$.
-This clearly holds by applying rule $\forallL$ again. However such dummy instantiations
-pose extra difficulties in \name:
-\begin{equation*}
-    \forall A : T.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A : T.\, A \rightarrow A) \rightarrow [[int]]
-\end{equation*}
-We cannot apply \rref{s-forall-l} until we find a valid instantiation for type $A$,
-therefore we encounter an \emph{inhabitation problem} for \name. This problem is
-undecidable for System F~\cite{dudenhefner2019simpler}. We do not expect it to be
-decidable in a more complicated system with strong normalization.
-Since we support general recursion in our language with a mono-expression
-restriction we expect that all types are
-inhabited. However, we currently do not have the proof backing the claim that
-this is the case.
+
+Here to conclude $[[bind x : A. lambda y : int. y]]$ having type $[[int]] \rightarrow [[int]]$,
+we want to derive $\forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$ by
+using \rref{s-forall-l}. That would require a well-typed instantiation
+for the abstract type $A$, and that is where the variable $a$ in the context
+comes to rescue, although not being used anywhere in the original typing relation.
+
+However since our system supports fixpoint operators, all monotypes in our system
+are easily inhabited with the diverging programs with their inhabitants (note that due
+to the issue discussed in \label{sec:reverse-subst}, our fixpoints only support monotypes).
+For instance, we do not need the variable $a$ in the context in the example above, we can just find
+the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l}.
+And it is \emph{likely} that any polytype can have its inhabitant with the help
+of monotype fixpoints, for example, type $\forall A : [[*]],\, A \rightarrow B$ with $B$
+being an abstract type, has an inhabitant $\Lambda A : [[*]].\,[[lambda x : A. mu y : B. y]]$.
+
+But recall that the polymorphic types in our system also serve as ``implicit function types'',
+it would be a weird choice to infer a diverging program as the function parameter.
+It is not a big deal for the time being, because we guarantee the runtime irrelevance
+of all the implicit parameters. This design will not be reasonable if we are
+going to relax the restriction of runtime irrelevance in the future.
+
+\paragraph{Occurences of variable that matters}
+Another issue for the strengthening is that even if we have the issue of
+inhabitability covered, it is tricky to guarantee that a variable unused in the
+final subtyping conclusion, does not matter for the whole derivation.
+For example in \rref{s-app}, where type $A$ in the premises does not
+occur at all in the conclusion, we cannot guarantee that a variable that
+does not occur in the conclusion, does not occur in type $A$. We can construct
+the following example:
+
+\begin{mathpar}
+    \inferrule*[Right=s-app]
+      {  T : [[*]] \vdash 42 : \forall y : T \rightarrow T.\, [[int]]
+      \\ T : [[*]] \vdash [[lambda x : int. x]] : (\forall y : T \rightarrow T.\, [[int]]) \rightarrow [[int]] }
+      {T : [[*]] \vdash ([[lambda x : int. x]])~42 : [[int]]}
+\end{mathpar}
+
+\noindent Here the variable $T$ does not occur in the conclusion, but occurs in
+the premises. The interesting part is that although it occurs in the premises, without
+it, the conclusion holds with a different derivation tree (by directly deriving $\vdash 42 : [[int]]$).
+For this example, although the strengthening property holds, we do not currently
+know how to determine whether a variable really \emph{matters} for a derivation.
+
+So for the two issues we discussed above, we decide to live with the lack of
+strengthening property in our system for now, at the cost of a slightly more
+complicated system with additional kinding premise in \rref{s-forall-r}
+and the addition of \rref{s-forall}.
+
+% In polymorphic subtyping, we do not need a ``real'' instantiation to conclude
+% that a subtyping relation holds. For example, in polymorphic subtyping:
+% \begin{equation*}
+%     \forall A.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A.\, A \rightarrow A) \rightarrow [[int]]
+% \end{equation*}
+% \noindent holds by first applying rule $\forallL$ with a dummy instantiation,
+% say $[[int]]$, and then showing $\forall A.\, A \rightarrow A \le [[int]] \rightarrow [[int]]$.
+% This clearly holds by applying rule $\forallL$ again. However such dummy instantiations
+% pose extra difficulties in \name:
+% \begin{equation*}
+%     \forall A : T.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A : T.\, A \rightarrow A) \rightarrow [[int]]
+% \end{equation*}
+% We cannot apply \rref{s-forall-l} until we find a valid instantiation for type $A$,
+% therefore we encounter an \emph{inhabitation problem} for \name. This problem is
+% undecidable for System F~\cite{dudenhefner2019simpler}. We do not expect it to be
+% decidable in a more complicated system with strong normalization.
+% Since we support general recursion in our language with a mono-expression
+% restriction we expect that all types are
+% inhabited. However, we currently do not have the proof backing the claim that
+% this is the case.
