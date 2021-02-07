@@ -27,7 +27,7 @@ with inert terms.
 % inside a cast operator is a value or not does not matter during the reasoning of
 % type safety. It is not necessary to complicate the metatheory by introducing inert terms.
 
-\subsection{Design Choices of the Semantics around Cast Operators}
+\subsection{Call-by-value Semantics of Cast Operators}
 \label{sec:cast-design}
 
 An alternative design around cast operators is the
@@ -192,21 +192,22 @@ for the abstract type $A$, and that is where the variable $a$ in the context
 comes to rescue, although not being used anywhere in the original typing relation.
 
 However since our system supports fixpoint operators, all monotypes in our system
-are easily inhabited with the diverging programs with their inhabitants (note that due
+are easily inhabited with diverging programs as inhabitants (note that due
 to the issue discussed in \label{sec:reverse-subst}, our fixpoints only support monotypes).
-For instance, we do not need the variable $a$ in the context in the example above, we can just find
-the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l}.
+For instance, we do not need the variable $a$ in the context in the example above,
+we can just find the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l}.
 And it is \emph{likely} that any polytype can have its inhabitant with the help
 of monotype fixpoints, for example, type $\forall A : [[*]],\, A \rightarrow B$ with $B$
 being an abstract type, has an inhabitant $\Lambda A : [[*]].\,[[lambda x : A. mu y : B. y]]$.
 
 But recall that the polymorphic types in our system also serve as ``implicit function types'',
-it would be a weird choice to infer a diverging program as the function parameter.
-It is not a big deal for the time being, because we guarantee the runtime irrelevance
-of all the implicit parameters. This design will not be reasonable if we are
-going to relax the restriction of runtime irrelevance in the future.
+it would be a weird choice to infer diverging programs as their implicit arguments.
+Inferring infinite loops is not a big deal for the time being,
+because we guarantee the runtime irrelevance
+of all the implicit arguments. But this design will not be reasonable if we are
+going to relax the restriction of runtime irrelevance of implicit parameters in the future.
 
-\paragraph{Occurences of variable that matters}
+\paragraph{Occurences of variable that matter}
 Another issue for the strengthening is that even if we have the issue of
 inhabitability covered, it is tricky to guarantee that a variable unused in the
 final subtyping conclusion, does not matter for the whole derivation.
@@ -222,11 +223,13 @@ the following example:
       {T : [[*]] \vdash ([[lambda x : int. x]])~42 : [[int]]}
 \end{mathpar}
 
-\noindent Here the variable $T$ does not occur in the conclusion, but occurs in
+\noindent Here the variable $T$ does not occur in the conclusion
+(other than in the context, of course), but occurs in
 the premises. The interesting part is that although it occurs in the premises, without
 it, the conclusion holds with a different derivation tree (by directly deriving $\vdash 42 : [[int]]$).
 For this example, although the strengthening property holds, we do not currently
-know how to determine whether a variable really \emph{matters} for a derivation.
+know how to determine whether a variable really \emph{matters} for a derivation
+in general.
 
 So for the two issues we discussed above, we decide to live with the lack of
 strengthening property in our system for now, at the cost of a slightly more

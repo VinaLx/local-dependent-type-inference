@@ -209,11 +209,11 @@ but there are subtle differences in different contexts where it may matter.
 > p12L20 If `Castdn` triggers only one step, why does the outer cast
 > form remain in `R-Castdn`?
 
-ANSWER: Because castdn triggers type-level reduction,
+DONE
+Because castdn triggers type-level reduction,
 which is performed in the typing rules, while in R-Castdn the castdn operator
 only serves as an evaluation context.
-
-TODO: Add some explanation in the paper regarding this point.
+And we added a sentence in section 3.2 to clarify this point.
 
 > p14L20 Maybe call out the three non-structural rules (`S-Forall-L`,
 > `S-Forall-R`, `S-Sub`)? The appearance of `S-Forall` to resolve some
