@@ -1,22 +1,30 @@
 \section{Discussions and Future Work}
 
+In this section we discuss some design choices and alternatives, as well
+as possible future work.
+
 \subsection{Open Terms Reduction}
 \label{sec:open-term-reduction}
 
-Usually only close terms are considered when designing the operational semantics,
-and irreducible terms like variable are not considered as values.
-But since the reduction relation $e_1 \longrightarrow e_2$ is also
-used in typing relations, the reduced expressions can be open terms and well-typed under contexts.
-\citet{full} observed this issue and included \emph{inert terms} as values
-to capture the scenario that open terms like $x e$
+Usually only closed terms are considered when designing the operational semantics,
+and irreducible (open) terms like variables are not considered to be values.
+However, since in \name the reduction relation $e_1 \longrightarrow e_2$ is also
+used in the unified subtyping relation, the reduced expressions can be open terms and well-typed under contexts.
+\citet{full} observed this issue and included \emph{inert terms}~\cite{opencbv} as values
+to capture the scenario that open terms like $x~e$
 (applying variable $x$ to the argument $e$) is also irreducible, which considerably
 complicates their metatheory around operational semantics.
-However since our call-by-name reduction relation only concerns when a term \emph{can} reduce
-instead of when it \emph{can not} reduce
-(there is no rule like ``if $e$ is a value, then $e_1 \longrightarrow e_2$'').
-The definition of values does not matter when reasoning about
-type-level reductions, we do not have to complicates the metatheory of our system
+Fortunately, our call-by-name reduction rules do not rely on the notion of value,
+which, for closed terms, represents irreducible forms. 
+In other words, there is no rule that requires some expression to be a value or irreducible.
+%Our call-by-name reduction relation only applies when a term \emph{can} reduce
+%instead of when it \emph{cannot} reduce
+%(there is no rule like ``if $e$ is a value, then $e_1 \longrightarrow e_2$'').
+Thus, the definition of values or irreducible terms does not matter when reasoning about
+type-level call-by-name reductions, and we do not have to complicate the metatheory of our system
 with inert terms.
+\bruno{I modified this text a bit since it didn't seem very clear. However I'm not sure if my
+rewrite captures what you wanted to say. Please double-check carefully.}
 
 % The type reduction in cast operators is potentially under a context that
 % is not empty, so it is likely that we are performing reduction on an open term.
@@ -35,15 +43,18 @@ call-by-value (CBV) style~\cite{yang2019pure},
 by not considering all $\castup$ terms as values, and performing cast
 elimination only when the expression inside two casts is a value.
 Such design requires us to have a more general definition of value, and there would
-be a need for inert terms as described in section \ref{sec:open-term-reduction}
+be a need for inert terms as mentioned in Section~\ref{sec:open-term-reduction}
 
 However, a simple design with CBV-style cast semantics and inert terms
-potentially leads to a system where \emph{Reduction Substitution} does not hold,
+potentially leads to a system where \emph{reduction substitution} does not hold,
 for example:
 \begin{gather*}
     \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow f ~ x \\
     [\lambda x : B. \, x / f] \, \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow \castdn \, \castup \, [A] \, x
 \end{gather*}
+\bruno{You are missing some parenthesis here, aren't you? Around the castUp's?
+  Also, please state briefly why is the property broken. I.e. state what you were you expecting in the example
+above if the property did hold, and how what you get instead isn't the same.}
 
 So we stick with the call-by-name style semantics around cast operators and
 leave the discussion of other possibilities of design in future work.
@@ -55,7 +66,7 @@ Currently, we impose restrictions on the kinding of polymorphic types
 We believe that this has little impact on the usability
 of our system since polymorphic kinds such as $\forall x : [[int]].\,\star$
 do not appear frequently in practice.
-However it would be reasonable not to have this restriction, but it would
+It would be reasonable not to have this restriction, but this would
 complicate the development of the metatheory significantly.
 
 One of the obstacles of removing the kind restriction is that
@@ -85,7 +96,7 @@ One of the possiblities in this scenario is to show $[[G |- B <: * : box]]$,
 which does not always hold for the reason discussed above.
 
 Moreover, we expect complexities while reasoning about the kinding of types
-after we lose the kinding uniqueness in other parts of the metatheory, therefore
+after we lose the kinding uniqueness in other parts of the metatheory. Therefore
 we leave the relaxation of the kinding restrictions for future work.
 
 \subsection{Runtime Relevance of Implicit Arguments}
@@ -100,12 +111,14 @@ such as \emph{the Calculus of Constructions}~\cite{coc},
 instead of providing the direct operational semantics.
 
 We can elaborate implicit function types (universal types) to $\Pi$ types,
-implicit abstraction to lambda expression and implicit instantiation to explicit
-application during type checking, when we have full information about the
-choice of implicit instantiations. However the elaboration on a unified subtyping
-system is not an easy task, because the subtyping relation cannot simply be interpreted
-to a coercion between values of different types, while half of our subtyping
-rules involve the subtype relation between terms instead of types.
+implicit abstractions to lambda expressions, and implicit instantiation to explicit
+application during type checking (when we have full information about the
+choice of implicit instantiations). However the elaboration on a unified subtyping
+system is not an easy task. The subtyping relation cannot simply be interpreted
+as a coercion between values of different types, since some of our subtyping
+rules involve a relation between terms instead of types. In other words,
+unified subtyping generalizes conventional subtyping relations that are defined
+on types only, to a relation defined on general terms.
 Therefore we leave the exploration of how elaboration can be done
 on a unified subtyping system as future work.
 
@@ -113,7 +126,7 @@ on a unified subtyping system as future work.
 
 \name does not currently have an algorithmic system since we
 consider a formalized algorithm for dependent type system itself a
-substantial challenge so it is left for future work.
+substantial challenge. Thus, an algorithmic formulation it is left for future work.
 While comparing to existing algorithmic systems
 for higher-ranked polymorphic type inference for System F-like languages
 ~\cite{dunfield2013complete,zhao19mechanical},
@@ -124,7 +137,7 @@ we identify one of the interesting challenges to develop an algorithmic system f
 In dependent type systems, function types ($\Pi$ types) are dependent:
 the type of applications potentially depends on the values of their arguments.
 Therefore the unification problem we meet is potentially inside binders and
-depends on the value of the arguments. For an extreme example in our language:
+depends on the value of the arguments. For an example in \name, consider:
 
 \begin{equation*}
     \lambda F : [[int]] \rightarrow [[*]].\, \lambda f : F~42 \rightarrow [[int]].\, f ((\Lambda A : \star.\,\mu x : A.\, x)~42)
@@ -141,22 +154,22 @@ Here we have two choices for the instantiation of $e$, namely $x$ and $42$,
 but neither choice ($\Pi x.\, F~x$ or $\Pi x.\, F~42$) for type $A$ leads to a more general
 solution than choosing the other.
 
-Notably for a similar reason, the decidable
+Notably, for a similar reason, the decidable
 fragment of higher-order unification~\cite{patternunification} specifically
 forbids scenarios where a unification variable applies to constants.
 The case shown above is similar, where the ``application'' is $A~42$
-(dependent function type $A$ ``applies'' to 42) with unification variable $A$,
-while slightly different, because our system do not allow implicit type-level
+(dependent function type $A$ ``applies'' to 42) with unification variable $A$.
+Nonetheless, because our system do not allow implicit type-level
 computation (hence unifications remain at first-order),
-the choices of $A$ are restricted to $\Pi x : [[int]].\,F~e_1$ where $[42/x]\,e_1 = 42$,
-rather than $\Pi x : [[int]].\, e_2$ where $[42/x]\,e_2 = F~42$ in
-higher-order unification.
+the choices of $A$ are restricted to $\Pi x : [[int]].\,F~e_1$ where $[42/x]\,e_1 = 42$.
+With higher-order unification we would instead
+have $\Pi x : [[int]].\, e_2$ where $[42/x]\,e_2 = F~42$.
 
 There are potentially multiple approaches to this problem. For example, we can
 impose a similar restriction to the pattern unification and refuse to solve
 this kind of conflicts entirely, or we can only infer non-dependent function types when
 facing a unification variable, which is the choice by \citet{dh}. But which is
-the proper method for our system remains to be studied.
+the better method for our system remains to be studied.
 
 % However, we still face the
 % problems with substitutions. For example, in the program above,
@@ -167,47 +180,58 @@ the proper method for our system remains to be studied.
 %We consider coming up with a formal system a challenging problem to
 %resolve the general issues that this example implies.
 
-\subsection{The Issues of Strengthening Property}
+\subsection{The Issues of Strengthening}
 \label{sec:habitability}
 
 The current lack of proof of \emph{strengthening} property leads to non-trivial
 changes during the generalization of polymorphic subtyping relation as
-described in section \ref{sec:strengthening}. It would be nice to be able to
-have it so the system could be simplified. However the issues around it are
+described in Section \ref{sec:strengthening}. It would be nice to be able to
+have strengthening so the system could be simplified. However the issues are
 quite tricky.
 
-\paragraph{Habitability of types}
-One of the issues, as we mentioned earlier, is around not being able to find an
-well-typed instantiation for an arbitrary type, without the presence of certain
-seemingly unused variable, for example:
+\paragraph{Type Inhabitation}
+As we mentioned earlier, one of the issues is centered around not being able to find an
+well-typed instantiation for an arbitrary type in general. Nevertheless, in the presence of
+seemingly unused variables it may be possible to find well-typed instantiations,
+which is a key reason for strenghtning not holding in general. For example:
 
 \begin{equation*}
     A : [[*]], \rulehl{a : A} \vdash [[(bind x : A. lambda y : int. y)]]~42 : [[int]]
 \end{equation*}
 
-Here to conclude $[[bind x : A. lambda y : int. y]]$ having type $[[int]] \rightarrow [[int]]$,
+Here to conclude that $[[bind x : A. lambda y : int. y]]$ has type $[[int]] \rightarrow [[int]]$,
 we want to derive $\forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$ by
 using \rref{s-forall-l}. That would require a well-typed instantiation
 for the abstract type $A$, and that is where the variable $a$ in the context
 comes to rescue, although not being used anywhere in the original typing relation.
+Thus, unlike other calculi where it is possible to drop unused variables in the context
+and still have a valid typing statement, in \name this is not always possible. In the example
+above dropping $\rulehl{a : A}$ from the context results in an typing statement that does not hold
+(unless we can find another inhabitant for the type $A$ somehow).
+In other words, a conventional strenghtning property does not hold.
 
-However since our system supports fixpoint operators, all monotypes in our system
-are easily inhabited with diverging programs as inhabitants (note that due
-to the issue discussed in \label{sec:reverse-subst}, our fixpoints only support monotypes).
+However since our system supports fixpoints, all monotypes in our system
+are easily inhabited with diverging programs as inhabitants (recall that, due
+to the issue discussed in Section~\ref{sec:reverse-subst}, our fixpoints only support monotypes).
 For instance, we do not need the variable $a$ in the context in the example above,
-we can just find the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l}.
-And it is \emph{likely} that any polytype can have its inhabitant with the help
+we can just find the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l}, if $A$ is a
+monotype.
+Moreover, it is \emph{likely} that any polytype can have an inhabitant with the help
 of monotype fixpoints, for example, type $\forall A : [[*]],\, A \rightarrow B$ with $B$
 being an abstract type, has an inhabitant $\Lambda A : [[*]].\,[[lambda x : A. mu y : B. y]]$.
 
-But recall that the polymorphic types in our system also serve as ``implicit function types'',
-it would be a weird choice to infer diverging programs as their implicit arguments.
+Nevertheless, since polymorphic types in our system also serve as ``implicit function types'',
+it seems a weird choice to infer diverging programs as their implicit arguments.
 Inferring infinite loops is not a big deal for the time being,
 because we guarantee the runtime irrelevance
 of all the implicit arguments. But this design will not be reasonable if we are
 going to relax the restriction of runtime irrelevance of implicit parameters in the future.
+Furthermore, it is also reasonable to consider similar language designs without fixpoints
+(for instance if our goals are to develop theorem provers or strongly normalizing languages).
+In such scenarios the approach of finding inhabitants by creating non-terminating terms
+would not be possible. Thus such an approach would not be very generalizable. 
 
-\paragraph{Occurences of variable that matter}
+\paragraph{Occurences of variables that matter}
 Another issue for the strengthening is that even if we have the issue of
 inhabitability covered, it is tricky to guarantee that a variable unused in the
 final subtyping conclusion, does not matter for the whole derivation.
@@ -233,7 +257,7 @@ in general.
 
 So for the two issues we discussed above, we decide to live with the lack of
 strengthening property in our system for now, at the cost of a slightly more
-complicated system with additional kinding premise in \rref{s-forall-r}
+complicated system with additional kinding premises in \rref{s-forall-r}
 and the addition of \rref{s-forall}.
 
 % In polymorphic subtyping, we do not need a ``real'' instantiation to conclude
