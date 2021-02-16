@@ -232,19 +232,19 @@ generalizes this relation to a dependently typed setting.
 \end{array}
 \end{equation*}
 \begin{drulepar}{$\Gamma \vdash A \le B$}{Polymorphic Subtyping}
-  \inferrule*[right=$\tau$]
+  \inferrule*[lab=$\tau$]
     { }
     {\Gamma \vdash \tau \le \tau}
   \and
-  \inferrule*[right=$\rightarrow$]
+  \inferrule*[lab=$\rightarrow$]
     {\Gamma \vdash B_1 \le A_1 \\ \Gamma \vdash A_2 \le B_2}
     {\Gamma \vdash A_1 \rightarrow A_2 \le B_1 \rightarrow B_2}
   \\
-  \inferrule*[right=$\forallL$]
+  \inferrule*[lab=$\forallL$]
     {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
     {\Gamma \vdash \forall x.\, A \le B}
   \and
-  \inferrule*[right=$\forallR$]
+  \inferrule*[lab=$\forallR$]
     {\Gamma ,\, x \vdash A \le B}
     {\Gamma \vdash A \le \forall x.\, B}
 \end{drulepar}
@@ -263,11 +263,11 @@ be values or other kinds of types as well.
 A first idea of a direct generalization is:
 
 \begin{mathpar}
-  \inferrule*[right=$\forallL'$]
+  \inferrule*[lab=$\forallL'$]
     {\Gamma \vdash \tau \rulehl{: A} \\ \Gamma \vdash [\tau / x]\, B \le C}
     {\Gamma \vdash \forall x \rulehl{: A}.\, B \le C}
   \and
-  \inferrule*[right=$\forallR'$]
+  \inferrule*[lab=$\forallR'$]
     {\Gamma ,\, x \rulehl{: B} \vdash A \le C}
     {\Gamma \vdash A \le \forall x \rulehl{: B}.\,C}
 \end{mathpar}
@@ -335,7 +335,7 @@ in its premise ($\Gamma \vdash \tau : A$). Moreover, as usual,
 the subsumption rule of
 the typing relation (shown below) depends on the subtyping relation.
 \begin{mathpar}
-  \inferrule*[right=t-sub]
+  \inferrule*[lab=t-sub]
     {\Gamma \vdash e : A \\ \Gamma \vdash A \le B}
     {\Gamma \vdash e : B}
 \end{mathpar}
@@ -362,11 +362,11 @@ and especially the proof of transitivity in the original work. Ideally after app
 the generalization of the polymorphic subtyping should be:
 
 \begin{mathpar}
-  \inferrule*[right=$\le\forall'' L$]
+  \inferrule*[lab=$\le\forall'' L$]
     {\Gamma \vdash \tau : A \\ \Gamma \vdash [\tau / x]\, B \le C \rulehl{: [[*]]}}
     {\Gamma \vdash \forall x : A.\, B \le C \rulehl{: [[*]]}}
   \and
-  \inferrule*[right=$\le\forall'' R$]
+  \inferrule*[lab=$\le\forall'' R$]
     {\Gamma ,\, x : B \vdash A \le C \rulehl{: [[*]]}}
     {\Gamma \vdash A \le \forall x : B.\,C \rulehl{: [[*]]}}
 \end{mathpar}

@@ -7,7 +7,7 @@ as possible future work.
 \label{sec:open-term-reduction}
 
 Usually only closed terms are considered when designing the operational semantics,
-and irreducible (open) terms like variables are not considered to be values.
+and irreducible open terms like variables are not considered to be values.
 However, since in \name the reduction relation $e_1 \longrightarrow e_2$ is also
 used in the unified subtyping relation, the reduced expressions can be open terms and well-typed under contexts.
 \citet{full} observed this issue and included \emph{inert terms}~\cite{opencbv} as values
@@ -15,16 +15,17 @@ to capture the scenario that open terms like $x~e$
 (applying variable $x$ to the argument $e$) is also irreducible, which considerably
 complicates their metatheory around operational semantics.
 Fortunately, our call-by-name reduction rules do not rely on the notion of value,
-which, for closed terms, represents irreducible forms. 
-In other words, there is no rule that requires some expression to be a value or irreducible.
+which, for closed terms, represents irreducible forms.
+In other words, there is no premise in our reduction rules that require
+some expression to be a value or irreducible.
 %Our call-by-name reduction relation only applies when a term \emph{can} reduce
 %instead of when it \emph{cannot} reduce
 %(there is no rule like ``if $e$ is a value, then $e_1 \longrightarrow e_2$'').
 Thus, the definition of values or irreducible terms does not matter when reasoning about
 type-level call-by-name reductions, and we do not have to complicate the metatheory of our system
 with inert terms.
-\bruno{I modified this text a bit since it didn't seem very clear. However I'm not sure if my
-rewrite captures what you wanted to say. Please double-check carefully.}
+% \bruno{I modified this text a bit since it didn't seem very clear. However I'm not sure if my
+% rewrite captures what you wanted to say. Please double-check carefully.}
 
 % The type reduction in cast operators is potentially under a context that
 % is not empty, so it is likely that we are performing reduction on an open term.
@@ -46,17 +47,38 @@ Such design requires us to have a more general definition of value, and there wo
 be a need for inert terms as mentioned in Section~\ref{sec:open-term-reduction}
 
 However, a simple design with CBV-style cast semantics and inert terms
-potentially leads to a system where \emph{reduction substitution} does not hold,
-for example:
-\begin{gather*}
-    \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow f ~ x \\
-    [\lambda x : B. \, x / f] \, \castdn \, \castup \, [A] \, (f ~ x) \longrightarrow \castdn \, \castup \, [A] \, x
-\end{gather*}
-\bruno{You are missing some parenthesis here, aren't you? Around the castUp's?
-  Also, please state briefly why is the property broken. I.e. state what you were you expecting in the example
-above if the property did hold, and how what you get instead isn't the same.}
+potentially leads to a system where \emph{reduction substitution}
+(see section \ref{sec:typing-properties}) does not hold.
+With the CBV-style reduction rules which consists of:
+\begin{mathpar}
+  \inferrule*[lab=cbv-r-castdn]
+    {e_1 \longrightarrow_\mathrm{cbv} e_2}
+    {[[castdn e1]] \longrightarrow_\mathrm{cbv} [[castdn e2]]}
+  \inferrule*[lab=cbv-r-castup]
+    {e_1 \longrightarrow_\mathrm{cbv} e_2}
+    {[[castup [A] e1]] \longrightarrow_\mathrm{cbv} [[castup [A] e2]]} \\
+  \inferrule*[lab=cbv-r-cast-elim]
+    {\mathrm{value}~e}
+    {[[castdn (castup [A] e)]] \longrightarrow_\mathrm{cbv} [[e]]}
+\end{mathpar}
 
-So we stick with the call-by-name style semantics around cast operators and
+\noindent Assuming the notion of $\mathrm{value}$ is properly defined to
+capture irreducible open terms, these rules allow reductions like:
+\begin{gather*}
+  \castdn \, (\castup \, [A] \, (f ~ x)) \longrightarrow_\mathrm{cbv} f ~ x
+\end{gather*}
+\noindent The \emph{reduction substitution} breaks if we substitute $f$ to an lambda expression:
+\begin{gather*}
+    [\lambda y : B. \, x / f] \, \castdn \, (\castup \, [A] \, (f ~ x)) \longrightarrow_\mathrm{cbv} \castdn \, (\castup \, [A] \, x)
+\end{gather*}
+The reduction rule prioritizes reducing the inner expression of two casts,
+while \emph{reduction substitution} expect
+$[\lambda y : B. \, x / f] \, \castdn \, (\castup \, [A] \, (f ~ x))$ to reduce to $(\lambda y : B.\, y)~x$.
+% \bruno{You are missing some parenthesis here, aren't you? Around the castUp's?
+%   Also, please state briefly why is the property broken. I.e. state what you were you expecting in the example
+% above if the property did hold, and how what you get instead isn't the same.}
+
+So we stick with the call-by-name style semantics around cast operators for now and
 leave the discussion of other possibilities of design in future work.
 
 \subsection{Kind Restrictions on Polymorphic Types}
@@ -229,7 +251,7 @@ going to relax the restriction of runtime irrelevance of implicit parameters in 
 Furthermore, it is also reasonable to consider similar language designs without fixpoints
 (for instance if our goals are to develop theorem provers or strongly normalizing languages).
 In such scenarios the approach of finding inhabitants by creating non-terminating terms
-would not be possible. Thus such an approach would not be very generalizable. 
+would not be possible. Thus such an approach would not be very generalizable.
 
 \paragraph{Occurences of variables that matter}
 Another issue for the strengthening is that even if we have the issue of
