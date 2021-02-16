@@ -112,16 +112,19 @@ it is used at the type-level to allow type conversions induced
 by the cast operators. The second reduction relation is deterministic and
 is employed to give the run-time semantics of expressions.
 
-\paragraph{Nondeterministic Reduction}
+\paragraph{Non-deterministic Reduction}
 Figure \ref{fig:semantics} presents the small-step operational semantics of \name.
-It mostly follows the ``call-by-name'' variant of \emph{Pure Iso-Type Systems} (PITS)
+It mostly follows the ``Call-By-Name''(CBN) variant of \emph{Pure Iso-Type Systems} (PITS)
 ~\cite{yang2019pure} corresponding to the calculus of constructions:
 the arguments of the $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
-Meanwhile, since reductions can be performed inside $\castdn$ terms (\rref{r-castdn}),
-$\castup$ terms are considered to be values to avoid nondeterministic reduction of
-terms like $\castup [A] (\castdn ~e)$, where $e$ is reducible
-(either the reduction of the inside $\castdn$ term, or the reduction via
+Reductions can be performed inside $\castdn$ terms (\rref{r-castdn,r-cast-inst}).
+Note that here \rref{r-castdn} reflects the term-level reduction of $\castdn$ terms themselves,
+the one-step type-level reductions triggered by the $\castdn$ operator are
+reflected in the typing rules.
+Following the CBN semantics of PITS, $\castup$ terms are considered to be values
+to avoid nondeterministic reduction of terms like $\castdn (\castup [A] ~e)$,
+where $e$ is reducible (either performing reduction on $e$, or the reduction via
 \rref{r-cast-elim} could be the choice, should $\castup$ terms be reducible).
 There is an alternative design following the ``call-by-value'' variant of PITS, we
 will discuss that in Section~\ref{sec:cast-design}.
@@ -228,15 +231,14 @@ In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
 special case of the unified subtyping judgment $[[G |- e <: e : A]]$,
 and the well-formedness of types $\Gamma \vdash A$ is expressed by
 $[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
-
-Although unified, the typing rules can still be viewed as two parts, the ``typing'' part
-(\rref{s-abs,s-app,s-bind,s-mu,s-castup,s-castdn,s-sub}) and the ``subtyping'' part
-(\rref{s-pi,s-forall,s-forall-l,s-forall-r}). We follow a usual design for
-typing rules for lambda abstraction and application, and the subtyping rule of
-dependent function types ($\Pi$ type).
-\bruno{I don't agree with this last paragraph. If you have a language with recursive types,
-  type applications and type functions then you need subtyping rules similar to s-abs, s-app or s-mu,
-even when you have a design not based on unified subtyping. I suggest omitting this paragraph.}
+% Although unified, the typing rules can still be viewed as two parts, the ``typing'' part
+% (\rref{s-abs,s-app,s-bind,s-mu,s-castup,s-castdn,s-sub}) and the ``subtyping'' part
+% (\rref{s-pi,s-forall,s-forall-l,s-forall-r}). We follow a usual design for
+% typing rules for lambda abstraction and application, and the subtyping rule of
+% dependent function types ($\Pi$ type).
+% \bruno{I don't agree with this last paragraph. If you have a language with recursive types,
+%   type applications and type functions then you need subtyping rules similar to s-abs, s-app or s-mu,
+% even when you have a design not based on unified subtyping. I suggest omitting this paragraph.}
 
 \begin{figure}
     \centering

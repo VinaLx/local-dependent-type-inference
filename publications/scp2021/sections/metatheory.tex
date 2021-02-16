@@ -3,7 +3,6 @@
 
 This section presents the metatheory of \name, and discusses several challenges
 that arose in the design of the rules to ensure the desired properties.
-
 The three main results of the metatheory are:
 \emph{transitivity of unified subtyping}, \emph{type-soundness} and
 \emph{completeness with respect to Odersky and L\"aufer's} polymorphic
@@ -34,7 +33,8 @@ that do not hold in our dependently typed generalization. So we make several adj
 in our adaptation to combat these issues, which result in the difference between
 our current system and a direct generalization.
 
-\subsubsection{Reverse Substitution of Well-Formedness.}
+\paragraph*{Reverse Substitution of Well-Formedness}
+\label{sec:reverse-subst}
 Rule $\forallL$ relies on the \emph{reverse substitution} property, but this property
 does not hold in a dependently typed setting. Thus we need an alternative design that
 still ensures well-formedness, but without relying on the reverse substitution property.
@@ -59,27 +59,37 @@ $42$ in order for the type of argument $a$ to match the parameter type.
 So we add a premise $[[G , x : A |- B : *]]$ in \rref{s-forall-l} to directly
 ensure the well-formedness of types in the conclusion.
 
-\subsubsection{Strengthening of Contexts.}
+\paragraph*{Strengthening of Contexts}
+\label{sec:strengthening}
 
 Rule $\forallR$ relies on a strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{does not occur in}~ A$, then $\Gamma \vdash A$}, which
 is trivial to prove.
-However its generalization:
+However the admissibility of its generalization:
 \emph{if $[[G, x : B |- A : *]]$ and $x ~\text{does not occur in}~ A$, then $[[G |- A : *]]$},
-does not hold in our system. We can construct the following example:
+% does not hold in our system.
+is much more complicated to reason about. We can construct the following example:
 \begin{equation*}
     F : [[int]] \rightarrow [[*]],\, A : [[*]],\, \rulehl{a : A} \vdash F ~ ([[(bind x : A. lambda y : int. y)]]~ 42) : [[*]]
 \end{equation*}
 The variable $a$ does not appear in any expression, but plays a
-crucial role when considering the subtyping relation $\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$.
+crucial role when considering the subtyping statement
+$\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$,
+which arises when type-checking the application $[[(bind x : A. lambda y : int. y)]]~42$.
 In this case, we cannot apply \rref{s-forall-l} while we are not able to find a
-well-typed instance for the polymorphic parameter, so the variable in the context
-is needed even though it does not occur anywhere.
+well-typed instance for the polymorphic parameter. So the variable in the context
+is needed even though it does not occur anywhere in the final judgement.
+Note that, since our system has the fixpoint operator, theoretically we could construct
+a diverging program $[[mu x : A. x]]$ to instantiate the implicit parameter, but
+this possibility leads to several other issues which we are going to discuss in
+Section~\ref{sec:habitability}. Furthermore such an approach would not work for calculi
+without fixpoints. 
 
-To counter the lack of strenghtening, we add a premise $[[G |- A : *]]$ to \rref{s-forall-r},
-requiring $A$ to be a well-typed type without the help of the fresh variable.
+Due to these complications, we assume that strengthening does not hold in our system for now.
+We add a premise $[[G |- A : *]]$ to \rref{s-forall-r} to workaround this issue,
+requiring $A$ to be a well-kinded type without the help of the fresh variable.
 A consequence of adding this premise is that we will encounter a circular proof
-while trying to prove $[[G |- forall x : A. B <: forall x : A . B : *]]$ for
+while trying to prove $[[G |- forall x : A. B <: forall x : A . B : *]]$, for
 arbitrary $A$ and $B$ by first applying \rref{s-forall-r}. We resolve this issue by
 adding \rref{s-forall}.
 
@@ -223,8 +233,8 @@ have to consider when designing the reduction rules (see Section \ref{sec:cast-d
 
 \noindent \emph{Type correctness} is a nice property that ensures that
 what appears in the position of a type are actually types.
-The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
-the only non-trivial case is when the derivation ends with \rref{s-app}. We make
+The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$.
+The only non-trivial case is when the derivation ends with \rref{s-app}. We make
 use of the substitution lemma and the inductive hypothesis to demonstrate the head
 of a $\Pi$ type preserves its kind after the argument is applied.
 
@@ -394,8 +404,8 @@ shown in Figure \ref{fig:semantics}, except for \rref{er-elim,er-cast-elim}, whi
 conveys the idea of the irrelevance of implicit instantiation by eliminating the
 parameter directly.
 
-\paragraph{Progress} We show the \emph{progress} property for both of
-the original expressions and erased expressions.
+\paragraph{Progress} We show the \emph{progress} property for both
+the original expressions and the erased expressions.
 
 \begin{theorem}[Generalized progress]
     If $[[nil |- e1 <: e2 : A]]$,
@@ -492,9 +502,9 @@ In other words, the runtime semantics of \name can be implemented only with
 erased expressions.
 
 Aside from the erasure aspect of our preservation lemma, we also consider the
-generalized version of preservation in our unified subtyping system, the
-\emph{subtype preservation}: reductions not only preserve the type of expression,
-the subtyping relation between expressions is preserved as well.
+generalized version of preservation in our unified subtyping system. The
+\emph{subtype preservation} reductions not only preserve the type of expressions,
+they also preserve the subtyping relation between expressions as well.
 
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
 cases for \rref{r-beta,r-mu} are solved with the substitution theorem,
@@ -524,7 +534,7 @@ Therefore want to show $\Gamma \vdash A_2 \le B_2$ with the information that
 $\Gamma \vdash A_1 \le B_1$, $[[A1 --> A2]]$
 and $[[B1 --> B2]]$, which depends on the property we want to prove initially,
 subtype preservation after reduction.
-And subtype preservation needs to solve the cast elimination case, causing a
+Subtype preservation needs to solve the cast elimination case, causing a
 circular dependency of properties.
 This problem was also observed by the previous work on unified subtyping
 with cast operators~\cite{full}. They solved this situation
@@ -602,7 +612,7 @@ With the previous lemmas, the subtype preservation lemma for type computation is
 The proof of two cases for implicit instantiations (\rref{r-inst,r-cast-inst})
 are quite similar. In our language, implicit instantiations are only triggered by
 \rref{s-forall-l}, which is exactly where polymorphic types are instantiated.
-And the implicit argument is the same mono-expression ($\tau$) that
+The implicit argument is the same mono-expression ($\tau$) that
 instantiates the polymorphic type in \rref{s-forall-l}.
 The type of the instantiation result of $\Lambda$ expression is the same as the
 instantiation of the polymorphic types, with the same argument.
@@ -614,8 +624,8 @@ preservation after the instantiations.
 \subsection{Equivalence to a Simplified System}
 We mentioned in Section \ref{sec:type-system} that the premises marked in gray in the
 unified subtyping rules are redundant. They help in the formalization, but the calculus
-is equivalent to a variant of the calculus without them. We define system
-$[[G |= e1 <: e2 : A]]$, whose rules are the same as the typing rules of \name,
+is equivalent to a variant of the calculus without them. We define unified subtyping relation
+$[[G |= e1 <: e2 : A]]$, whose rules are the same as the unified subtyping rules of \name,
 but with all redundant premises eliminated. Also, \rref{s-castdn,s-castup}
 are simplified to use deterministic reduction ($A \longrightarrow_D B$)
 instead of the reduction rule $A \longrightarrow B$ as shown below
@@ -642,11 +652,10 @@ We prove that the two system are equivalent in terms of expressiveness.
 
 Finally we show that the subtyping aspect of \name subsumes
 Odersky and L\"aufer's polymorphic
-subtyping~\cite{odersky1996putting}
-
-by showing our system subsumes the Dunfields and Krishnaswami (DK)'s declarative
-subtyping system \cite{dunfield2013complete}, which is a implementation of
-the polymorphic subtyping.
+subtyping~\cite{odersky1996putting}. To be more precise 
+we show that our unified subtyping relation subsumes the Dunfield and Krishnaswami (DK)'s declarative
+subtyping relation \cite{dunfield2013complete}, which is a small variant of
+Odersky and L\"aufer's polymorphic subtyping.
 
 \begin{figure}
     \begin{mathpar}
@@ -688,8 +697,8 @@ Both cases can be solved with the help of the \emph{well-formedness} lemma in
 DK's system. We can conclude $\Gamma, x \vdash_{\text{DK}} A$ from
 $\Gamma \vdash_{\text{DK}} \forall x.\, A \le B$ for the $\forallL$ case,
 and conclude $\Gamma \vdash_{\text{DK}} A$ from $\Gamma \vdash_{\text{DK}} A \le \forall x.\, B$ for the $\forallR$ case.
-Then theorem \ref{thm:type-wellformedness} can be used to solve the additional
-premises in our system.
+Then Theorem~\ref{thm:type-wellformedness} can be used to solve the additional
+premises in \name.
 
 % The proof is straightforward by making use of the \emph{well-formedness} lemma
 % in Odersky and L\"aufer system, mentioned in Section \ref{sec:adaptation}, to conclude that
