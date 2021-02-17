@@ -13,7 +13,7 @@ used in the unified subtyping relation, the reduced expressions can be open term
 \citet{full} observed this issue and included \emph{inert terms}~\cite{opencbv} as values
 to capture the scenario that open terms like $x~e$
 (applying variable $x$ to the argument $e$) is also irreducible, which considerably
-complicates their metatheory around operational semantics.
+complicates their metatheory around the operational semantics.
 Fortunately, our call-by-name reduction rules do not rely on the notion of value,
 which, for closed terms, represents irreducible forms.
 In other words, there is no premise in our reduction rules that require
@@ -49,11 +49,11 @@ be a need for inert terms as mentioned in Section~\ref{sec:open-term-reduction}
 However, a simple design with CBV-style cast semantics and inert terms
 potentially leads to a system where \emph{reduction substitution}
 (see section \ref{sec:typing-properties}) does not hold.
-With the CBV-style reduction rules which consists of:
+With the CBV-style reduction rules, which consist of:
 \begin{mathpar}
   \inferrule*[lab=cbv-r-castdn]
     {e_1 \longrightarrow_\mathrm{cbv} e_2}
-    {[[castdn e1]] \longrightarrow_\mathrm{cbv} [[castdn e2]]}
+    {[[castdn e1]] \longrightarrow_\mathrm{cbv} [[castdn e2]]}~~~~~
   \inferrule*[lab=cbv-r-castup]
     {e_1 \longrightarrow_\mathrm{cbv} e_2}
     {[[castup [A] e1]] \longrightarrow_\mathrm{cbv} [[castup [A] e2]]} \\
@@ -72,7 +72,7 @@ capture irreducible open terms, these rules allow reductions like:
     [\lambda y : B. \, x / f] \, \castdn \, (\castup \, [A] \, (f ~ x)) \longrightarrow_\mathrm{cbv} \castdn \, (\castup \, [A] \, x)
 \end{gather*}
 The reduction rule prioritizes reducing the inner expression of two casts,
-while \emph{reduction substitution} expect
+while \emph{reduction substitution} expects
 $[\lambda y : B. \, x / f] \, \castdn \, (\castup \, [A] \, (f ~ x))$ to reduce to $(\lambda y : B.\, y)~x$.
 % \bruno{You are missing some parenthesis here, aren't you? Around the castUp's?
 %   Also, please state briefly why is the property broken. I.e. state what you were you expecting in the example
@@ -176,7 +176,7 @@ Here we have two choices for the instantiation of $e$, namely $x$ and $42$,
 but neither choice ($\Pi x.\, F~x$ or $\Pi x.\, F~42$) for type $A$ leads to a more general
 solution than choosing the other.
 
-Notably, for a similar reason, the decidable
+Notably, for a similar reason, the decidable pattern
 fragment of higher-order unification~\cite{patternunification} specifically
 forbids scenarios where a unification variable applies to constants.
 The case shown above is similar, where the ``application'' is $A~42$
@@ -232,7 +232,7 @@ above dropping $\rulehl{a : A}$ from the context results in an typing statement 
 (unless we can find another inhabitant for the type $A$ somehow).
 In other words, a conventional strenghtning property does not hold.
 
-However since our system supports fixpoints, all monotypes in our system
+However, since \name supports fixpoints, all monotypes in our system
 are easily inhabited with diverging programs as inhabitants (recall that, due
 to the issue discussed in Section~\ref{sec:reverse-subst}, our fixpoints only support monotypes).
 For instance, we do not need the variable $a$ in the context in the example above,
