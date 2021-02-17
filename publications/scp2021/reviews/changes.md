@@ -33,6 +33,37 @@ have some work/discussion on type inference. Again I suspect that
 there won't be any formalization of higher-ranked type-inference in F*.
 But reading is needed to double-check this.
 
+> Refinement type systems typically have both dependency and subtyping
+> (though there are some issues, e.g.,
+> <https://github.com/FStarLang/FStar/issues/65>). If you'd like to
+> compare to core calculi rather than systems/implementations, maybe
+> take a look at FH, which is the core calculus for Liquid Haskell (Belo
+> et al., ESOP 2011). Belo et al. is related for a less fortunate
+> reason---their reduction substitution lemma was wrong for reasons
+> similar to those mentioned on p26L56, highlighting how critical this
+> property is (Sekiyama et al., TOPLAS 2017 corrects the calculus but
+> doesn't include subtyping). Finally, FH does things the opposite way
+> of most systems: it defines subtyping post facto and shows that it's a
+> semantically safe (if syntactically ill typed) optimization.
+> 
+> I also expected to see discussion of DOT (Rompf and Amin, OOPSLA 2016)
+> and some of its followup work (e.g., "DOT with Implicit Functions"
+> from Jeffery, Scala Symposium 2019).
+
+TODO: We should definitly mention the Belo et al. paper and the issue that
+was found (in TOPLAS 2017?). That will look good for us: i.e. that we have
+a working substitution lemma in the presence of subtyping!
+
+I briefly looked at the TOPLAS 2017 paper. Here are a few points:
+
+- The discussion on page 8, under the paragraph "Subsumption-free 
+formulation" seems relevant. They seem to discuss a similar issue
+to the mutual dependency between typing and subtyping in the context
+of contract calculi. This seems worthwhile mentioning in our paper.
+Perhaps unified subtyping could help there.
+
+- The discussion that follows page 8 (pages 9 and 10) then gives details
+on the substitution issue. 
 
 > Clearer indication up front that implicits are necessarily proof irrelevant,
 > and some concrete examples of programs your regime _disallows_.
