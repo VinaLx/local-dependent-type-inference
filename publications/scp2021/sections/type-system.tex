@@ -258,7 +258,7 @@ $[[G |- A : *]]$.
       \drule{star}
       % \drule{abs}
       \and \ottaltinferrule{abs}{width=20em}
-        {\rulehl{[[G |- A : k1]]} \\ [[G, x : A |- B : k2]] \\ [[G, x : A |- e1 <: e2 : B]]}
+        {\redundant{[[G |- A : k1]]} \\ [[G, x : A |- B : k2]] \\ [[G, x : A |- e1 <: e2 : B]]}
         {[[G |- lambda x : A. e1 <: lambda x : A. e2 : pi x : A. B]]}
       % \drule{app}
       \and \ottaltinferrule{s-app}{}
@@ -270,7 +270,7 @@ $[[G |- A : *]]$.
         {[[G |- t : k]] \\ [[G , x : t |- s : t]]}
         {[[G |- mu x : t. s <: mu x : t. s : t]]}
       \and \ottaltinferrule{s-bind}{width=20em}
-        {\rulehl{[[G |- A : k]]} \\ [[G , x : A |- B : *]] \\
+        {\redundant{[[G |- A : k]]} \\ [[G , x : A |- B : *]] \\
          [[G, x : A |- e1 <: e2 : B]] \\
          x \notin \mathrm{FV}(\extract{[[e1]]}) \cup \mathrm{FV}(\extract{[[e2]]})}
         {[[G |- bind x : A. e1 <: bind x : A. e2 : forall x : A. B]]}
@@ -279,19 +279,19 @@ $[[G |- A : *]]$.
       \drule{castdn}
       % \drule{forallXXl}
       \and \ottaltinferrule{s-forall-l}{width=20em}
-        {\rulehl{[[G |- A : k]]} \\ [[G |- t : A]] \\
-         [[G , x : A |- B : *]] \\
+        {\redundant{[[G |- A : k]]} \\ [[G |- t : A]] \\
+         \rulehl{[[G , x : A |- B : *]]} \\
          [[G |- [t / x] B <: C : *]]}
         {[[G |- forall x : A. B <: C : *]]}
       % \drule{forallXXr}
       \and \ottaltinferrule{s-forall-r}{width=20em}
-        {\rulehl{[[G |- B : k]]} \\ [[G |- A : *]] \\
+        {\redundant{[[G |- B : k]]} \\ \rulehl{[[G |- A : *]]} \\
          [[G , x : B |- A <: C : *]]}
         {[[G |- A <: forall x : B. C : *]]}
       % \drule{forall}
-      \and \ottaltinferrule{s-forall}{width=20em}
-        {\rulehl{[[G |- A : k]]} \\ [[G , x : A |- B <: C : *]]}
-        {[[G |- forall x : A. B <: forall x : A. C : *]]}
+      \and \rulehl{\ottaltinferrule{s-forall}{width=20em}
+        {\redundant{[[G |- A : k]]} \\ [[G , x : A |- B <: C : *]]}
+        {[[G |- forall x : A. B <: forall x : A. C : *]]}}
       \and \ottaltinferrule{s-sub}{width=15em}
         {[[G |- e1 <: e2 : A]] \\ [[G |- A <: B : k]]}
         {[[G |- e1 <: e2 : B]]}
@@ -311,7 +311,7 @@ $[[G |- A : *]]$.
 \end{figure}
 % \bruno{Add syntactic sugar also for subtyping and well-formedness.}
 
-\paragraph{Rules for Universal Quantification}
+\paragraph{Subtyping Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
 the spirit of the Odersky and L\"aufer's polymorphic subtyping~\cite{odersky1996putting,dunfield2013complete},
 where the subtyping relation is interpreted as a ``more-general-than'' relation.
@@ -322,12 +322,13 @@ type $[[forall x : B. C]]$ is less general than a type $A$,
 if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
 is instantiated abstractly (\rref{s-forall-r}).
 
-Notably, our formalization is not a direct generalization of Odersky and L\"aufer's
-polymorphic subtyping:
-\rref{s-forall} axiomatizes the subtyping relation between two universal types.
-Furthermore, additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
-ones we previously mentioned in Section \ref{sec:polymorphic-subtyping}.
-The motivations for these changes are discussed in more detail in Section \ref{sec:adaptation}.
+Notably, our formalization is not the direct generalization of
+Odersky and L\"aufer's polymorphic subtyping which we mentioned in section \ref{sec:feature-overview}.
+As highlighted in figure \label{fig:typing}:
+\rref{s-forall} is added to axiomatize the subtyping relation between two universal types,
+and additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
+ones that appear in rules $\forallL''$ and $\forallR''$ in section \ref{sec:feature-overview}.
+We discuss the motivations for these changes in more detail in Section \ref{sec:adaptation}.
 
 \paragraph{Mono-expression Restrictions}
 As in other predicative relations (such as the one by Odersky and L\"aufer),
@@ -389,8 +390,8 @@ erasure of expressions.
 
 \paragraph{Redundant Premises}
 
-All the premises highlighted in gray are redundant in a way that
+All the premises boxed by dash lines are redundant in a way that
 the system without them is proved equivalent to the system with them.
-These redundant rules are there to simplify the mechanized proofs of
+These redundant premises are there to simplify the mechanized proofs of
 certain lemmas, but can be safely dropped in an actual implementation.
 

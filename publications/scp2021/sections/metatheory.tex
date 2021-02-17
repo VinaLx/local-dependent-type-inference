@@ -416,8 +416,8 @@ the original expressions and the erased expressions.
 
 \begin{theorem}[Generalized progress on erased expressions]
     If $[[nil |- e1 <: e2 : A]]$,
-    then $\exists \, E_1'. \, \extract{e_1} \longrightarrow_E E_1'$ or $\extract{e_1}$ is an erased value,
-    and $\exists \, E_2'. \, \extract{e_2} \longrightarrow_E E_2'$ or $\extract{e_2}$ is an erased value.
+    then $\exists \, E_1'. \, \extract{e_1} \Longrightarrow E_1'$ or $\extract{e_1}$ is an erased value,
+    and $\exists \, E_2'. \, \extract{e_2} \Longrightarrow E_2'$ or $\extract{e_2}$ is an erased value.
 \end{theorem}
 
 \noindent We prove a generalized version of \emph{progress} that talks about both sides
@@ -456,7 +456,7 @@ on erased values.
 
 \begin{corollary}[Progress on erased expressions]
     If $[[nil |- e : A]]$,
-    then $\exists \, E'. \, \extract{e} \longrightarrow_E E'$ or $\extract{e}$ is an erased value.
+    then $\exists \, E'. \, \extract{e} \Longrightarrow E'$ or $\extract{e}$ is an erased value.
 \end{corollary}
 
 Both corollaries directly follow from their generalized versions.
@@ -470,16 +470,25 @@ such issues, we discuss them as though we are proving a normal preservation
 for brevity.
 
 \begin{theorem}[Subtype Preservation]
-    If $[[G |- e1 <: e2 : A]]$, $\extract{e_1} \longrightarrow_E E_1'$ and $\extract{e_2} \longrightarrow_E E_2'$,
+    If $[[G |- e1 <: e2 : A]]$, $\extract{e_1} \Longrightarrow E_1'$ and $\extract{e_2} \Longrightarrow E_2'$,
     then $\exists\,e_1' \, e_2'.$ $\extract{e_1'} = E_1'$, $\extract{e_2'} = E_2'$,
     $e_1 \longrightarrow e_1'$, $e_2 \longrightarrow e_2'$ and $\Gamma \vdash e_1' \le e_2' : A$.
 \end{theorem}
 
+% \begin{figure}
+%     \centering
+%     \begin{tikzcd}[row sep=large, column sep=large]
+%         e : A \arrow[r] \arrow[dashed]{d}[swap]{\text{Erasure}} & e' : A \\
+%         E \arrow[shorten=1mm]{r}[swap, pos=1]{E} & E' \arrow[dashed]{u}[swap]{\text{Annotation}}
+%     \end{tikzcd}
+%     \caption{Diagram for Erased Preservation without Subtyping}
+%     \label{fig:preservation}
+% \end{figure}
 \begin{figure}
     \centering
     \begin{tikzcd}[row sep=large, column sep=large]
         e : A \arrow[r] \arrow[dashed]{d}[swap]{\text{Erasure}} & e' : A \\
-        E \arrow[shorten=1mm]{r}[swap, pos=1]{E} & E' \arrow[dashed]{u}[swap]{\text{Annotation}}
+        E \arrow[Rightarrow]{r} & E' \arrow[dashed]{u}[swap]{\text{Annotation}}
     \end{tikzcd}
     \caption{Diagram for Erased Preservation without Subtyping}
     \label{fig:preservation}

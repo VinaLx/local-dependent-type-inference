@@ -15,12 +15,14 @@
 \usepackage{listings}
 \usepackage{MnSymbol}
 \usepackage{url}
+\usepackage{dashbox}
 %\usepackage[english]{babel}
 
 \inputott{dependent-subtyping.ott}
 
 \newcommand{\rulehl}[2][gray!40]{
   \colorbox{#1}{$\displaystyle#2$}}
+\newcommand{\redundant}[1]{\dbox{$\displaystyle#1$}}
 
 \newcommand{\extract}[1]{\lvert #1 \rvert}
 \newcommand{\lift}[1]{\lceil #1 \rceil}

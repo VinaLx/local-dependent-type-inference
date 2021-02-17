@@ -261,7 +261,9 @@ and subsumption rule is very common in a system with subtyping.
 
 > p14L36 Maybe highlight the new kinding premises?
 
-TODO
+DONE
+
+See below.
 
 > p16L21-25 I assumed the highlighted parts were important when I first
 > read the figure, and I was surprised to see they were in fact
@@ -272,7 +274,14 @@ TODO
 > importance. Maybe you can draw some `\fbox`en with various forms of
 > dashing, or use colors, or something?
 
-TODO
+DONE
+
+Now the redundant premises are enclosed in dashed lines instead of being highlighted.
+And we highlight the newly added premises for rules s-forall-l and s-forall-R,
+as well as the entire s-forall, point them out in the paragraph "Subtyping Rules
+for Universal Quantification", and leave the display of other premises
+unchanged to avoid the figure to be cluttered by too many notations
+(kinding restrictions and mono-type restrictions are relatively easy to see).
 
 > p26L24-28 It'd be good to mark some turnstiles with a DK or
 > something---it wasn't immediately obvious that the first turnstile was
@@ -610,7 +619,7 @@ The parameter `r` is the "final return type" of the CPS functions.
 > everywhere. For instance, map at line 34 is different from map at line
 > 35.
 
-TODO
+DONE
 
 > line 52: However, you do not show the definition of map
 
@@ -672,7 +681,10 @@ why we did not choose an alternative design.
 > Figure 4: to use E both as metavariable and as index of the relation
 > is a very bad choice (I was confused at the beginning)
 
-TODO
+DONE
+
+We now use \Longrightarrow as the new symbol for erased reductions instead of
+\longrightarrow_E.
 
 > page 17 line 34 you use "fresh in A" to mean "not occurring in A", right?
 

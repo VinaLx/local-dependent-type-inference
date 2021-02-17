@@ -85,7 +85,7 @@ terminals :: 'terminal_' ::=
   | emu     :: :: emu     {{ tex \mu }}
   | -->  :: :: reduce  {{ tex \longrightarrow }}
   | ==>  :: :: dreduce {{ tex \longrightarrow_D \,}}
-  | *--> :: :: ereduce {{ tex \longrightarrow_E \,}}
+  | *--> :: :: ereduce {{ tex \Longrightarrow \,}}
   | nil  :: :: nil {{ tex \varnothing }}
   | int  :: :: int {{ tex \mathbb{N} }}
   | |=   :: :: vDash {{ tex \vdash_s }}

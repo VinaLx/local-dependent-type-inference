@@ -21,8 +21,7 @@ is the ability to implicitly infer universally quantified arguments.
 
 \paragraph{A First Example of Implicit Polymorphism}
 Like most of functional languages, \name supports (implicit) parametric polymorphism.
-A first simple example is the polymorphic identity
-function:
+A first simple example is the polymorphic identity function:
 % \begin{flalign*}
 % &\mathrm{id} : \forall (A : \star).\, A \rightarrow A &&\\
 % &\mathrm{id} = \lambda (x : A).\, x &&\\
@@ -233,6 +232,7 @@ In contrast, in approaches like the ICC, the types of \lstinline{callcc} and \ls
 are not compatible and the example above would be rejected.
 
 \subsection{Key Features}
+\label{sec:feature-overview}
 
 We briefly discuss the major features of \name itself and
 its formalization. A more formal and technical discussion will be left to
@@ -464,7 +464,7 @@ Furthermore, computational irrelevance can benefit performance, since
 irrelevant arguments can simply be erased at runtime.
 In dependently typed systems, however, there can be some programs where
 it is useful to have computationaly relevant implicit parameters.
-For example, accessing the length of a length indexed vector in constant time:
+For example, accessing the length of a length-indexed vector in constant time:
 % \begin{flalign*}
 %   &\mathrm{length} : \forall n : [[int]].\, \mathrm{Vector}~n \rightarrow [[int]] &&\\
 %   &\mathrm{length} = \Lambda n : [[int]].\, \lambda v : \mathrm{Vector}~n.\, n
