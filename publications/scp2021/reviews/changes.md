@@ -45,7 +45,7 @@ But reading is needed to double-check this.
 > doesn't include subtyping). Finally, FH does things the opposite way
 > of most systems: it defines subtyping post facto and shows that it's a
 > semantically safe (if syntactically ill typed) optimization.
-> 
+>
 > I also expected to see discussion of DOT (Rompf and Amin, OOPSLA 2016)
 > and some of its followup work (e.g., "DOT with Implicit Functions"
 > from Jeffery, Scala Symposium 2019).
@@ -56,14 +56,14 @@ a working substitution lemma in the presence of subtyping!
 
 I briefly looked at the TOPLAS 2017 paper. Here are a few points:
 
-- The discussion on page 8, under the paragraph "Subsumption-free 
+- The discussion on page 8, under the paragraph "Subsumption-free
 formulation" seems relevant. They seem to discuss a similar issue
 to the mutual dependency between typing and subtyping in the context
 of contract calculi. This seems worthwhile mentioning in our paper.
 Perhaps unified subtyping could help there.
 
 - The discussion that follows page 8 (pages 9 and 10) then gives details
-on the substitution issue. 
+on the substitution issue.
 
 > Clearer indication up front that implicits are necessarily proof irrelevant,
 > and some concrete examples of programs your regime _disallows_.
@@ -629,7 +629,7 @@ of `map`.
 
 DONE
 
-You are right, the Functor here is a record type that mimic the typeclass. 
+You are right, the Functor here is a record type that mimic the typeclass.
 We added explanations to point this out.
 
 > It will also be useful to point out exactly what could not be expressed in, e.g., Haskell.
@@ -743,7 +743,7 @@ DONE.
 
 > callcc example: again, please use a different font for code
 
-TODO
+DONE
 
 ## References
 

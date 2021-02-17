@@ -13,30 +13,44 @@ The \name calculus features a form of \emph{implicit
   higher-ranked polymorphism} with the power of dependent types. Thus the main feature of \name
 is the ability to implicitly infer universally quantified arguments.
 
+\lstset
+  { language=Haskell
+  , basicstyle=\ttfamily
+  , mathescape=true
+  , columns=flexible}
+
 \paragraph{A First Example of Implicit Polymorphism}
 Like most of functional languages, \name supports (implicit) parametric polymorphism.
 A first simple example is the polymorphic identity
 function:
-\begin{flalign*}
-&\mathrm{id} : \forall (A : \star).\, A \rightarrow A &&\\
-&\mathrm{id} = \lambda (x : A).\, x &&\\
-&\mathrm{answer} : \mathbb{N} &&\\
-&\mathrm{answer} = \mathrm{id} ~ 42 \qquad \text{-- No type argument needed at the call of $\mathrm{id}$} &&
-\end{flalign*}
-\noindent The polymorphic parameter \verb|A| is annotated with its type,
+% \begin{flalign*}
+% &\mathrm{id} : \forall (A : \star).\, A \rightarrow A &&\\
+% &\mathrm{id} = \lambda (x : A).\, x &&\\
+% &\mathrm{answer} : \mathbb{N} &&\\
+% &\mathrm{answer} = \mathrm{id} ~ 42 \qquad \text{-- No type argument needed at the call of $\mathrm{id}$} &&
+% \end{flalign*}
+\begin{lstlisting}
+id : $\forall$(A:$\star$). A $\rightarrow$ A
+id = $\lambda$(x:A). x
+answer : Nat
+-- No type argument needed at the call of id
+answer = id 42
+\end{lstlisting}
+\noindent The polymorphic parameter \lstinline{A} is annotated with its type,
 which is $\star$. The type $\star$ is the type of types (also known as
 \emph{kind}). In \name, the parameters of lambda abstractions are annotated
-with their types, and the \verb|A| in the definition refers back to the
+with their types, and the \lstinline{A} in the definition refers back to the
 polymorphic parameter. In the examples below, we drop the parentheses around
-variables and their type annotations such as $[[lambda x : A. x]]$ for conciseness.
+variables and their type annotations such as \lstinline{$\lambda$x:A. x} for conciseness.
 
 Similarly to implicit polymorphism in other languages,
 the polymorphic parameters of the $\forall$ types are implicitly instantiated
-during applications. Thus, in the call of the identity function ($id~42$), we
+during applications. Thus, in the call of the identity function (\lstinline{id 42}), we
 do not need to specify the argument used for instantiation. In contrast,
 in an explicitly polymorphic language (such as System F) we would need
-to call $id$ with an extra argument that specifies the instantiation of $A$:
-$\mathrm{id}~\mathbb{N}~ 42$.
+to call \lstinline{id} with an extra argument that specifies the instantiation of \lstinline{A}:
+\lstinline{id Nat 42}.
+% $\mathrm{id}~\mathbb{N}~ 42$.
 
 \paragraph{Recursion and Dependent Types}
 
@@ -48,13 +62,13 @@ which has been focusing on System F-like
 languages where universal quantification can only have arguments of type $\star$.
 Furthermore, \name supports general recursion at both the term and the type-level.
 
-Using these features we can encode an indexed list, a \verb|map| operation over it
-and illustrate how the implicit instantiation allows us to use the \verb|map|
+Using these features we can encode an indexed list, a \lstinline{map} operation over it
+and illustrate how the implicit instantiation allows us to use the \lstinline{map}
 function conveniently.
 However, because \name is just a core calculus there is no built-in support
 yet for algebraic datatypes and pattern matching.
 We expect that a source language would provide a more convenient
-way to define the \verb|map| function using pattern matching and other useful source-level
+way to define the \lstinline{map} function using pattern matching and other useful source-level
 constructs. To model algebraic datatypes and pattern matching in \name, we
 use an encoding by Yang and Oliveira~\cite{yang2019pure},
 which is based on Scott encodings~\cite{mogensen1992efficient}.
@@ -67,17 +81,21 @@ here we omit the code for most definitions and show only their types.
 
 In a dependently typed language a programmer could write the following definition
 for our formulation of indexed lists:
-\newcommand{\Nat}[0]{\mathbb{N}}
-\newcommand{\Succ}[0]{\mathrm{S}}
-\newcommand{\Zero}[0]{\mathrm{Z}}
-\newcommand{\List}[0]{\mathrm{List}}
-\newcommand{\Nil}[0]{\mathrm{Nil}}
-\newcommand{\Cons}[0]{\mathrm{Cons}}
-\newcommand{\map}[0]{\mathrm{map}}
-\begin{flalign*}
-  & \mathbf{data} ~ \Nat = \Zero ~|~ \Succ~\Nat &&\\
-  & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n)) &&
-\end{flalign*}
+% \newcommand{\Nat}[0]{\mathbb{N}}
+% \newcommand{\Succ}[0]{\mathrm{S}}
+% \newcommand{\Zero}[0]{\mathrm{Z}}
+% \newcommand{\List}[0]{\mathrm{List}}
+% \newcommand{\Nil}[0]{\mathrm{Nil}}
+% \newcommand{\Cons}[0]{\mathrm{Cons}}
+% \newcommand{\map}[0]{\mathrm{map}}
+% \begin{flalign*}
+%   & \mathbf{data} ~ \Nat = \Zero ~|~ \Succ~\Nat &&\\
+%   & \mathbf{data} ~ \List~(a : \star)~(n : \Nat) = \Nil ~ | ~ \Cons~a~(\List~a~(\Succ~n)) &&
+% \end{flalign*}
+\begin{lstlisting}
+  data Nat = Zero | Succ Nat
+  data List (a : $\star$) (n : Nat) = Nil | Cons a (List a (Succ n))
+\end{lstlisting}
 \noindent In this definition, the index grows towards the tail of the list,
 which is admittedly not the most useful definition.
 The reason why we did not choose the more practical
@@ -86,82 +104,100 @@ encodings of GADT-like datatypes~\cite{gadt1,gadt2}. Such encodings are more
 complex than encodings of regular algebraic datatypes as they require explicit
 equality proofs and a more language support for such proofs~\cite{yang2019pure}. Thus we use the simpler,
 but still dependently typed example here.
-Here we encode $\mathrm{List}$ and its constructors as conventional terms. We
-show the definition for \verb|List|, and the types for the constructors next
+Here we encode \lstinline{List} and its constructors as conventional terms. We
+show the definition for \lstinline{List}, and the types for the constructors next
 (implementation omitted):
-
-\begin{flalign*}
-&\List : \star \rightarrow \Nat \rightarrow \star &&\\
-&\List = \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \Pi r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r &&\\
-&\Nil : \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n &&\\
-&\Cons : \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n &&
-\end{flalign*}
+% \begin{flalign*}
+% &\List : \star \rightarrow \Nat \rightarrow \star &&\\
+% &\List = \mu L : \star \rightarrow \Nat \rightarrow \star.\, \lambda a:\star.\, \lambda n :\Nat.\, \Pi r:\star.\, r \rightarrow (a \rightarrow L~a~(\Succ ~ n) \rightarrow r) \rightarrow r &&\\
+% &\Nil : \forall a : \star.\, \forall n : \Nat.\, \List ~ a ~ n &&\\
+% &\Cons : \forall a : \star.\, \forall n : \Nat.\, a \rightarrow \List ~ a ~ (\Succ ~ n) \rightarrow \List ~ a ~n &&
+% \end{flalign*}
+\begin{lstlisting}
+  List : $\star$ $\rightarrow$ Nat $\rightarrow$ $\star$
+  List = $\mu$L:($\star$ $\rightarrow$ Nat $\rightarrow$ $\star$).$\lambda$a:$\star$.$\lambda$n:Nat.$\Pi$r:$\star$.
+           r $\rightarrow$ (a $\rightarrow$ L a (Succ n) $\rightarrow$ r) $\rightarrow$ r
+  Nil : $\forall$a:$\star$.$\forall$n:Nat. List a n
+  Cons : $\forall$a:$\star$.$\forall$n:Nat. a $\rightarrow$ List a (Succ n) $\rightarrow$ List a n
+\end{lstlisting}
 \noindent
 In later subsequent examples we will just assume some
 Haskell-style syntactic sugar for datatype definitions and constructors.
-Using the above definitions, we can define a \verb|map| function over \verb|List| with the type:
-\begin{flalign*}
-  & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n &&
-\end{flalign*}
-An example of application of \verb|map| is:
-\begin{flalign*}
-&\map~\Succ~(\Cons~1~(\Cons~2~\Nil)) &&
-\end{flalign*}
-
+Using the above definitions, we can define a \lstinline{map} function over \lstinline{List} with the type:
+% \begin{flalign*}
+%   & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n &&
+% \end{flalign*}
+\begin{lstlisting}
+  map = $\forall$a:$\star$.$\forall$b:$\star$.$\forall$n:Nat. a $\rightarrow$ b $\rightarrow$ List a n $\rightarrow$ List b n
+\end{lstlisting}
+An example of application of \lstinline{map} is:
+\begin{lstlisting}
+  map Succ (Cons 1 (Cons 2 Nil))
+\end{lstlisting}
+% \begin{flalign*}
+% &\map~\Succ~(\Cons~1~(\Cons~2~\Nil)) &&
+% \end{flalign*}
 \noindent which increases every natural in the list by one.
-Note that since the type parameters for \verb|map|, \verb|Cons| and \verb|Nil|
+Note that since the type parameters for \lstinline{map}, \lstinline{Cons} and \lstinline{Nil}
 are all implicit, they can be all omitted
-and the arguments are instantiated implicitly. Thus the \verb|map| function
+and the arguments are instantiated implicitly. Thus the \lstinline{map} function
 only requires two explicit arguments, making it as convenient to use
 as in most functional language implementations.
 
 There are a few final points worth mentioning about the example.
-Firstly, \verb|List| is an example of a dependently typed function, since it is parameterized
+Firstly, \lstinline{List} is an example of a dependently typed function, since it is parameterized
 by a natural value. Secondly, in \name (following the design of PITS~\cite{yang2019pure}),
 fixpoint operators ($\mu$) serve a dual purpose of defining recursive types and recursive
 functions. Besides its usual use of defining term-level general recursive functions,
-it can be used to define recursive types, as shown in the encoding of \verb|List|
+it can be used to define recursive types, as shown in the encoding of \lstinline{List}
 above.
-% In \verb|List| the fixpoint operator is used to define a recursive type, whereas
-% in the definition of \verb|map| the fixpoint operator is used to define term-level recursion.
 Moreover, recursion is unrestricted and there is no termination checking, much like approaches
 such as Dependently Typed Haskell~\cite{dh}, and unlike various other dependently typed languages
 such as Agda~\cite{2007_norell_agda} or Idris~\cite{brady2013idris}.
 
-
 \paragraph{Implicit Higher-Kinded Types}
 
 The implicit capabilities also extend to the realm of higher-kinded types~\cite{tapl}.
-For example we can define a record type \verb|Functor|,
-to mimic the typeclass\cite{typeclasseswadler,typeclasseskaes} \verb|Functor| in Haskell:
+For example we can define a record type \lstinline{Functor},
+to mimic the typeclass\cite{typeclasseswadler,typeclasseskaes} \lstinline{Functor} in Haskell:
 \newcommand{\Functor}[0]{\mathrm{Functor}}
 \newcommand{\MkFunctor}[0]{\mathrm{MkF}}
 \newcommand{\Id}[0]{\mathrm{Id}}
 \newcommand{\MkId}[0]{\mathrm{MkId}}
 \newcommand{\fmap}[0]{fmap}
-\begin{flalign*}
-  &\mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~\{\fmap : \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b\} &&
-\end{flalign*}
+% \begin{flalign*}
+%   &\mathbf{data}~\Functor~(F : \star \rightarrow \star) = \MkFunctor~\{\fmap : \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b\} &&
+% \end{flalign*}
+\begin{lstlisting}
+  data Functor (F : $\star \rightarrow \star$) =
+    MkF { fmap : $\forall$a:$\star$.$\forall$b:$\star$. (a $\to$ b) $\to$ F a $\to$ F b }
+\end{lstlisting}
 \noindent Here $\Functor$ is a record type with a single field. $\MkFunctor$ is the data constructor,
 and $\fmap$ is the field accessor.
 The type of $fmap$ is:
-\begin{flalign*}
-  & \fmap : \forall F : \star \to \star.~\Functor~F \to \forall a : \star.\, \forall b : \star.\, (a \rightarrow b) \rightarrow F~a \rightarrow F~b &&
-\end{flalign*}
+\begin{lstlisting}
+  fmap : $\forall$F:$\star \to \star$. Functor F $\to$ ($\forall$a:$\star$.$\forall$b:$\star$. (a $\to$ b) $\to$ F a $\to$ F b)
+\end{lstlisting}
 Importantly this example illustrates that universal variables can quantify over higher-kinds (i.e.
-$F : \star \to \star$).
+\lstinline{F : $\star \to \star$}).
 We can define instances of functor in a standard way:
-\begin{flalign*}
-  & \mathbf{data}~\mathrm{Id}~a=\MkId~\{runId : a\} && \\
-  & \mathrm{idFunctor} : \Functor~\Id && \\
-  & \mathrm{idFunctor} = \MkFunctor~\{\fmap = \lambda f : a \rightarrow b.\, \lambda ~x : \Id~a.\, \MkId~(f~(runId~x))\} &&
-\end{flalign*}
-and then use \verb|fmap| with three arguments:
-\begin{flalign*}
-& \fmap~\mathrm{idFunctor}~\Succ~(\MkId~0) &&
-\end{flalign*}
+% \begin{flalign*}
+%   & \mathbf{data}~\mathrm{Id}~a=\MkId~\{runId : a\} && \\
+%   & \mathrm{idFunctor} : \Functor~\Id && \\
+%   & \mathrm{idFunctor} = \MkFunctor~\{\fmap = \lambda f : a \rightarrow b.\, \lambda ~x : \Id~a.\, \MkId~(f~(runId~x))\} &&
+% \end{flalign*}
+\begin{lstlisting}
+  data Id a = MkId { runId : a }
+  idFunctor : Functor Id
+  idFunctor =
+    MkF { fmap = $\lambda$f:(a $\to$ b).$\lambda$x:(Id a). MkId (f (runId x)) }
+\end{lstlisting}
+and then use \lstinline{fmap} with three arguments:
+\begin{lstlisting}
+  fmap idFunctor Succ (MkId 0)
+\end{lstlisting}
 \noindent Note that, because our calculus has no mechanism like type classes we pass the ``instance'' explicitly.
-Nonetheless, three other arguments (the $F$, $a$, and $b$) are implicitly instantiated.
+Nonetheless, three other arguments (the \lstinline{F}, \lstinline{a}, and \lstinline{b}) are implicitly instantiated.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 \label{sec:higher-ranked-poly}
@@ -179,16 +215,21 @@ assigned to \verb|callcc|. One of these types is a rank-3 type,
 while another one is a rank-1 type.
 Using polymorphic subtyping we can show that the rank-3
 type is more general than the rank-1 type. Thus the following program type-checks:
-\begin{flalign*}
-& \mathrm{callcc}' : \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a && \\
-& \mathrm{callcc} : \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a && \\
-& \mathrm{callcc} = \mathrm{callcc}' &&
-\end{flalign*}
-\noindent The type $\forall b : \star.\, a \rightarrow b$ appears in a positive position
-of the whole signature, and it is a more general signature than $a \rightarrow b$
-for an arbitrary choice of $b$. Our language captures this subtyping relation so that
-we can assign $\mathrm{callcc}'$ to $\mathrm{callcc}$ (but not the other way around).
-In contrast, in approaches like the ICC, the types of \verb|callcc| and \verb|callcc'|
+% \begin{flalign*}
+% & \mathrm{callcc}' : \forall a : \star.\, ((\forall b : \star.\, a \rightarrow b) \rightarrow a) \rightarrow a && \\
+% & \mathrm{callcc} : \forall a : \star.\, \forall b : \star.\, ((a \rightarrow b) \rightarrow a) \rightarrow a && \\
+% & \mathrm{callcc} = \mathrm{callcc}' &&
+% \end{flalign*}
+\begin{lstlisting}
+  callcc' = $\forall$a:$\star$.(($\forall$b:$\star$. a $\to$ b) $\to$ a) $\to$ a
+  callcc  = $\forall$a:$\star$.$\forall$b:$\star$. ((a $\to$ b) $\to$ a) $\to$ a
+  callcc = callcc'
+\end{lstlisting}
+\noindent The type \lstinline{$\forall$b:$\star$. a $\to$ b} appears in a positive position
+of the whole signature, and it is a more general signature than \lstinline{a $\to$ b}
+for an arbitrary choice of \lstinline{b}. Our language captures this subtyping relation so that
+we can assign \lstinline{callcc'} to \lstinline{callcc} (but not the other way around).
+In contrast, in approaches like the ICC, the types of \lstinline{callcc} and \lstinline{callcc'}
 are not compatible and the example above would be rejected.
 
 \subsection{Key Features}
@@ -365,11 +406,11 @@ and especially the proof of transitivity in the original work. Ideally after app
 the generalization of the polymorphic subtyping should be:
 
 \begin{mathpar}
-  \inferrule*[lab=$\le\forall'' L$]
+  \inferrule*[lab=$\forallL''$]
     {\Gamma \vdash \tau : A \\ \Gamma \vdash [\tau / x]\, B \le C \rulehl{: [[*]]}}
     {\Gamma \vdash \forall x : A.\, B \le C \rulehl{: [[*]]}}
   \and
-  \inferrule*[lab=$\le\forall'' R$]
+  \inferrule*[lab=$\forallR''$]
     {\Gamma ,\, x : B \vdash A \le C \rulehl{: [[*]]}}
     {\Gamma \vdash A \le \forall x : B.\,C \rulehl{: [[*]]}}
 \end{mathpar}
@@ -424,10 +465,14 @@ irrelevant arguments can simply be erased at runtime.
 In dependently typed systems, however, there can be some programs where
 it is useful to have computationaly relevant implicit parameters.
 For example, accessing the length of a length indexed vector in constant time:
-\begin{flalign*}
-  &\mathrm{length} : \forall n : [[int]].\, \mathrm{Vector}~n \rightarrow [[int]] &&\\
-  &\mathrm{length} = \Lambda n : [[int]].\, \lambda v : \mathrm{Vector}~n.\, n
-\end{flalign*}
+% \begin{flalign*}
+%   &\mathrm{length} : \forall n : [[int]].\, \mathrm{Vector}~n \rightarrow [[int]] &&\\
+%   &\mathrm{length} = \Lambda n : [[int]].\, \lambda v : \mathrm{Vector}~n.\, n
+% \end{flalign*}
+\begin{lstlisting}
+  length : $\forall$n:Nat. Vector n $\to$ Nat
+  length = $\Lambda$n:Nat.$\lambda$v:(Vector n). n
+\end{lstlisting}
 \noindent Here the implicit parameter $n$ is computationally relevant as it is used as
 the return value of the function which is likely to be executed at runtime.
 Languages like Agda, Coq or Idris support such programs. However,
