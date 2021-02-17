@@ -230,7 +230,8 @@ subtype of $[[e2]]$ and they are both of type $[[A]]$''.
 In this form of formalization, the typing judgment $[[G |- e : A]]$ is a
 special case of the unified subtyping judgment $[[G |- e <: e : A]]$,
 and the well-formedness of types $\Gamma \vdash A$ is expressed by
-$[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
+$[[G |- A : *]]$.
+% where $k \in \{[[*]], [[box]]\}$.
 % Although unified, the typing rules can still be viewed as two parts, the ``typing'' part
 % (\rref{s-abs,s-app,s-bind,s-mu,s-castup,s-castdn,s-sub}) and the ``subtyping'' part
 % (\rref{s-pi,s-forall,s-forall-l,s-forall-r}). We follow a usual design for
@@ -247,6 +248,7 @@ $[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
       \drule{nil}
       \drule[width=30em]{cons}
     \end{drulepar}
+\setlength{\belowdisplayskip}{3pt} \setlength{\belowdisplayshortskip}{1.5pt}
 
     \begin{drulepar}[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}
       \mprset{sep=1.3em}
@@ -296,13 +298,18 @@ $[[G |- A : k]]$ where $k \in \{[[*]], [[box]]\}$.
     \end{drulepar}
     % \drules[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}{
     %     var,lit,int,star,abs,pi,app,bind,mu,castup,castdn,forallXXl,forallXXr,forall,sub}
-    \begin{equation*}
-       \text{Syntactic Sugar} \qquad [[G |- e : A]] \triangleq [[G |- e <: e : A]]
-    \end{equation*}
+    \setlength{\abovedisplayskip}{0pt}
+    \setlength{\abovedisplayshortskip}{0pt}
+    \begin{gather*}
+       \text{Syntactic Sugars} \\
+       [[G |- e : A]] \triangleq [[G |- e <: e : A]]
+      \qquad \Gamma \vdash A \triangleq [[G |- A <: A : *]]
+      \qquad \Gamma \vdash A \le B \triangleq [[G |- A <: B : *]]
+    \end{gather*}
     \caption{(Sub)Typing Rules of \name.}
     \label{fig:typing}
 \end{figure}
-\bruno{Add syntactic sugar also for subtyping and well-formedness.}
+% \bruno{Add syntactic sugar also for subtyping and well-formedness.}
 
 \paragraph{Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow

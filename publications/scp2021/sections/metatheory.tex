@@ -83,7 +83,7 @@ Note that, since our system has the fixpoint operator, theoretically we could co
 a diverging program $[[mu x : A. x]]$ to instantiate the implicit parameter, but
 this possibility leads to several other issues which we are going to discuss in
 Section~\ref{sec:habitability}. Furthermore such an approach would not work for calculi
-without fixpoints. 
+without fixpoints.
 
 Due to these complications, we assume that strengthening does not hold in our system for now.
 We add a premise $[[G |- A : *]]$ to \rref{s-forall-r} to workaround this issue,
@@ -94,6 +94,7 @@ arbitrary $A$ and $B$ by first applying \rref{s-forall-r}. We resolve this issue
 adding \rref{s-forall}.
 
 \subsection{Typing Properties of \name}
+\label{sec:typing-properties}
 
 With our rules properly set up, we can prove most of the basic properties
 using techniques borrowed from the \emph{unifed subtyping}~\cite{full} approach.
@@ -652,7 +653,7 @@ We prove that the two system are equivalent in terms of expressiveness.
 
 Finally we show that the subtyping aspect of \name subsumes
 Odersky and L\"aufer's polymorphic
-subtyping~\cite{odersky1996putting}. To be more precise 
+subtyping~\cite{odersky1996putting}. To be more precise
 we show that our unified subtyping relation subsumes the Dunfield and Krishnaswami (DK)'s declarative
 subtyping relation \cite{dunfield2013complete}, which is a small variant of
 Odersky and L\"aufer's polymorphic subtyping.

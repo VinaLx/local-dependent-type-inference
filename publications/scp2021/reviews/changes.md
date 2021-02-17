@@ -43,9 +43,8 @@ DONE: We added the following sentence in the introduction:
 function types are computationally irrelevant (i.e. they cannot be
 used in runtime computation)."
 
-We have also added a paragraph and an example in Section 2,
-at the end of: ``Explicit'' Implicit Instantiation
-
+We have also added a new paragraph and an example in Section 2
+called ``Computational Irrelevance``
 
 > A stronger conclusion. Rather than just summarizing the ideas and
 > listing future work, can you give a broader outlook? Supposing you
@@ -127,9 +126,10 @@ back to the added section.
 > forbidden... such an example would go a long way towards making it
 > clear what your system can and can't handle!
 
-DONE?
+DONE:
 
-Refer back to the paragraph "Kind Restriction for Universal Types" in section 3.
+Please refer to the paragraph "Kind Restriction for Universal Types"
+in Section 3.
 
 > p24L56 I didn't understand this lemma. Shouldn't it be the case that
 > `castdown N` has type `(\x:box. x) *`, and doesn't that type have kind
@@ -139,7 +139,7 @@ Refer back to the paragraph "Kind Restriction for Universal Types" in section 3.
 
 DONE
 
-Added a paragraph under lemma 22 to explain why such expression is not
+Added a paragraph under Lemma 22 to explain why such expression is not
 well-typed.
 
 ## Syntax, naming, and notation
@@ -151,8 +151,8 @@ well-typed.
 
 DONE
 
-We added the syntax of types and monotypes to figure 1, briefly introduced it in
-the first paragraph of section 2.2.
+We added the syntax of types and monotypes to Figure 1, and briefly introduced it in
+the first paragraph of Section 2.2.
 
 The role of monotypes is mentioned just below in the introduction of the forall-L
 rule (for the predicativity of relation).
@@ -166,8 +166,8 @@ ANSWER: We rephrased the text in this paragraph significantly. We now show
 the syntax of the new binder, but we prefer not to introduce the full grammar
 at this point.
 
-"Binder" should be a standard term to refer to the syntax construct to "bind"
-a variable in the body. And the "binder" does not refer to `forall` type itself,
+"Binder" should be a standard term to refer to the syntax of a construct that "binds"
+a variable in the body. Our use of "binder" does not refer to `forall` type itself,
 it refer to the inhabitants of `forall` types.
 
 > p10L15 It took quite some time to understand that mono-expressions
@@ -177,12 +177,13 @@ it refer to the inhabitants of `forall` types.
 > one? Right? More clarity here would be very helpful! Some kind of
 > discussion should also go in "Implicit Polymorphism" on p11L24-38.
 
-DONE?
+DONE:
 
-Rephrased the paragraph of implicit polymorphism, which first emphasizes the idea
-of generalization of polymorphic types
-(and emphasize that the mono-types only excludes forall types not everything else).
-Then mention the implicit lambda expression.
+We rephrased the paragraph of implicit polymorphism, which first
+emphasizes the idea of generalization of polymorphic types (and
+emphasize that the mono-types only excludes forall types not
+everything else). We also mention the implicit lambda expression
+at that point.
 
 > p10L42 I'm not sure `Castup` and `Castdn` are the best possible names
 > here. Why not just write $\mathsf{expand}$ and $\mathsf{reduce}$ for
@@ -198,7 +199,7 @@ designs, such as those from Zombie.
 > mentioning. When _don't_ you do that?
 
 ANSWER:
-For example the definition of transitivity we use e1, e2 and e3. Intuitively
+For example, in the definition of transitivity, we use e1, e2 and e3. Intuitively
 transitivity should be a property concerning about subtyping, but our generalized
 version talks about general terms as well. It is not necessary in this circumstance
 where e1 e2 and e3 mention terms or types.
@@ -209,24 +210,23 @@ but there are subtle differences in different contexts where it may matter.
 > p12L20 If `Castdn` triggers only one step, why does the outer cast
 > form remain in `R-Castdn`?
 
-DONE
-Because castdn triggers type-level reduction,
-which is performed in the typing rules, while in R-Castdn the castdn operator
-only serves as an evaluation context.
-And we added a sentence in section 3.2 to clarify this point.
+DONE:
+
+Because castdn triggers type-level reduction, which is performed in
+the typing rules, while in R-Castdn the castdn operator only serves as
+an evaluation context. We added a sentence in Section 3.2 to
+clarify this point.
 
 > p14L20 Maybe call out the three non-structural rules (`S-Forall-L`,
 > `S-Forall-R`, `S-Sub`)? The appearance of `S-Forall` to resolve some
 > issues (p17L51) seems to indicate that "structurality" is an important
 > property!
 
-IGNORE?
+ANSWER:
 
 We are not sure that rules being structural or not is an important property
-to mention, while the orginal polymorphic subtyping rules are already non-structural,
-and subsumption rule is very common in a system with subtyping. And it does not
-seem to be a common tradition to highlight structurality of rules in programming
-languages either.
+to mention. While the orginal polymorphic subtyping rules are already non-structural,
+and subsumption rule is very common in a system with subtyping.
 
 > p14L36 Maybe highlight the new kinding premises?
 
@@ -250,13 +250,13 @@ TODO
 
 DONE
 
-Specify directly that we prove the subsumption of polymorphic subtyping, based
-on the subsumption of DK's declarative subtyping. And add DK subscript to the
-corresponding turnstiles.
+We now specify directly that we prove the subsumption of polymorphic subtyping, based
+on the subsumption of DK's declarative subtyping. Furthermore, we added
+DK subscripts to the corresponding turnstiles.
 
 > p26L30-43 I didn't understand these paragraphs at all.
 
-DONE
+DONE:
 
 For 30-33, we expanded the discussion of proofs of the subsumption of the
 polymorphic subtyping and hopefully it makes more sense.
@@ -268,8 +268,8 @@ open terms and made it a standalong subsection.
 
 DONE
 
-We rephrased and detailed the said discussion, by specifying that the two choices
-of instantiation is not more general than the other.
+We rephrased and detailed the said discussion, by specifying that the
+either of the two choices of instantiation are not more general than the other.
 
 > It would be good to emphasize up front that pi and forall are
 > different---the former explicitly takes an argument and the latter is
@@ -277,13 +277,13 @@ of instantiation is not more general than the other.
 > Calling out the difference between `S-Pi` and `S-Forall` would be a
 > key move (p15).
 
-DONE?
+DONE:
 
-We add a sentence in section 3, "Implicit Polymorphism" to emphasize the
+We added a sentence in Section 3, "Implicit Polymorphism" to emphasize the
 difference between \Lambda and \lambda expressions. As for the difference
 between S-Pi and S-Forall, S-Pi is meant to be a generalization of the standard
-subtyping rule of function type, and the motivation of S-Forall is explained in
-section 4.1.
+subtyping rule of function types, and the motivation of S-Forall is explained in
+Section 4.1.
 
 ## Coq proofs
 
@@ -293,14 +293,14 @@ section 4.1.
 DONE
 
 Renamed some of the names in the implementation to better match the name in the
-paper. And is a Readme file that states the correspondence between the theorems
-in the paper and the theorems in Coq.
+paper. Moreover there is a Readme file, that comes with the Coq formalization,
+that states the correspondence between the theorems in the paper and the theorems in Coq.
 
 > p18L20-23 These lemmas have identical proof scripts. Why can't you
 > prove it in one go? (You'd have to generalize your fancy tactic...)
 
 ANSWER: The problem of left reflexivity and right reflexivity have been
-different before the introduction of s-forall. And the separation of left refl
+different before the introduction of s-forall. The separation of left refl
 and right refl follows from the original work of unified subtyping, so
 we prefer to leave them this way.
 
@@ -313,7 +313,7 @@ we prefer to leave them this way.
 
 DONE
 
-It was the substitution lemma which imposes the monotype restriction
+It was the substitution lemma which imposed the monotype restriction
 back to the typing rule of s-app. Because of the reason explained under
 the substitution theorem, because of the subtyping aspect of substitution, and
 the mono-type restriction imposed by s-forall-L, substutition of polytypes does
@@ -327,7 +327,7 @@ Rephrased the paragraph under substitution to better reflect this logic.
 > induction (i.e., due to the <= on the measures). Might be good to
 > mention this in the paper.
 
-DONE?
+DONE:
 
 Added the word "strong" before the word "induction".
 
@@ -350,8 +350,8 @@ Added high-level explanations of what those measures do when introducing them.
 
 DONE
 
-Replaced the version of progress with what were proved in the script. And added
-a short paragraph talking about "generalization" very briefly.
+We eeplaced the version of progress with what were proved in the script.
+Moreover, we added a short paragraph talking about "generalization" very briefly.
 
 > p23L39 I was surprised that the proof of subtype preservation is able
 > to find the valid instantiation (necessarily constructively). I can't
@@ -378,7 +378,7 @@ DONE
 
 DONE
 
-We add a sentence explaining that we have to pass the "typeclass" instance explicitly.
+We added a sentence explaining that we have to pass the "typeclass" instance explicitly.
 
 > p7L51 When you say "first attempt", it would be nice to give a clue as
 > to what goes wrong... we find out later that the answer is
@@ -391,7 +391,7 @@ We added a paragraph mention the direct generalization is not suitable for
 formalization for the reasons discussed in later sections.
 
 The admissible rules in the final system are mentioned in subsection
-"Equivalence to a Simplified System" in section 4.
+"Equivalence to a Simplified System" in Section 4.
 
 > p8L32 Can you explain how Hindley-Milner relates to the ICC rules
 > (i.e., INST at variables and GEN at `let`s)?
@@ -536,7 +536,7 @@ DONE: We added one paragraph in related work at the end of "Dependent types
 and subtyping". There we give more details on the differences between the
 calculus formalized by us and that formalized in [25].
 
-And we extended the paragraph in overview discussing the addition
+We also extended the paragraph in overview discussing the addition
 of cast operators over a conversion rule, hopefully it makes more sense now.
 
 > page 2 41-42
@@ -598,21 +598,22 @@ of `map`.
 
 DONE
 
-You are right, the Functor here is a record type that mimic the typeclass, which
-we added explanations to point out.
+You are right, the Functor here is a record type that mimic the typeclass. 
+We added explanations to point this out.
 
 > It will also be useful to point out exactly what could not be expressed in, e.g., Haskell.
 > You say (line 33) that F is implicitly instantiated, but F is not Functor Id here?
 
 DONE
 
-We added a sentence to explain this Functor, unlike the typeclass, the instance
-has to be explicitly passed as argument.
+We added a sentence to explain with this formulation of Functor, unlike with
+type classes, the instance has to be explicitly passed as argument.
 
 The parameter `F`, as shown in the type of fmap, refers to the higher-kinded
 type parameter of `Functor`, in this case, `Id`.
 
-> page 7 you should explain which is the role of the type variables in Gamma; that is, what is only allowed if the type variable is available in Gamma
+> page 7 you should explain which is the role of the type variables in Gamma;
+> that is, what is only allowed if the type variable is available in Gamma
 
 DONE
 
@@ -627,7 +628,7 @@ DONE
 DONE
 
 We added a brief explanation to the role of star and box kind to the first
-paragraph in section 3.1.
+paragraph in Section 3.1.
 
 > page 12: perhaps you should justify better why upcasts are values
 
@@ -737,8 +738,9 @@ DONE
 DONE
 
 We added an explanation after showing the definition that we did not choose a
-more intuitive example is because it would require the GADT which our language
-does not currently support.
+more intuitive example is because it would require GADTs
+(which have significantly more complex encodings and require additional cast
+support).
 
 > I also didn't understand the encoding technique in the list/map
 > example.  What is r in the encoding of List?  Is this from Yang and
@@ -775,7 +777,7 @@ example may not be very intuitive for someone not very familiar with
 > theory alone has some interest, though; so this is not a fatal flaw,
 > but it is something that decreases my enthusiasm considerably.
 
-We certainly agree that the algorithmic aspects are a big challenge.
+ANSWER: We certainly agree that the algorithmic aspects are a big challenge.
 However we are indeed a bit more hopeful than the reviewer. One reason
 is that, with our proposal, we can avoid one of the biggest challenges
 of type-inference work done previously for dependently typed languages:

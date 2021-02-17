@@ -164,7 +164,11 @@ The subtyping rules for universal quantification (which do not exist in $\lambda
 bring considerable challenges for transitivity, and the proof technique used by
 \name differs considerably from the proof technique used in $\lambda{I}$.
 Unlike $\lambda_{I}$, \name does not support bounded quantification, which brings
-some welcome simplifications to some of the unified subtyping rules. 
+some welcome simplifications to some of the unified subtyping rules.
+Besides these differences other differences include the use of a call-by-name
+semantics in \name (see also the discussion in Sections~\ref{sec:open-term-reduction} and \ref{sec:cast-design}),
+and the use of the $\star : \square$ axiom in \name versus the use of $\star : \star$
+in $\lambda_{I}$.
 
 \paragraph{Dependent Types with Explicit Casts} Previously
 discussed work is about the interaction between dependent types and
