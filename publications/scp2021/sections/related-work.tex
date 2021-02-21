@@ -185,3 +185,53 @@ on using explicit casts instead of conversion rule in a dependently
 typed system. In \name we adopt a simple formulation of casts based
 on iso-types~\cite{isotype}, but we believe that more powerful notions
 of casts could work too.
+
+\paragraph{Dependent Object Types}
+
+Dependent Object Types (DOT)~\cite{dot:dot,dot:path,dot:sound} is another
+family of systems that discusses subtyping in a dependently typed setting.
+Unlike the traditional dependent type systems that based on lambda calculus, DOT
+embraces the idea of ``everything is an object'' and features the \emph{path-dependent types}.
+The path-dependent type is a restricted form of general dependent type,
+although allowing return types of functions
+to mention their parameters, only member accessing operations are allowed for the ``depended value'',
+and instead of all terms, only variable names can occur in the accessing path.
+This restriction rules out the traditional problems in dependent type system
+like handling type-level computation and allows DOT to focus more on the subtyping
+aspect like reasoning about type bounds. Also, since they can still seperate the
+concept of terms and types due to the restriction, the mutual dependency of
+typing and subtyping is also not an issue.
+
+DOT with Implicit Functions (DIF)~\cite{dif} is an interesting extension of DOT
+that adds implicit functions to the DOT.
+Since path-dependent types can encode parametric
+polymorphism, adding implicit functions implies adding implicit polymorphism.
+The treatment of implicit parameters in DIF is quite similar
+to ICC~\cite{miquel2001implicit} in terms of the generalization and
+instantiation rules shown in section \ref{sec:polymorphic-subtyping}.
+So their system share similar restrictions of being unable to handle implicits
+at higher-ranked position. However in DIF, implicit arguments are runtime relevant,
+and can be retrieved by a specicial variable. This comes with a restriction of
+only implicit arguments can only be variables in the typing context when inferred.
+
+\paragraph{Refinement Types and Manifest Systems}
+
+The \emph{manifest} systems~\cite{manifestcontracts} is one of the styles of
+contract-oriented programming (in contrast to the \emph{latent} systems~\cite{latentcontracts}),
+where contracts (the conditions that programmers expect to satisfy) are expressed
+in the type system. $\lambda_H$~\cite{hybridtypes,manifestcontracts} is one of such systems that
+includes dependent types and subtyping simultaneously. The subtyping relation
+expresses the implication relation between contract satisfaction conditions. They
+also observed the difficulty of potential mutual dependency between typing and subtyping,
+they build another layer of denotational semantics on top of
+subtyping rules to avoid that subtyping depends on typing. However it introduces
+massive complications in terms of metatheory. System $\mathrm{F}_\mathrm{H}$~\cite{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
+~\cite{fhsigma} provide another
+interesting idea to deal with this mutual dependency. They get rid of the
+subtyping aspect entirely in the type system, but recover it after the system is
+defined to prove the ideas expressed by subtyping hold for their systems,
+which \citet{fhsigma} also called a \emph{subsumption free formulation}.
+However such technique is likely to be difficult to apply for systems that
+reason about implicit polymorphism,
+as systems like ICC\cite{miquel2001implicit} that mentions subtyping relations \emph{post facto}
+often fail to reason about polymorphism at a higher rank.

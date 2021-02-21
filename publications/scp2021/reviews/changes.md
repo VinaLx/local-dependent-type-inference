@@ -16,23 +16,6 @@ a good starting point.
 > The related work section omits two significant areas of inquiry:
 > refinement type systems like F* and Liquid Haskell, and Amin's DOT theory,
 > "DOT with Implicit Functions" from Jeffery, Scala Symposium 2019
-
-TODO? But I know almost nothing about it.
-
-I guess what's there to be said is that those also involve subtyping.
-In DOT there's no work on type inference yet (it is an explicitly typed calculus),
-and the forms of dependent types are more limited: DOT has path-dependent types.
-
-In Liquid Haskell there's also some form of dependencies and subtyping I think.
-Some reading will be needed here, especially trying to look for work
-where type-inference is also discussed. I suppose that no work on Liquid
-Haskell considers higher-ranked polymorphism.
-
-For F*, more reading is needed here. In particular figuring out if they
-have some work/discussion on type inference. Again I suspect that
-there won't be any formalization of higher-ranked type-inference in F*.
-But reading is needed to double-check this.
-
 > Refinement type systems typically have both dependency and subtyping
 > (though there are some issues, e.g.,
 > <https://github.com/FStarLang/FStar/issues/65>). If you'd like to
@@ -50,20 +33,20 @@ But reading is needed to double-check this.
 > and some of its followup work (e.g., "DOT with Implicit Functions"
 > from Jeffery, Scala Symposium 2019).
 
-TODO: We should definitly mention the Belo et al. paper and the issue that
-was found (in TOPLAS 2017?). That will look good for us: i.e. that we have
-a working substitution lemma in the presence of subtyping!
+DONE?
 
-I briefly looked at the TOPLAS 2017 paper. Here are a few points:
+We mentions the DOT (by Amin et al.) and DIF (by Jeffery) and the manifest
+systems (System lambdaH, FH, FH^sigma) in the related work section.
 
-- The discussion on page 8, under the paragraph "Subsumption-free
-formulation" seems relevant. They seem to discuss a similar issue
-to the mutual dependency between typing and subtyping in the context
-of contract calculi. This seems worthwhile mentioning in our paper.
-Perhaps unified subtyping could help there.
-
-- The discussion that follows page 8 (pages 9 and 10) then gives details
-on the substitution issue.
+However we consider the substitution problem mentioned
+by Sekiyama et al. a different problem from what we mentioned in the discussion
+(although we call them the same "reduction substitution").
+The reduction substitution of FH is a problem in their axioms that causes a
+contradiction in their system (an ill-formed interaction between convertible
+types and reduction rules). And our problem of
+substitution is much "milder" one that limits the design of our operational
+semantics (we cannot include some reduction rule, because that would cause
+trouble when proving relevant theorems).
 
 > Clearer indication up front that implicits are necessarily proof irrelevant,
 > and some concrete examples of programs your regime _disallows_.
