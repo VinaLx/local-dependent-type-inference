@@ -2,9 +2,9 @@
 
 In this article, we come up with a design of a dependently-typed calculus called \name.
 \name generalizes non-dependent polymorphic subtyping by Odersky and
-L\"aufer~\cite{odersky1996putting} and contains other features like general
+L\"aufer~\citep{odersky1996putting} and contains other features like general
 recursion and explicit casts for type-level computations.
-We adopt the techniques of the Unified Subtyping~\cite{full} to
+We adopt the techniques of the Unified Subtyping~\citep{full} to
 avoid the mutual dependency between typing and subtyping relation to simplify
 the formalization. Besides other relevant theorems about typing and subtyping,
 \emph{transitivity} and \emph{type safety} are proved mechanically with the Coq
@@ -24,12 +24,12 @@ of the core features that are important for typed functional languages.
 Assumming that we have an implementation of a core language based on \name,
 we expect that interesting and expressive functional languages can be built
 on top of such core language. For instance, all the features of Haskell 98,
-including higher-kinds, algebraic datatypes and type classes~\cite{typeclasseskaes,typeclasseswadler}
+including higher-kinds, algebraic datatypes and type classes~\citep{typeclasseskaes,typeclasseswadler}
 should be easily encodable
 in \name. Furthermore, some features not in Haskell 98, but available in modern
 versions of GHC Haskell, such as higher-ranked polymorphism or certain
-kinds of dependent types are also supported in \name. GADTs~\cite{gadt1,gadt2} and
-type-families~\cite{typefamilies} are more challenging as they require a more powerful
+kinds of dependent types are also supported in \name. GADTs~\citep{gadt1,gadt2} and
+type-families~\citep{typefamilies} are more challenging as they require a more powerful
 form of casts and additional support for equality. Previous work on PITS
 has shown how some forms of GADTs and equality can be modelled using
 a variant of cast operators that employ a more powerful parallel reduction

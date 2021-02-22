@@ -4,10 +4,10 @@
 This section introduces the static and dynamic semantics of
 \name: a dependently typed calculus with type casts
 and implicit polymorphism. The calculus employs
-\emph{unified subtyping}~\cite{full}
+\emph{unified subtyping}~\citep{full}
 and has a single relation that generalizes both typing and subtyping.
-The calculus can be seen as a variant of the \emph{Calculus of Constructions}~\cite{coc},
-but it uses a simple form of casts~\cite{isotype,yang2019pure} with $\castup$ and $\castdn$ operators
+The calculus can be seen as a variant of the \emph{Calculus of Constructions}~\citep{coc},
+but it uses a simple form of casts~\citep{isotype,yang2019pure} with $\castup$ and $\castdn$ operators
 instead of the conversion rule and features unrestricted recursion with the fixpoint operator.
 We present syntax, unified subtyping, and reduction for \name.
 
@@ -65,7 +65,7 @@ types (i.e. $x$ can have any type $A$ instead of just kind $\star$). The idea of
 \emph{monomorphic types} (or monotypes) is also generalized.
 \emph{Mono-expressions} $\tau$ exclude polymorphic types ($[[forall x : A. B]]$) from the syntax,
 which follows a similar design in various work about predicative
-higher-ranked polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical}.
+higher-ranked polymorphism~\citep{odersky1996putting,dunfield2013complete,jones2007practical}.
 With dependent types, we choose to only exclude universal types, but not
 any other related expressions.
 
@@ -81,19 +81,19 @@ of implicit lambda ($\Lambda$) expressions are deduced during type checking.
 % The design used in \name
 This is a similar design to
 % is similar to the design of
-the \emph{Implicit Calculus of Constructions} ($\text{ICC}^*$)~\cite{barras2008implicit}, which
+the \emph{Implicit Calculus of Constructions} ($\text{ICC}^*$)~\citep{barras2008implicit}, which
 employs similar constructs for implicit dependent products.
 % Like conventional universal quantification, the arguments of $\forall$ types are
 % deduced during applications rather than explicitly passed.
 
 % Also, following the designs for predicative higher-ranked
-% polymorphism~\cite{odersky1996putting,dunfield2013complete,jones2007practical},
+% polymorphism~\citep{odersky1996putting,dunfield2013complete,jones2007practical},
 % we have generalized the concept of \emph{monotypes} to
 % \emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
 
 \paragraph{Recursion and Explicit Type-level Computation}
 \label{sec:cast}
-The \name calculus adopts \emph{iso-types}~\cite{isotype,yang2019pure},
+The \name calculus adopts \emph{iso-types}~\citep{isotype,yang2019pure},
 featuring explicit type-level computation with cast operators
 $\castdn$ and $\castup$. These operators respectively perform one-step
 type reduction and type expansion based on the operational semantics.
@@ -115,7 +115,7 @@ is employed to give the run-time semantics of expressions.
 \paragraph{Non-deterministic Reduction}
 Figure \ref{fig:semantics} presents the small-step operational semantics of \name.
 It mostly follows the ``Call-By-Name''(CBN) variant of \emph{Pure Iso-Type Systems} (PITS)
-~\cite{yang2019pure} corresponding to the calculus of constructions:
+~\citep{yang2019pure} corresponding to the calculus of constructions:
 the arguments of the $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
 Reductions can be performed inside $\castdn$ terms (\rref{r-castdn,r-cast-inst}).
@@ -193,7 +193,7 @@ information in the dynamic semantics.
 
 \paragraph{Deterministic Erased Reduction}
 We address the issue of determinacy of the dynamic semantics with
-a design similar to $\mathrm{ICC}^*$~\cite{barras2008implicit},
+a design similar to $\mathrm{ICC}^*$~\citep{barras2008implicit},
 employing type-erased expressions. The erased expressions
 essentially mirror the syntax and semantics
 of normal expressions, except for the elimination of type annotations in $\lambda$,
@@ -220,7 +220,7 @@ correspondence to their unerased counterpart, which is discussed in Section \ref
 \label{sec:type-system}
 
 Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt a
-simplified design based on unified subtyping~\cite{full}. The subtyping rules and
+simplified design based on unified subtyping~\citep{full}. The subtyping rules and
 typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
 
 Unified subtyping solves the challenging issue of mutual dependency between typing
@@ -313,7 +313,7 @@ $[[G |- A : *]]$.
 
 \paragraph{Subtyping Rules for Universal Quantification}
 The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
-the spirit of the Odersky and L\"aufer's polymorphic subtyping~\cite{odersky1996putting,dunfield2013complete},
+the spirit of the Odersky and L\"aufer's polymorphic subtyping~\citep{odersky1996putting,dunfield2013complete},
 where the subtyping relation is interpreted as a ``more-general-than'' relation.
 A polymorphic type $[[forall x : A. B]]$
 is more general than another type $C$ when its well-typed
@@ -343,7 +343,7 @@ discuss the reason behind these restrictions in Section \ref{sec:metatheory}.
 \label{sec:kind-restriction}
 
 For the kinding of types, we mainly follow the design of the Calculus of
-Constructions~\cite{coc}. However, we specifically restrict
+Constructions~\citep{coc}. However, we specifically restrict
 the polymorphic type $[[forall x : A. B]]$ to only have kind $[[*]]$, but not $[[box]]$.
 % This restriction prevents types of kind $[[*]]$ from having implicit
 % polymorphic kind such as $[[forall x : int. *]]$ through
@@ -381,7 +381,7 @@ The direct operational semantics shown in Figure \ref{fig:semantics} chooses
 arbitrary mono-expressions to instantiate the implicit arguments,
 which potentially breaks type safety.
 Thus, we adopt a restriction in \rref{s-bind} that is similar to the
-Implicit Calculus of Constructions (ICC)~\cite{miquel2001implicit}.
+Implicit Calculus of Constructions (ICC)~\citep{miquel2001implicit}.
 We only allow the implicit parameters to occur in type annotations in the
 body of implicit abstraction, so that the choices of implicit parameters are not
 relevant at runtime. The type safety of the direct operational semantics is

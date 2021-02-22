@@ -56,7 +56,7 @@ to call \lstinline{id} with an extra argument that specifies the instantiation o
 \name is dependently typed, and universal quantifications are not limited to work
 on arguments of type $\star$, but it allows arguments of other types. This is
 a key difference compared to much of the work on type-inference for higher-ranked
-polymorphism~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical}
+polymorphism~\citep{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical}
 which has been focusing on System F-like
 languages where universal quantification can only have arguments of type $\star$.
 Furthermore, \name supports general recursion at both the term and the type-level.
@@ -69,8 +69,8 @@ yet for algebraic datatypes and pattern matching.
 We expect that a source language would provide a more convenient
 way to define the \lstinline{map} function using pattern matching and other useful source-level
 constructs. To model algebraic datatypes and pattern matching in \name, we
-use an encoding by Yang and Oliveira~\cite{yang2019pure},
-which is based on Scott encodings~\cite{mogensen1992efficient}.
+use an encoding by Yang and Oliveira~\citep{yang2019pure},
+which is based on Scott encodings~\citep{mogensen1992efficient}.
 The Scott Encoding encodes datatypes with different cases to
 Continuation-Passing-Style (CPS) function types. The return branches of these
 function types correspond to each case of the datatypes.
@@ -99,9 +99,9 @@ for our formulation of indexed lists:
 which is admittedly not the most useful definition.
 The reason why we did not choose the more practical
 example, where the index represents the length of the list, is that it requires
-encodings of GADT-like datatypes~\cite{gadt1,gadt2}. Such encodings are more
+encodings of GADT-like datatypes~\citep{gadt1,gadt2}. Such encodings are more
 complex than encodings of regular algebraic datatypes as they require explicit
-equality proofs and a more language support for such proofs~\cite{yang2019pure}. Thus we use the simpler,
+equality proofs and a more language support for such proofs~\citep{yang2019pure}. Thus we use the simpler,
 but still dependently typed example here.
 Here we encode \lstinline{List} and its constructors as conventional terms. We
 show the definition for \lstinline{List}, and the types for the constructors next
@@ -145,20 +145,20 @@ as in most functional language implementations.
 
 There are a few final points worth mentioning about the example.
 Firstly, \lstinline{List} is an example of a dependently typed function, since it is parameterized
-by a natural value. Secondly, in \name (following the design of PITS~\cite{yang2019pure}),
+by a natural value. Secondly, in \name (following the design of PITS~\citep{yang2019pure}),
 fixpoint operators ($\mu$) serve a dual purpose of defining recursive types and recursive
 functions. Besides its usual use of defining term-level general recursive functions,
 it can be used to define recursive types, as shown in the encoding of \lstinline{List}
 above.
 Moreover, recursion is unrestricted and there is no termination checking, much like approaches
-such as Dependently Typed Haskell~\cite{dh}, and unlike various other dependently typed languages
-such as Agda~\cite{2007_norell_agda} or Idris~\cite{brady2013idris}.
+such as Dependently Typed Haskell~\citep{dh}, and unlike various other dependently typed languages
+such as Agda~\citep{2007_norell_agda} or Idris~\citep{brady2013idris}.
 
 \paragraph{Implicit Higher-Kinded Types}
 
-The implicit capabilities also extend to the realm of higher-kinded types~\cite{tapl}.
+The implicit capabilities also extend to the realm of higher-kinded types~\citep{tapl}.
 For example we can define a record type \lstinline{Functor},
-to mimic the typeclass\cite{typeclasseswadler,typeclasseskaes} \lstinline{Functor} in Haskell:
+to mimic the typeclass\citep{typeclasseswadler,typeclasseskaes} \lstinline{Functor} in Haskell:
 \newcommand{\Functor}[0]{\mathrm{Functor}}
 \newcommand{\MkFunctor}[0]{\mathrm{MkF}}
 \newcommand{\Id}[0]{\mathrm{Id}}
@@ -201,13 +201,13 @@ Nonetheless, three other arguments (the \lstinline{F}, \lstinline{a}, and \lstin
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 \label{sec:higher-ranked-poly}
 
-In calculi such as the ICC~\cite{miquel2001implicit}, a form of implicit instantiation also exists.
+In calculi such as the ICC~\citep{miquel2001implicit}, a form of implicit instantiation also exists.
 However, such calculi do not employ subtyping, instead, they only apply instantiation
 to top-level universal quantifiers. Our next example illustrates how subtyping enables
 instantiation to be applied also in nested universal quantifiers, thus enabling
 more types to be related.
 
-When programming with continuations~\cite{sussman1998scheme} one of the
+When programming with continuations~\citep{sussman1998scheme} one of the
 functions that are typically needed is call-with-current-continutation
 (\verb|callcc|). In a polymorphic language, there are several types that can be
 assigned to \verb|callcc|. One of these types is a rank-3 type,
@@ -241,7 +241,7 @@ Sections \ref{sec:system} and \ref{sec:metatheory}.
 \paragraph{Polymorphic Subtyping Relation}
 Figure \ref{fig:polymorphic-subtyping} shows the syntax of types, monomorphic types (or monotypes),
 and the polymorphic subtyping relation in
-Odersky and L\"aufer's declarative type system \cite{odersky1996putting}.
+Odersky and L\"aufer's declarative type system \citep{odersky1996putting}.
 Here the syntax includes polymorphic types (or polytypes), which are universally quantified over type parameters
 ($\forall$ types). The definition of monotypes
 is standard, and includes all types without occurences of universal quantifiers.
@@ -256,7 +256,7 @@ and $\forallR$:
         than another type ($B$), when we can find an arbitrary monotype ($\tau$)
         so that the instantiation is more general than $B$.
         Importantly note that this relation does not guess arbitrary (poly)types,
-        but just monotypes. In other words, the relation is \emph{predicative}~\cite{Martin-Lof-1972}.
+        but just monotypes. In other words, the relation is \emph{predicative}~\citep{Martin-Lof-1972}.
         This restriction ensures that the relation is \emph{decidable}.
 
   \item In rule $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
@@ -293,7 +293,7 @@ generalizes this relation to a dependently typed setting.
     {\Gamma \vdash A \le \forall x.\, B}
 \end{drulepar}
 
-\caption{The polymorphic subtyping relation by Odersky and L\"aufer~\cite{odersky1996putting}.}
+\caption{The polymorphic subtyping relation by Odersky and L\"aufer~\citep{odersky1996putting}.}
 \label{fig:polymorphic-subtyping}
 \end{figure}
 
@@ -334,7 +334,7 @@ As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, thes
 rules based on polymorphic subtyping, combined with other subtyping rules,
 are able to handle the subtyping relations that occur at not only top-level,
 but also at a higher-ranked level. This feature distinguishes our \name from the
-Implicit Calculus of Constructions (ICC) \cite{miquel2001implicit} which also talks about
+Implicit Calculus of Constructions (ICC) \citep{miquel2001implicit} which also talks about
 the implicit polymorphism of dependent type languages. The ICC features the two related rules
 in the \emph{typing relation}:
 
@@ -350,7 +350,7 @@ in the \emph{typing relation}:
 
 \noindent Without an explicit subtyping relation, the ICC is not always able
 to handle subtyping at higher-ranked positions. The approach taken by the ICC
-is similar to that of the Hindley-Milner type system~\cite{hindley1969principal,damas1982principal},
+is similar to that of the Hindley-Milner type system~\citep{hindley1969principal,damas1982principal},
 which is also designed for dealing only with rank-1 polymorphism.
 Hindley-Milner's declarative system also has a \textsc{GEN} rule to
 convert expressions to polymorphic types, and a
@@ -362,7 +362,7 @@ it can quantify over terms of an arbitrary type (including types themselves).
 % which also features similar rules in typing.
 % But Hindley-Milner is designed for dealing only with rank-1 polymorphism.
 In generalizations of higher-ranked polymorphic
-type-inference~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
+type-inference~\citep{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
 it has been shown that rules like $\forallL$ and $\forallR$ generalize rules like
 \textsc{GEN} and \textsc{INST}. Since we aim at higher-ranked polymorphic generalization,
 we follow a similar, more general, approach in \name.
@@ -384,11 +384,11 @@ the typing relation (shown below) depends on the subtyping relation.
     {\Gamma \vdash e : B}
 \end{mathpar}
 This mutual dependency problem has been a significant
-problem when combining subtyping and dependent types~\cite{subdep, hutchins},
+problem when combining subtyping and dependent types~\citep{subdep, hutchins},
 and presents itself on our way to the direct generalization of polymorphic subtyping.
 
 To tackle this issue, we adopt a technique called
-\emph{unified subtyping}~\cite{full}. Unified subtyping merges the typing relation and
+\emph{unified subtyping}~\citep{full}. Unified subtyping merges the typing relation and
 subtyping relation into a single relation to avoid the mutual dependency:
 \begin{mathpar}
   \Gamma \vdash e_1 \le e_2 : A
@@ -457,7 +457,7 @@ be recovered with a simple form of syntactic sugar:
 \label{sec:computational-irrelevance-overview}
 
 Implicit parameters in traditional languages with polymorphic subtyping,
-the ICC~\cite{miquel2001implicit,barras2008implicit} and \name are computationaly irrelevant.
+the ICC~\citep{miquel2001implicit,barras2008implicit} and \name are computationaly irrelevant.
 In traditional (non-dependently) typed languages, types cannot affect computation,
 thus computational irrelevance is quite natural and widely adopted.
 Furthermore, computational irrelevance can benefit performance, since
@@ -488,7 +488,7 @@ as the above.
 \name features a fixpoint operator that supports general recursion at both
 type and term level. In order to avoid diverging computations at type checking,
 we do not provide the conversion rule (or congruence rule) like other
-dependently typed systems such as the Calculus of Constructions~\cite{coc}
+dependently typed systems such as the Calculus of Constructions~\citep{coc}
 to support implicit type-level reduction.
 \begin{mathpar}
   \inferrule*[lab=Cong]
@@ -503,7 +503,7 @@ But the presence of general recursion denies the strong normalization property
 of our language.
 
 Instead of using a conversion rule, we adopt the call-by-name design of
-\emph{Pure Iso-Type Systems} (PITS)~\cite{isotype,yang2019pure},
+\emph{Pure Iso-Type Systems} (PITS)~\citep{isotype,yang2019pure},
 and provide $\castdn$ and $\castup$ operators to explicitly trigger one-step
 type reductions or expansions as shown in the typing rules below.
 \begin{mathpar}
@@ -520,6 +520,6 @@ type reductions or expansions as shown in the typing rules below.
 operators, whether a term is strongly normalizing no longer affects the
 decidability of type checking.
 Note that there are some other cast designs in the
-literature~\cite{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15}, but
+literature~\citep{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15}, but
 we adopt the PITS design here for simplicity. We believe that other cast
 designs could also be adopted instead, but leave this for future work.

@@ -1,8 +1,8 @@
 \section{Related Work}
 
 \paragraph{Implicit Dependent Type Calculus}
-The implicit calculus of constructions (ICC~\cite{miquel2001implicit} and
-ICC*\cite{barras2008implicit}) discuss implicit polymorphism in a dependently-typed
+The implicit calculus of constructions (ICC~\citep{miquel2001implicit} and
+ICC*\citep{barras2008implicit}) discuss implicit polymorphism in a dependently-typed
 setting. ICC features generalized polymorphic types and typing rules to express
 the idea of implicit instantiation. They do not explicitly have a subtyping
 relation between polymorphic types. Therefore the expressiveness of reasoning
@@ -27,34 +27,34 @@ type-inference.
 One important challenge for type inference in
 systems with dependent types and a conversion rule
 is that they require \emph{higher-order unification},
-which is known to be undecidable~\cite{goldfarb1981undecidability}. The \textit{pattern}
-fragment~\cite{miller1991unification} is a well-known decidable
+which is known to be undecidable~\citep{goldfarb1981undecidability}. The \textit{pattern}
+fragment~\citep{miller1991unification} is a well-known decidable
 fragment. Much literature on unification for dependent
-types~\cite{reed2009higher,abel2011higher, gundry2013tutorial, Cockx:2016:UEP:2951913.2951917, ziliani2015unification, coen2004mathematical} is
+types~\citep{reed2009higher,abel2011higher, gundry2013tutorial, Cockx:2016:UEP:2951913.2951917, ziliani2015unification, coen2004mathematical} is
 built upon the pattern fragment. Algorithms for type-inference used in Agda and
 (Dependent) Haskell have been described and formalized to some degree
-in various theses~\cite{norell,gundry,dh}. However, as far as we know
+in various theses~\citep{norell,gundry,dh}. However, as far as we know
 there is not a clear specification and complete metatheory (let alone
 mechanized) for such algorithms.
 
 The current GHC Haskell's language of types and kinds
 is already dependently typed, but has no type conversion. Thus
 it is able to avoid higher-order unification. Recent work by
-Xie et al.~\cite{xie20kind} describes algorithms and specifications
+Xie et al.~\citep{xie20kind} describes algorithms and specifications
 for the form of (dependently typed) kind-inference currently present in GHC Haskell.
 The dependently typed language of types and kinds is closely related
 to \name. In particular in both calculi type equality is based only
 on $\alpha$-equivalence. One difference is that in GHC Haskell and, more precisely,
 in the core language employed by GHC, there
 are no type-level lambdas. The GHC Haskell source language does allow
-type families~\cite{assoctypes}, which mimick type-level functions. However,
+type families~\citep{assoctypes}, which mimick type-level functions. However,
 type families, unlike lambda functions, are not first class, and do not support partial application.
 They are encoded
 in terms of equality constraints, casts and mechanisms similar to those
 employed by type classes. There is some work to make type-level functions
-provided type families first-class~\cite{kiss19higher} and also partially applied, but this
+provided type families first-class~\citep{kiss19higher} and also partially applied, but this
 still does not enable full type-level lambdas (see also the discussion in Section~8.1
-of ~\cite{kiss19higher} for more details).
+of ~\citep{kiss19higher} for more details).
 In our work we do allow type-level lambdas
 but lambdas can only be equal up to $\alpha$-equivalence.
 Another difference is that the kind-inference system formalized by Xie et al.
@@ -71,45 +71,45 @@ computation.
 
 \paragraph{Type-inference for higher-ranked polymorphism}
 Type-inference for \emph{higher-ranked polymorphism}
-(HRP)~\cite{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical,Serrano2018, odersky1996putting}
-extends the classic Hindley-Milner algorithm~\cite{hindley1969principal,milner1978theory,damas1982principal},
+(HRP)~\citep{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical,Serrano2018, odersky1996putting}
+extends the classic Hindley-Milner algorithm~\citep{hindley1969principal,milner1978theory,damas1982principal},
 removing the restriction of top-level (let) polymorphism only. Type
 inference for HRP aims at providing inference for System F-like
 languages. In particular existing HRP approaches allow \emph{synthesis of type arguments}
 and use type annotations to aid
 inference, since type-inference for full System F is
-well-known to be undecidable~\cite{wells1999typability}.
+well-known to be undecidable~\citep{wells1999typability}.
 
-The work on HRP is divided into two strands: \emph{predicative} HRP~\cite{dunfield2013complete,jones2007practical,odersky1996putting,dunfield2019sound}
-and \emph{impredicative} HRP~\cite{le2003ml,leijen2008hmf,vytiniotis2008fph,Serrano2018}.
+The work on HRP is divided into two strands: \emph{predicative} HRP~\citep{dunfield2013complete,jones2007practical,odersky1996putting,dunfield2019sound}
+and \emph{impredicative} HRP~\citep{le2003ml,leijen2008hmf,vytiniotis2008fph,Serrano2018}.
 In predicative HRP instantiations can
 only synthesize monotypes, whereas in impredicative HRP there's no
 such restriction. However impredicative HRP is quite complex because
-the polymorphic subtyping relation for impredicative HRP is undecidable~\cite{tiuryn1996subtyping}.
+the polymorphic subtyping relation for impredicative HRP is undecidable~\citep{tiuryn1996subtyping}.
 Thus reasonable restrictions that work well in practice are still
 a research frontier.
 The monotype restriction on predicative instantiation is considered reasonable
 and practical for most programs. It is currently in use by languages such as
-(GHC) Haskell, Unison~\cite{Unison} and PureScript~\cite{PureScript}.
+(GHC) Haskell, Unison~\citep{Unison} and PureScript~\citep{PureScript}.
 The original work on polymorphic subtyping by Odersky and L\"aufer also enforces
 the monotype restriction in their subtyping rules (rule $\forallL$) to prevent
 choosing a polytype in the instantiation. Based on polymorphic subtyping as
 their declarative system,
 % \bruno{mention Odersky and Laufer here before moving on to DK}
-Dunfield and Krishnaswami (DK)~\cite{dunfield2013complete} develop an
+Dunfield and Krishnaswami (DK)~\citep{dunfield2013complete} develop an
 algorithmic system for predicative HRP type inference. DK's algorithm was
 manually proved to be sound, complete, and decidable.
-With a more complex declarative system~\cite{dunfield2019sound}, DK
+With a more complex declarative system~\citep{dunfield2019sound}, DK
 extended their original work with new features.
-Recently Zhao et al.~\cite{zhao19mechanical} formalized DK's type system in the Abella
+Recently Zhao et al.~\citep{zhao19mechanical} formalized DK's type system in the Abella
 theorem prover.
 
 \begin{comment}
 \paragraph{MLSub} A recent breakthrough in the area of (global) type-inference
-for type systems with subtyping is MLSub~\cite{dolan17polymorphism}. MLSub extends the Hindley-Milner
+for type systems with subtyping is MLSub~\citep{dolan17polymorphism}. MLSub extends the Hindley-Milner
 type system with support for subtyping. A key innovation
 of MLSub is that it has compact principal types, which had been a challenge
-in previous research on type-inference in the presence of subtyping~\cite{eifrig95inference,Trifonov96subtyping,pottier1998inference}.
+in previous research on type-inference in the presence of subtyping~\citep{eifrig95inference,Trifonov96subtyping,pottier1998inference}.
 MLSub is significantly more ambitious than local type-inference, and requires
 no annotations (in the tradition of Hindley-Milner). However, MLSub does not
 account for HRP and its algorithms and metatheory have not been mechanically
@@ -121,21 +121,21 @@ A major difficulty is that the introduction of dependent
 types makes typing and subtyping depend on each other. This causes
 several difficulties in developing the metatheory for calculi that
 combine dependent types and subtyping. Almost all previous
-work~\cite{subdep,ptssub,chen1,cocsub,Chen03coc} attempts to address such problem by somehow
+work~\citep{subdep,ptssub,chen1,cocsub,Chen03coc} attempts to address such problem by somehow
 \emph{untangling} typing and subtyping, which has the benefit that the
 metatheory for subtyping can be developed before the metatheory of
 typing. Nevertheless, several results and features prove to be
 challenging.
 
-Our work builds on the work done on Pure Iso-Type Systems (PITS)~\cite{yang2019pure}, and
-\emph{unified subtyping}~\cite{full}. PITS is a variant of pure type systems (PTSs),
+Our work builds on the work done on Pure Iso-Type Systems (PITS)~\citep{yang2019pure}, and
+\emph{unified subtyping}~\citep{full}. PITS is a variant of pure type systems (PTSs),
 which captures a family of calculi with \emph{iso-types}.
 Iso-types generalize \emph{iso-recursive
-types}~\cite{tapl}, and provide a simple form of
+types}~\citep{tapl}, and provide a simple form of
 type casts to address the combination of recursion and
 dependent types.
-Yang and Oliveira~\cite{full} introduce a calculus, called $\lambda_{I}$, supporting OOP features such as
-\emph{higher-order subtyping}~\cite{fsubo}, \emph{bounded quantification} and
+Yang and Oliveira~\citep{full} introduce a calculus, called $\lambda_{I}$, supporting OOP features such as
+\emph{higher-order subtyping}~\citep{fsubo}, \emph{bounded quantification} and
 \emph{top types}.
 To address the challenges posed by
 the combination of dependent types and subtyping, $\lambda_{I}$
@@ -179,16 +179,16 @@ of type casts to control type-level computation. In such an approach explicit ca
 are used for performing type-level computations. A motivation for
 using type casts is to decouple strong normalization from the
 proofs of metatheory, which also makes it possible to allow general
-recursion. There have been several studies~\cite{guru,sjoberg:msfp12,
+recursion. There have been several studies~\citep{guru,sjoberg:msfp12,
   kimmel:plpv, zombie:popl15, fc:kind, Doorn:2013hq,isotype} working
 on using explicit casts instead of conversion rule in a dependently
 typed system. In \name we adopt a simple formulation of casts based
-on iso-types~\cite{isotype}, but we believe that more powerful notions
+on iso-types~\citep{isotype}, but we believe that more powerful notions
 of casts could work too.
 
 \paragraph{Dependent Object Types}
 
-Dependent Object Types (DOT)~\cite{dot:dot,dot:path,dot:sound} is another
+Dependent Object Types (DOT)~\citep{dot:dot,dot:path,dot:sound} is another
 family of systems that discusses subtyping in a dependently typed setting.
 Unlike the traditional dependent type systems that based on lambda calculus, DOT
 embraces the idea of ``everything is an object'' and features the \emph{path-dependent types}.
@@ -202,12 +202,12 @@ aspect like reasoning about type bounds. Also, since they can still seperate the
 concept of terms and types due to the restriction, the mutual dependency of
 typing and subtyping is also not an issue.
 
-DOT with Implicit Functions (DIF)~\cite{dif} is an interesting extension of DOT
+DOT with Implicit Functions (DIF)~\citep{dif} is an interesting extension of DOT
 that adds implicit functions to the DOT.
 Since path-dependent types can encode parametric
 polymorphism, adding implicit functions implies adding implicit polymorphism.
 The treatment of implicit parameters in DIF is quite similar
-to ICC~\cite{miquel2001implicit} in terms of the generalization and
+to ICC~\citep{miquel2001implicit} in terms of the generalization and
 instantiation rules shown in section \ref{sec:polymorphic-subtyping}.
 So their system share similar restrictions of being unable to handle implicits
 at higher-ranked position. However in DIF, implicit arguments are runtime relevant,
@@ -216,22 +216,22 @@ only implicit arguments can only be variables in the typing context when inferre
 
 \paragraph{Refinement Types and Manifest Systems}
 
-The \emph{manifest} systems~\cite{manifestcontracts} is one of the styles of
-contract-oriented programming (in contrast to the \emph{latent} systems~\cite{latentcontracts}),
+The \emph{manifest} systems~\citep{manifestcontracts} is one of the styles of
+contract-oriented programming (in contrast to the \emph{latent} systems~\citep{latentcontracts}),
 where contracts (the conditions that programmers expect to satisfy) are expressed
-in the type system. $\lambda_H$~\cite{hybridtypes,manifestcontracts} is one of such systems that
+in the type system. $\lambda_H$~\citep{hybridtypes,manifestcontracts} is one of such systems that
 includes dependent types and subtyping simultaneously. The subtyping relation
 expresses the implication relation between contract satisfaction conditions. They
 also observed the difficulty of potential mutual dependency between typing and subtyping,
 they build another layer of denotational semantics on top of
 subtyping rules to avoid that subtyping depends on typing. However it introduces
-massive complications in terms of metatheory. System $\mathrm{F}_\mathrm{H}$~\cite{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
-~\cite{fhsigma} provide another
+massive complications in terms of metatheory. System $\mathrm{F}_\mathrm{H}$~\citep{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
+~\citep{fhsigma} provide another
 interesting idea to deal with this mutual dependency. They get rid of the
 subtyping aspect entirely in the type system, but recover it after the system is
 defined to prove the ideas expressed by subtyping hold for their systems,
 which \citet{fhsigma} also called a \emph{subsumption free formulation}.
 However such technique is likely to be difficult to apply for systems that
 reason about implicit polymorphism,
-as systems like ICC\cite{miquel2001implicit} that mentions subtyping relations \emph{post facto}
+as systems like ICC\citep{miquel2001implicit} that mentions subtyping relations \emph{post facto}
 often fail to reason about polymorphism at a higher rank.

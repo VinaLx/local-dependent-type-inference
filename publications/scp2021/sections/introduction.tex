@@ -7,41 +7,41 @@ languages. Polymorphic subtyping enables a form of
 functions are automatically instantiated and the programmer does not specify them.
 Traditionally, variants of polymorphic subtyping (in the form of a more-general-than relation)
 have been used in functional languages based on the
-Hindley-Milner~\cite{hindley1969principal,milner1978theory,damas1982principal}
+Hindley-Milner~\citep{hindley1969principal,milner1978theory,damas1982principal}
 type system, which supports full type-inference without any type annotations.
 However, the Hindley-Milner type system only supports \emph{rank-1 (or first order)
 polymorphism}, where all universal quantifiers only occur at the top-level
 of a type.  Modern functional programming languages, such as Haskell, go beyond
-Hindley-Milner and support \emph{higher-ranked polymorphism}~\cite{odersky1996putting,jones2007practical}
+Hindley-Milner and support \emph{higher-ranked polymorphism}~\citep{odersky1996putting,jones2007practical}
 with a more expressive
 polymorphic subtyping relation. With higher-ranked
 polymorphism there is no restriction on where universal quantifiers can occur.
 
-Odersky and L\"aufer~\cite{odersky1996putting} proposed a
+Odersky and L\"aufer~\citep{odersky1996putting} proposed a
 simple declarative specification for polymorphic subtyping, which supports higher-ranked polymorphism.
 Since then several
 algorithms have been proposed that implement variants of this specification. Most
-notably, the algorithm proposed by Peyton Jones et al.~\cite{jones2007practical} forms the basis
+notably, the algorithm proposed by Peyton Jones et al.~\citep{jones2007practical} forms the basis
 for the implementation of type inference in the GHC compiler.
-Dunfield and Krishnaswami (DK)~\cite{dunfield2013complete} provide an elegant
+Dunfield and Krishnaswami (DK)~\citep{dunfield2013complete} provide an elegant
 formalization of another sound and complete algorithm, which has
 also inspired implementations of type-inference in some polymorphic
-programming languages (such as PureScript~\cite{PureScript} or DDC~\cite{Disciple}).
-More recently Zhao et al.~\cite{zhao19mechanical} have mechanized DK's type system in a theorem prover.
+programming languages (such as PureScript~\citep{PureScript} or DDC~\citep{Disciple}).
+More recently Zhao et al.~\citep{zhao19mechanical} have mechanized DK's type system in a theorem prover.
 
 %some more background text
 
 In recent years dependent
-types~\cite{coc,cayenne,dep:pisigma,sjoberg:msfp12,guru,fc:kind,zombie:popl14,zombie:popl15}
+types~\citep{coc,cayenne,dep:pisigma,sjoberg:msfp12,guru,fc:kind,zombie:popl14,zombie:popl15}
 have become a hot topic in programming
 language research. Several newer
-functional programming languages, most notably Agda~\cite{2007_norell_agda} and
-Idris~\cite{brady2013idris}, are now dependently typed. Moreover a number of existing functional
-languages, such as Haskell, have started to move towards dependently typed programming~\cite{dependenthaskell}. Dependent types naturally lead to a unification between types and terms, which enables both
+functional programming languages, most notably Agda~\citep{2007_norell_agda} and
+Idris~\citep{brady2013idris}, are now dependently typed. Moreover a number of existing functional
+languages, such as Haskell, have started to move towards dependently typed programming~\citep{dependenthaskell}. Dependent types naturally lead to a unification between types and terms, which enables both
 additional \emph{expressiveness} and \emph{economy of concepts}.
 The key enabler for unifying terms and types in dependently typed
 calculi is the adoption of a style similar to
-Pure Type Systems (PTSs)~\cite{pts}. In PTSs there is only a single level
+Pure Type Systems (PTSs)~\citep{pts}. In PTSs there is only a single level
 of syntax for terms, i.e. the types (or kinds) are expressed using the
 same syntax as the terms. This is in contrast with more traditional calculi, where
 distinct pieces of syntax (terms, types and kinds) are separated.
@@ -55,13 +55,13 @@ typical properties among them is the decidability of type checking,
 which simply cannot be guaranteed if some
 type-level computations are non-terminating.
 However, this area has been actively investigated in the
-last few years, and a general approach~\cite{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15,
+last few years, and a general approach~\citep{guru,sjoberg:msfp12, kimmel:plpv, zombie:popl15,
   isotype} based on explicit casts for type-level computations,
 has emerged as an interesting solution for integrating general recursion
 in dependently typed calculi. By avoiding the implicit type-level computation
 entirely, whether programs strongly normalize or not no longer matters for the
 decidability of type checking.
-Current proposals for dependently typed versions of Haskell~\cite{dependenthaskell},
+Current proposals for dependently typed versions of Haskell~\citep{dependenthaskell},
 for instance, adopt explicit casts for type-level computation.
 
 A second challenge, for calculi that employ subtyping, is that
@@ -69,13 +69,13 @@ smoothly integrating
 dependent types and subtyping is difficult. Subtyping is a
 substantial difference to traditional PTSs, which do not have such feature.
 The issue with subtyping
-is well summarized by Aspinall and Compagnoni~\cite{subdep}:
+is well summarized by Aspinall and Compagnoni~\citep{subdep}:
 \emph{``One thing that makes the study of these systems difficult is that
   with
 dependent types, the typing and subtyping relations become intimately
 tangled, which means that tested techniques of examining subtyping in
 isolation no longer apply''}.
-Recent work on \emph{unified subtyping}~\cite{full} provides a
+Recent work on \emph{unified subtyping}~\citep{full} provides a
 simple technique to address this problem.
 Following the same spirit as Pure Type Systems,
 which attempt to unify syntax and the typing and well-formedness relations,
@@ -99,7 +99,7 @@ using $\beta$-reduction to conclude whether or not they are equal.
 Dependent type systems with a conversion rule have some major complications.
 % that arise in the presence of a conversion rule
 A well-known one is that type-inference for such systems requires \emph{higher-order
-  unification}, which is known to be \emph{undecidable}~\cite{goldfarb1981undecidability}.
+  unification}, which is known to be \emph{undecidable}~\citep{goldfarb1981undecidability}.
 By employing a system with $\alpha$-equivalence only we stay closer to existing
 languages like Haskell, where type equality (at least at the core language level)
 is also essentially only up-to $\alpha$-equivalence.
@@ -111,11 +111,11 @@ Transitivity is a non-trivial result (like in most calculi combining dependent t
 and subtyping) and requires a proof based on sizes and a property that guarantees
 the uniqueness of kinds in our language. Type soundness is also non-trivial and we need
 to take a different approach than that employed by existing work on polymorphic
-subtyping~\cite{odersky1996putting, jones2007practical}, where type-safety is shown by an
+subtyping~\citep{odersky1996putting, jones2007practical}, where type-safety is shown by an
 elaboration to System F. In essence elaboration into a target language
 brings significant complications to the metatheory in a dependently typed setting.
 Thus, instead of an elaboration, we use a direct operational semantics approach, which
-is partly inspired by the approach used in the \emph{Implicit Calculus of Constructions} (ICC)~\cite{miquel2001implicit,barras2008implicit},
+is partly inspired by the approach used in the \emph{Implicit Calculus of Constructions} (ICC)~\citep{miquel2001implicit,barras2008implicit},
 to prove type soundness.
 Similarly to ICC we adopt the restriction that arguments for implicit function types
 are computationally irrelevant (i.e. they cannot be used in runtime computation).
@@ -127,9 +127,9 @@ is valid in \name. Thus \name's unified subtyping subsumes the polymorphic subty
 relation by Odersky and L\"aufer.
 
 \name and all the proofs reported in this paper are formalized in the Coq theorem
-prover~\cite{coq}.
+prover~(\citeauthor{coqsite}).
 %Moreover we have a simple prototype implementation of \name by adapting
-%the algorithms from Zhao et al.~\cite{zhao19mechanical} for polymorphic subtyping.
+%the algorithms from Zhao et al.~\citep{zhao19mechanical} for polymorphic subtyping.
 %\bruno{Can the implementation run the examples we show?}
 This paper
 does not address decidability or soundness and completeness of \name to an

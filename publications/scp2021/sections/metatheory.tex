@@ -26,7 +26,7 @@ The polymorphic subtyping relation by Odersky and L\"aufer features the followin
       {\Gamma ,\, x \vdash A \le B}
       {\Gamma \vdash A \le \forall x.\, B}
 \end{mathpar}
-In order for the \emph{well-formedness}~\cite{dunfield2013lemmas} property
+In order for the \emph{well-formedness}~\citep{dunfield2013lemmas} property
 (\emph{If $\Gamma \vdash A \le B$, then $\Gamma \vdash A$ and $\Gamma \vdash B$})
 to hold in L\"aufer and Odersky's system, these two rules rely on certain properties
 that do not hold in our dependently typed generalization. So we make several adjustments
@@ -97,7 +97,7 @@ adding \rref{s-forall}.
 \label{sec:typing-properties}
 
 With our rules properly set up, we can prove most of the basic properties
-using techniques borrowed from the \emph{unifed subtyping}~\cite{full} approach.
+using techniques borrowed from the \emph{unifed subtyping}~\citep{full} approach.
 We introduce \emph{reflexivity}, \emph{weakening},
 \emph{context narrowing}, \emph{substitution} and \emph{type correctness}
 in this section.
@@ -316,7 +316,7 @@ $$
 % the first and the second premises respectively.
 The proof is mainly inspired by DK's transitivity proof of their declarative subtyping
 system of induction on the pair of
-$\langle \#\forall([[e2]]) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\cite{dunfield2013lemmas},
+$\langle \#\forall([[e2]]) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\citep{dunfield2013lemmas},
 with some adjustments to fit in our system.
 
 The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
@@ -547,7 +547,7 @@ subtype preservation after reduction.
 Subtype preservation needs to solve the cast elimination case, causing a
 circular dependency of properties.
 This problem was also observed by the previous work on unified subtyping
-with cast operators~\cite{full}. They solved this situation
+with cast operators~\citep{full}. They solved this situation
 by a delicate approach with the help of an essential lemma
 \emph{Reduction Exists in the Middle} (If $[[G |- e1 <: e2 : A]]$, $[[G |- e2 <: e3 : A]]$
 and $e_1 \longrightarrow e_1'$, $e_3 \longrightarrow e_3'$, there exists $e_2'$
@@ -604,7 +604,7 @@ because it means that we cannot construct
 a reducible expression like: $([[lambda x : int. *]])~42$ which has kind $[[box]]$.
 In reality, the lambda expression must be of type $[[int]] \rightarrow [[box]]$
 for the application to be well-typed. However, the conventional typing rule for
-lambda abstractions in Calculus of Constructions~\cite{coc}, which we also employ,
+lambda abstractions in Calculus of Constructions~\citep{coc}, which we also employ,
 forbids this. The function types of the lambda abstractions themselves
 must be well-kinded (see \rref{s-abs}). Since $[[box]]$ itself does not have a kind,
 $[[int]] \rightarrow [[box]]$ is not well-kinded, therefore the whole application
@@ -662,9 +662,9 @@ We prove that the two system are equivalent in terms of expressiveness.
 
 Finally we show that the subtyping aspect of \name subsumes
 Odersky and L\"aufer's polymorphic
-subtyping~\cite{odersky1996putting}. To be more precise
+subtyping~\citep{odersky1996putting}. To be more precise
 we show that our unified subtyping relation subsumes the Dunfield and Krishnaswami (DK)'s declarative
-subtyping relation \cite{dunfield2013complete}, which is a small variant of
+subtyping relation \citep{dunfield2013complete}, which is a small variant of
 Odersky and L\"aufer's polymorphic subtyping.
 
 \begin{figure}

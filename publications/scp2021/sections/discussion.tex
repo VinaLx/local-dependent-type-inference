@@ -10,7 +10,7 @@ Usually only closed terms are considered when designing the operational semantic
 and irreducible open terms like variables are not considered to be values.
 However, since in \name the reduction relation $e_1 \longrightarrow e_2$ is also
 used in the unified subtyping relation, the reduced expressions can be open terms and well-typed under contexts.
-\citet{full} observed this issue and included \emph{inert terms}~\cite{opencbv} as values
+\citet{full} observed this issue and included \emph{inert terms}~\citep{opencbv} as values
 to capture the scenario that open terms like $x~e$
 (applying variable $x$ to the argument $e$) is also irreducible, which considerably
 complicates their metatheory around the operational semantics.
@@ -30,8 +30,8 @@ with inert terms.
 % The type reduction in cast operators is potentially under a context that
 % is not empty, so it is likely that we are performing reduction on an open term.
 % Intuitively we should generalize the definition of value by introducing inert
-% terms~\cite{full} to handle open term reduction.
-% However since we adopt the call-by-name semantics of PITS~\cite{yang2019pure},
+% terms~\citep{full} to handle open term reduction.
+% However since we adopt the call-by-name semantics of PITS~\citep{yang2019pure},
 % there is no value check during the reduction. Whether the result of reduction
 % inside a cast operator is a value or not does not matter during the reasoning of
 % type safety. It is not necessary to complicate the metatheory by introducing inert terms.
@@ -40,7 +40,7 @@ with inert terms.
 \label{sec:cast-design}
 
 An alternative design around cast operators is the
-call-by-value (CBV) style~\cite{yang2019pure},
+call-by-value (CBV) style~\citep{yang2019pure},
 by not considering all $\castup$ terms as values, and performing cast
 elimination only when the expression inside two casts is a value.
 Such design requires us to have a more general definition of value, and there would
@@ -125,11 +125,11 @@ we leave the relaxation of the kinding restrictions for future work.
 
 In our language, the implicit arguments have no computational impact at runtime
 and only provide the necessary scoping for type annotations. This is
-a similar design to ICC~\cite{miquel2001implicit} and
-ICC*~\cite{barras2008implicit} to simplify the development of a direct
+a similar design to ICC~\citep{miquel2001implicit} and
+ICC*~\citep{barras2008implicit} to simplify the development of a direct
 operational semantics for our language. Such a restriction can be lifted if we
 prove the runtime type-safety by elaboration to a second language,
-such as \emph{the Calculus of Constructions}~\cite{coc},
+such as \emph{the Calculus of Constructions}~\citep{coc},
 instead of providing the direct operational semantics.
 
 We can elaborate implicit function types (universal types) to $\Pi$ types,
@@ -151,7 +151,7 @@ consider a formalized algorithm for dependent type system itself a
 substantial challenge. Thus, an algorithmic formulation it is left for future work.
 While comparing to existing algorithmic systems
 for higher-ranked polymorphic type inference for System F-like languages
-~\cite{dunfield2013complete,zhao19mechanical},
+~\citep{dunfield2013complete,zhao19mechanical},
 we identify one of the interesting challenges to develop an algorithmic system for \name.
 % the following challenges to develop an algorithmic system for \name.
 
@@ -177,7 +177,7 @@ but neither choice ($\Pi x.\, F~x$ or $\Pi x.\, F~42$) for type $A$ leads to a m
 solution than choosing the other.
 
 Notably, for a similar reason, the decidable pattern
-fragment of higher-order unification~\cite{patternunification} specifically
+fragment of higher-order unification~\citep{patternunification} specifically
 forbids scenarios where a unification variable applies to constants.
 The case shown above is similar, where the ``application'' is $A~42$
 (dependent function type $A$ ``applies'' to 42) with unification variable $A$.
@@ -296,7 +296,7 @@ and the addition of \rref{s-forall}.
 % \end{equation*}
 % We cannot apply \rref{s-forall-l} until we find a valid instantiation for type $A$,
 % therefore we encounter an \emph{inhabitation problem} for \name. This problem is
-% undecidable for System F~\cite{dudenhefner2019simpler}. We do not expect it to be
+% undecidable for System F~\citep{dudenhefner2019simpler}. We do not expect it to be
 % decidable in a more complicated system with strong normalization.
 % Since we support general recursion in our language with a mono-expression
 % restriction we expect that all types are
