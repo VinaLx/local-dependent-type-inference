@@ -452,19 +452,7 @@ functions enabled by type families are not lambdas.
 
 > Can you alphabetize your bibliography? The natbib package makes this easy.
 
-IGNORE?
-
-The elsarticle-num style seems to have its own idea of bibliography sorting.
-
-TODO: I think what the reviewer wants is that references use the style
-
-"The subtyping relation (Odersky and Laufer 1999) ..."
-
-instead of
-
-"The subtyping relation [53] ..."
-
-I think we should do this.
+DONE
 
 > Some of the papers in the bibliography are miscapitalized, e.g.,
 > "System fc" in [15].
