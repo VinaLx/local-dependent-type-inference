@@ -61,14 +61,6 @@ Another difference is that the kind-inference system formalized by Xie et al.
 is not higher-ranked like ours. In this way Xie et al. manage to avoid
 the mutual dependency issue that we have in our polymorphic subtyping relation.
 
-\begin{comment}
-Thus our focus is on Haskell-like languages with dependently typed
-features and explicit casts, rather than languages like Agda or Idris
-which typically have a conversion rule that triggers implicit type level
-computation.
-\end{comment}
-
-
 \paragraph{Type-inference for higher-ranked polymorphism}
 Type-inference for \emph{higher-ranked polymorphism}
 (HRP)~\citep{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical,Serrano2018, odersky1996putting}
@@ -103,18 +95,6 @@ With a more complex declarative system~\citep{dunfield2019sound}, DK
 extended their original work with new features.
 Recently Zhao et al.~\citep{zhao19mechanical} formalized DK's type system in the Abella
 theorem prover.
-
-\begin{comment}
-\paragraph{MLSub} A recent breakthrough in the area of (global) type-inference
-for type systems with subtyping is MLSub~\citep{dolan17polymorphism}. MLSub extends the Hindley-Milner
-type system with support for subtyping. A key innovation
-of MLSub is that it has compact principal types, which had been a challenge
-in previous research on type-inference in the presence of subtyping~\citep{eifrig95inference,Trifonov96subtyping,pottier1998inference}.
-MLSub is significantly more ambitious than local type-inference, and requires
-no annotations (in the tradition of Hindley-Milner). However, MLSub does not
-account for HRP and its algorithms and metatheory have not been mechanically
-formalized.
-\end{comment}
 
 \paragraph{Dependent Types and Subtyping}
 A major difficulty is that the introduction of dependent
@@ -234,4 +214,45 @@ which \citet{fhsigma} also called a \emph{subsumption free formulation}.
 However such technique is likely to be difficult to apply for systems that
 reason about implicit polymorphism,
 as systems like ICC\citep{miquel2001implicit} that mentions subtyping relations \emph{post facto}
-often fail to reason about polymorphism at a higher rank.
+often fail to reason about polymorphism at higher ranks.
+
+\paragraph{Feature Comparison}
+
+Lastly we present a summary comparing \name and some of its related work in table \ref{table:comparison}.
+
+\begin{table}
+  \centering
+  % \begin{tabular}{l|c|c|c|c|c|c|c|c}
+  \begin{tabular}{l|cccccccc}
+   & ICC\mpfootnotemark[1] & $\lambda I_\le$\mpfootnotemark[2] & Zhao19\mpfootnotemark[3] & DK19\mpfootnotemark[4] & Zombie\mpfootnotemark[5] & DH\mpfootnotemark[6] & DIF\mpfootnotemark[7] & \name \\
+   \hline
+   Dep\mpfootnotemark[8] & $\checkmark$ & $\checkmark$ & $\times$ & Equality\mpfootnotemark[9] & $\checkmark$ & $\checkmark$ & Path\mpfootnotemark[10] & $\checkmark$  \\
+   \hline
+   Sub\mpfootnotemark[11] & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\times$ & $\times$ & $\checkmark$ & $\checkmark$ \\
+   \hline
+   Imp\mpfootnotemark[12] & FR\mpfootnotemark[13] & $\times$ & $\checkmark$ & $\checkmark$ & $\times$ & $\checkmark$ & FR\mpfootnotemark[14] & $\checkmark$\mpfootnotemark[13] \\
+   \hline
+   Alg\mpfootnotemark[15] & $\times$ & S\&C & S\&C & S\&C & S\&C\footnotemark[16] & S & $\times$ & $\times$ \\
+   \hline
+   Mech\mpfootnotemark[17] & $\times$ & $\checkmark$ & $\checkmark$ & $\times$ & $\times$ & $\times$ & $\times$ & $\checkmark$
+  \end{tabular}
+  \footnotetext[1]{Implicit Calculus of Constructions~\citep{miquel2001implicit,barras2008implicit}}
+  \footnotetext[2]{\cite{full}}
+  \footnotetext[3]{Novel algorithm by \cite{zhao19mechanical}, declarative system is the same as \cite{dunfield2013complete}}
+  \footnotetext[4]{\cite{dunfield2019sound}}
+  \footnotetext[5]{\cite{zombie:popl15}}
+  \footnotetext[6]{Dependent Haskell \citep{dh}}
+  \footnotetext[7]{Dependent-object-type with Implicit Functions~\citep{dif}}
+  \footnotetext[8]{Whether the system support dependent types. $\checkmark$, if general dependent function and some form of type-level computation is supported. $\times$, if dependent types are not supported at all. Other entries see footnotes.}
+  \footnotetext[9]{Only type-level equality is dependent, other parts of the system are not.}
+  \footnotetext[10]{Path-dependent Types~\citep{dot:path}}
+  \footnotetext[11]{Whether there is a subtyping relation in the typing rules. The complexity of subtyping relations varies but we do not dive into details here.}
+  \footnotetext[12]{Whether some form of implicit polymorphism is supported. Monotype restriction on instantiation is assumed. $\checkmark$, if implicit polymorphism is supported at higher rank. FR, if only first-rank implicit polymorphism are supported.}
+  \footnotetext[13]{Implicit instantiations are runtime irrelevant.}
+  \footnotetext[14]{Implicit instantiations can only be variables.}
+  \footnotetext[15]{Whether there is an algorithmic system. S, if the algorithm is sound (with respect to \emph{some criteria}). C, if the algorithm is complete.}
+  \footnotetext[16]{The congruence relation does not have a algorithmic system, its algorithm is stated and proved seperately from the type system.}
+  \footnotetext[17]{Whether the correctness of metatheory (and algorithm, if available) is mechanically checked instead of manually.}
+  \caption{Feature Comparison of \name}
+  \label{table:comparison}
+\end{table}
