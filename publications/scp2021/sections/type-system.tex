@@ -1,4 +1,4 @@
-\section{\System}
+\section{The Dependent Implicitly Polymorphic Calculus}
 \label{sec:system}
 
 This section introduces the static and dynamic semantics of
@@ -56,11 +56,11 @@ via casts. These constructs are discussed next.
 % In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
 % polymorphism.
 In \name, universal types $[[forall x : A. B]]$ generalizes the implicit
-polymorphic type ($\forall x.\, A$) in conventional functional languages,
+polymorphic type ($\forall x.\, A$) found in conventional functional languages.
 % In contrast to universal quantification in conventional functional languages, the
 % parameter $x$ ranges over all well-typed expressions besides well-formed
 % types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
-while the parameter $x$ ranges over all well-typed expressions besides well-formed
+The parameter $x$ in $[[forall x : A. B]]$ ranges over all well-typed expressions besides well-formed
 types (i.e. $x$ can have any type $A$ instead of just kind $\star$). The idea of
 \emph{monomorphic types} (or monotypes) is also generalized.
 \emph{Mono-expressions} $\tau$ exclude polymorphic types ($[[forall x : A. B]]$) from the syntax,
@@ -114,8 +114,8 @@ is employed to give the run-time semantics of expressions.
 
 \paragraph{Non-deterministic Reduction}
 Figure \ref{fig:semantics} presents the small-step operational semantics of \name.
-It mostly follows the ``Call-By-Name''(CBN) variant of \emph{Pure Iso-Type Systems} (PITS)
-~\citep{yang2019pure} corresponding to the calculus of constructions:
+It mostly follows the ``Call-By-Name'' (CBN) variant of \emph{Pure Iso-Type Systems} (PITS)
+~\citep{yang2019pure} corresponding to the calculus of constructions. In such variant
 the arguments of the $\beta$-reduction (\rref{r-beta}) and expressions in
 the \rref{r-cast-elim} are not required to be values.
 Reductions can be performed inside $\castdn$ terms (\rref{r-castdn,r-cast-inst}).
@@ -126,8 +126,8 @@ Following the CBN semantics of PITS, $\castup$ terms are considered to be values
 to avoid nondeterministic reduction of terms like $\castdn (\castup [A] ~e)$,
 where $e$ is reducible (either performing reduction on $e$, or the reduction via
 \rref{r-cast-elim} could be the choice, should $\castup$ terms be reducible).
-There is an alternative design following the ``call-by-value'' variant of PITS, we
-will discuss that in Section~\ref{sec:cast-design}.
+There is an alternative design following the ``call-by-value'' variant of PITS, which
+we will discuss in Section~\ref{sec:cast-design}.
 Also, the unfold operation of the fixpoint operator is supported by \rref{r-mu}.
 
 \begin{figure}[t]
@@ -161,7 +161,7 @@ information in the dynamic semantics.
   \begin{array}{llcl}
       \text{Erased Expressions} & E, A, B & ~ \Coloneqq ~ & [[x]] \mid [[n]] \mid [[k]] \mid [[int]] \mid [[ee1 ee2]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \\
       & & \mid & [[ebind x. ee]] \mid [[eforall x : eA. eB]] \mid [[emu x. ee]] \mid [[ecastup ee]] \mid [[ecastdn ee]] \\
-      \text{Erased Value} & ev & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
+      \text{Erased Values} & ev & ~ \Coloneqq ~ & [[k]] \mid [[n]] \mid [[int]] \mid [[elambda x. ee]] \mid [[epi x : eA. eB]] \mid [[ebind x. ee]] \\
       & & \mid & [[eforall x : eA. eB]] \mid [[ecastup ee]]
   \end{array}
   \end{equation*}
@@ -221,7 +221,7 @@ correspondence to their unerased counterpart, which is discussed in Section \ref
 
 Figure \ref{fig:typing} shows the (sub)typing rules of the system. We adopt a
 simplified design based on unified subtyping~\citep{full}. The subtyping rules and
-typing rules are merged into a single typing judgment $[[G |- e1 <: e2 : A]]$.
+typing rules are merged into a single judgment $[[G |- e1 <: e2 : A]]$.
 
 Unified subtyping solves the challenging issue of mutual dependency between typing
 and subtyping in a dependent type system.
@@ -323,8 +323,8 @@ if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
 is instantiated abstractly (\rref{s-forall-r}).
 
 Notably, our formalization is not the direct generalization of
-Odersky and L\"aufer's polymorphic subtyping which we mentioned in section \ref{sec:feature-overview}.
-As highlighted in figure \label{fig:typing}:
+Odersky and L\"aufer's polymorphic subtyping, which we mentioned in Section \ref{sec:feature-overview}.
+As highlighted in Figure~\ref{fig:typing}:
 \rref{s-forall} is added to axiomatize the subtyping relation between two universal types,
 and additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
 ones that appear in rules $\forallL''$ and $\forallR''$ in section \ref{sec:feature-overview}.
