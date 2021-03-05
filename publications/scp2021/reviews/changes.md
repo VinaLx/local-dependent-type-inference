@@ -7,11 +7,11 @@
 > feature table comparing the features lAI shares (and does not share) with a
 > variety of systems. In particular...
 
-TODO
+DONE?
 
-This is one is a good suggestion and perhaps the one that involves more work
-out of all suggestions. The suggested table format from the reviewer is
-a good starting point.
+We added a feature comparison table at the end of the related work section,
+featuring some work that we consider are relatively the most relevant to our work,
+including some of the topics that are suggested by the reviewer.
 
 > The related work section omits two significant areas of inquiry:
 > refinement type systems like F* and Liquid Haskell, and Amin's DOT theory,
@@ -511,10 +511,6 @@ DONE
 
 DONE: We did not go as far as the title, but we now mention this
 in the introduction as well as the overview in more detail.
-
-> A feature table comparing related systems.
-
-TODO: together with similar entry above
 
 > A stronger conclusion, with more outlook for practice and/or
 > application. What can we _do_ now (or when we have an algorithmic
