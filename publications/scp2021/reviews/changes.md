@@ -35,7 +35,7 @@ a good starting point.
 
 DONE?
 
-We mentions the DOT (by Amin et al.) and DIF (by Jeffery) and the manifest
+We mention the DOT (by Amin et al.) and DIF (by Jeffery) and the manifest
 systems (System lambdaH, FH, FH^sigma) in the related work section.
 
 However we consider the substitution problem mentioned
