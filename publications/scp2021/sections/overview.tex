@@ -32,8 +32,7 @@ A first simple example is the polymorphic identity function:
 id : $\forall$(A:$\star$). A $\rightarrow$ A
 id = $\lambda$(x:A). x
 answer : Nat
--- No type argument needed at the call of id
-answer = id 42
+answer = id 42  -- No type argument needed at the call of id
 \end{lstlisting}
 \noindent The polymorphic parameter \lstinline{A} is annotated with its type,
 which is $\star$. The type $\star$ is the type of types (also known as
@@ -71,10 +70,10 @@ way to define the \lstinline{map} function using pattern matching and other usef
 constructs. To model algebraic datatypes and pattern matching in \name, we
 use an encoding by Yang and Oliveira~\citep{yang2019pure},
 which is based on Scott encodings~\citep{mogensen1992efficient}.
-The Scott Encoding encodes datatypes with different cases to
+The Scott Encoding encodes datatypes with different cases via
 Continuation-Passing-Style (CPS) function types. The return branches of these
 function types correspond to each case of the datatypes.
-Case analyses of terms are encoded to the application of the CPS functions.
+Case analyses of terms are encoded via the application of the CPS functions.
 Since the details of that encoding are not relevant for this paper,
 here we omit the code for most definitions and show only their types.
 
@@ -127,7 +126,7 @@ Using the above definitions, we can define a \lstinline{map} function over \lsti
 %   & \map : \forall a : \star.\, \forall b : \star.\, \forall n : \Nat .\, (a \rightarrow b) \rightarrow \List~a~n \rightarrow \List~b~n &&
 % \end{flalign*}
 \begin{lstlisting}
-  map = $\forall$a:$\star$.$\forall$b:$\star$.$\forall$n:Nat. a $\rightarrow$ b $\rightarrow$ List a n $\rightarrow$ List b n
+  map : $\forall$a:$\star$.$\forall$b:$\star$.$\forall$n:Nat. a $\rightarrow$ b $\rightarrow$ List a n $\rightarrow$ List b n
 \end{lstlisting}
 An example of application of \lstinline{map} is:
 \begin{lstlisting}
@@ -145,10 +144,10 @@ as in most functional language implementations.
 
 There are a few final points worth mentioning about the example.
 Firstly, \lstinline{List} is an example of a dependently typed function, since it is parameterized
-by a natural value. Secondly, in \name (following the design of PITS~\citep{yang2019pure}),
-fixpoint operators ($\mu$) serve a dual purpose of defining recursive types and recursive
+by a natural value. Secondly, following the design of PITS~\citep{yang2019pure},
+fixpoint operators ($\mu$) in \name serve a dual purpose of defining recursive types and recursive
 functions. Besides its usual use of defining term-level general recursive functions,
-it can be used to define recursive types, as shown in the encoding of \lstinline{List}
+fixpoint operators can be used to define recursive types, as shown in the encoding of \lstinline{List}
 above.
 Moreover, recursion is unrestricted and there is no termination checking, much like approaches
 such as Dependently Typed Haskell~\citep{dh}, and unlike various other dependently typed languages
@@ -158,7 +157,7 @@ such as Agda~\citep{2007_norell_agda} or Idris~\citep{brady2013idris}.
 
 The implicit capabilities also extend to the realm of higher-kinded types~\citep{tapl}.
 For example we can define a record type \lstinline{Functor},
-to mimic the typeclass\citep{typeclasseswadler,typeclasseskaes} \lstinline{Functor} in Haskell:
+to mimic the type class~\citep{typeclasseswadler,typeclasseskaes} \lstinline{Functor} in Haskell:
 \newcommand{\Functor}[0]{\mathrm{Functor}}
 \newcommand{\MkFunctor}[0]{\mathrm{MkF}}
 \newcommand{\Id}[0]{\mathrm{Id}}
@@ -172,8 +171,8 @@ to mimic the typeclass\citep{typeclasseswadler,typeclasseskaes} \lstinline{Funct
     MkF { fmap : $\forall$a:$\star$.$\forall$b:$\star$. (a $\to$ b) $\to$ F a $\to$ F b }
 \end{lstlisting}
 \noindent Here $\Functor$ is a record type with a single field. $\MkFunctor$ is the data constructor,
-and $\fmap$ is the field accessor.
-The type of $fmap$ is:
+and \lstinline{fmap} is the field accessor (which encodes the type class method \lstinline{fmap}).
+The type of \lstinline{fmap} is:
 \begin{lstlisting}
   fmap : $\forall$F:$\star \to \star$. Functor F $\to$ ($\forall$a:$\star$.$\forall$b:$\star$. (a $\to$ b) $\to$ F a $\to$ F b)
 \end{lstlisting}
@@ -220,8 +219,8 @@ type is more general than the rank-1 type. Thus the following program type-check
 % & \mathrm{callcc} = \mathrm{callcc}' &&
 % \end{flalign*}
 \begin{lstlisting}
-  callcc' = $\forall$a:$\star$.(($\forall$b:$\star$. a $\to$ b) $\to$ a) $\to$ a
-  callcc  = $\forall$a:$\star$.$\forall$b:$\star$. ((a $\to$ b) $\to$ a) $\to$ a
+  callcc' : $\forall$a:$\star$.(($\forall$b:$\star$. a $\to$ b) $\to$ a) $\to$ a
+  callcc  : $\forall$a:$\star$.$\forall$b:$\star$. ((a $\to$ b) $\to$ a) $\to$ a
   callcc = callcc'
 \end{lstlisting}
 \noindent The type \lstinline{$\forall$b:$\star$. a $\to$ b} appears in a positive position
@@ -304,7 +303,7 @@ The parameters of universal types can only be types in the polymorphic
 subtyping relation by Odersky and L\"aufer.
 In \name, we generalize the polymorphic parameters so that they can
 be values or other kinds of types as well.
-A first idea of a direct generalization is:
+A first idea for a direct generalization is:
 
 \begin{mathpar}
   \inferrule*[lab=$\forallL'$]
@@ -330,7 +329,7 @@ this idea, which is discussed later in this section and Sections
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
 
-As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, these subtyping
+As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, the subtyping
 rules based on polymorphic subtyping, combined with other subtyping rules,
 are able to handle the subtyping relations that occur at not only top-level,
 but also at a higher-ranked level. This feature distinguishes our \name from the
@@ -448,7 +447,7 @@ We purposely omitted the explicit binders for implicit parameters for all the ex
 in Section \ref{sec:examples} for conciseness. Such explicit binders can
 be recovered with a simple form of syntactic sugar:
 
-\[e : \forall x : A.\, B \triangleq \Lambda x : A.\, e : \forall x : A.\, B\]
+\[e : \forall (x : A).\, B \triangleq \Lambda x : A.\, e : \forall (x : A).\, B\]
 
 %\noindent When polymorphic parameters are used, \name provides a binder ($\Lambda x : A.\, e$)
 %to ensure that the parameters are well-scoped at the term-level.
@@ -516,7 +515,7 @@ type reductions or expansions as shown in the typing rules below.
     {[[G |- castdn e : B]]}
 \end{mathpar}
 
-\noindent Now since reductions only perform one step per use of cast
+\noindent Now, since reductions only perform one step per use of cast
 operators, whether a term is strongly normalizing no longer affects the
 decidability of type checking.
 Note that there are some other cast designs in the
