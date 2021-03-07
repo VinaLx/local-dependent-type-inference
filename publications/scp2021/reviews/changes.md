@@ -339,7 +339,7 @@ DONE
 It was the substitution lemma which imposed the monotype restriction
 back to the typing rule of s-app. Because of the reason explained under
 the substitution theorem, because of the subtyping aspect of substitution, and
-the mono-type restriction imposed by s-forall-L, substutition of polytypes does
+the monotype restriction imposed by s-forall-L, substutition of polytypes does
 not generally hold. So the flow of monotype restriction is:
 
 s-forall-L => Substitution Theorem => s-app / s-mu

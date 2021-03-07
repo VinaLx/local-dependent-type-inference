@@ -2,7 +2,8 @@
 \label{sec:metatheory}
 
 This section presents the metatheory of \name, and discusses several challenges
-that arose in the design of the rules to ensure the desired properties.
+that arose during our typing rules designs and ensuring desired subtyping and
+typing properties in our system.
 The three main results of the metatheory are:
 \emph{transitivity of unified subtyping}, \emph{type-soundness} and
 \emph{completeness with respect to Odersky and L\"aufer's} polymorphic
@@ -30,8 +31,8 @@ In order for the \emph{well-formedness}~\citep{dunfield2013lemmas} property
 (\emph{If $\Gamma \vdash A \le B$, then $\Gamma \vdash A$ and $\Gamma \vdash B$})
 to hold in L\"aufer and Odersky's system, these two rules rely on certain properties
 that do not hold in our dependently typed generalization. So we make several adjustments
-in our adaptation to combat these issues, which result in the difference between
-our current system and a direct generalization.
+in our adaptation to address these issues, which result in the difference between
+our current system and a direct generalization mentioned in section \ref{sec:feature-overview}.
 
 \paragraph*{Reverse Substitution of Well-Formedness}
 \label{sec:reverse-subst}
@@ -64,7 +65,7 @@ ensure the well-formedness of types in the conclusion.
 
 Rule $\forallR$ relies on a strenghtening lemma:
 \emph{if $\Gamma,\, x \vdash A$ and $x ~\text{does not occur in}~ A$, then $\Gamma \vdash A$}, which
-is trivial to prove.
+is trivial to prove in their system.
 However the admissibility of its generalization:
 \emph{if $[[G, x : B |- A : *]]$ and $x ~\text{does not occur in}~ A$, then $[[G |- A : *]]$},
 % does not hold in our system.
@@ -218,7 +219,7 @@ restriction has to be added for those rules for the system to be type-safe.
 proof is not complicated: it proceeds by mutual induction with
 Lemma \ref{thm:wf-substitution} on the derivations of
 $[[G1 , x : A ,, G2 |- e1 <: e2 : B]]$ and $[[|- G1 , x : A ,, G2]]$. When the
-derivation ends with \rref{castup,castdn}, the proof
+derivation ends with \rref{s-castup,s-castdn}, the proof
 requires the reduction relation to preserve after the substitution.
 This property should usually hold, but it puts an interesting constraint which we
 have to consider when designing the reduction rules (see Section \ref{sec:cast-design}).
@@ -345,7 +346,7 @@ when both premises end with \rref{s-pi}, where we encounter the following proble
 \end{mathpar}
 The first and the second premise above do not share the same context, which
 must be unified with the context narrowing theorem to be able to use the
-inductive hypotheses.
+inductive hypothesis.
 However context narrowing potentially increases the size of the
 derivation tree, so we are not able to use the inductive hypothesis of
 $\mathcal{D}_1 + \mathcal{D}_2$, and resort to the sizes of expressions
@@ -428,7 +429,7 @@ The left-hand-side may be reducible with the right-hand-side being a value or vi
 Both theorems are proved by induction on the derivation of $[[nil |- e1 <: e2 : A]]$.
 The proof is mostly straightforward except when the derivation ends with $\castdn$,
 where we have to show that the inner expressions $e$ of $\castdn~e$ either reduces, or
-is $\castup$ or a $\Lambda$-expression. We prove another fact to solve the situation:
+is a $\castup$ or a $\Lambda$-expression. We prove another fact to solve the situation:
 for a well-typed expression whose type reduces, that expression
 cannot be a value unless it is a $\castup$ or $\Lambda$-expression.
 
@@ -504,16 +505,16 @@ If an expression ($e$) is well-typed, and its erasure ($E$)
 reduces to another erased expression ($E'$), we can find a ``annotated''
 expression of $E'$ ($e'$) that is reduced by $e$ and also preserves the type $A$.
 When no implicit instantiation happens in the reduction, then $e \longrightarrow e'$
-is deterministic: i.e. it is just normal type preservation. When there is implicit
-instantiation, if the erased expression can reduce, we show that there must
-exist a valid instantiation for $e$ that preserves its type after the reduction, and
+is deterministic: i.e. it is just normal type preservation. When there are implicit
+instantiations, if the erased expression can reduce, we show that there
+exists a valid instantiation for $e$ that preserves its type after the reduction, and
 this instantiation only affects type annotations.
 In other words, the runtime semantics of \name can be implemented only with
 erased expressions.
 
 Aside from the erasure aspect of our preservation lemma, we also consider the
-generalized version of preservation in our unified subtyping system. The
-\emph{subtype preservation} reductions not only preserve the type of expressions,
+generalized version of preservation in our unified subtyping system, the
+\emph{subtype preservation}, where reductions not only preserve the type of expressions,
 they also preserve the subtyping relation between expressions as well.
 
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$,
@@ -543,11 +544,10 @@ while in reality it has type $A_2$ (as highlighted).
 Therefore want to show $\Gamma \vdash A_2 \le B_2$ with the information that
 $\Gamma \vdash A_1 \le B_1$, $[[A1 --> A2]]$
 and $[[B1 --> B2]]$, which depends on the property we want to prove initially,
-subtype preservation after reduction.
-Subtype preservation needs to solve the cast elimination case, causing a
+subtype preservation.
+Since subtype preservation needs to solve the cast elimination case, here we have a
 circular dependency of properties.
-This problem was also observed by the previous work on unified subtyping
-with cast operators~\citep{full}. They solved this situation
+This problem was also observed by \cite{full}. They solved this situation
 by a delicate approach with the help of an essential lemma
 \emph{Reduction Exists in the Middle} (If $[[G |- e1 <: e2 : A]]$, $[[G |- e2 <: e3 : A]]$
 and $e_1 \longrightarrow e_1'$, $e_3 \longrightarrow e_3'$, there exists $e_2'$
@@ -558,7 +558,7 @@ middle of two reducible types, so we cannot adopt their proof on this case.
 We tackle this problem from another direction, with the observation that the
 demand for subtype preservation property shifts from the term-level to the type-level.
 With the calculus-of-constructions-like kind hierarchy, our system only have
-limited layers in types.
+limited layers in types (type $[[int]]$ has kind $[[*]]$, kind $[[*]]$ has kind $[[box]]$).
 In fact, we only need to go up one layer in the type hierarchy to be able to
 obtain subtype preservation directly,
 since there is no subtyping involved at the kind level,
@@ -566,10 +566,10 @@ hence no problem for the cast elimination there.
 Even better, we show that by going up one level in the type hierarchy
 (only discussing the types of terms), the options
 for the reduction that can be performed by a well-typed term are very limited.
-Implicit abstractions do not occur in type computation due to the kind
-restriction of universal types (as explained in section \ref{sec:kind-restriction}).
+Not only implicit abstractions can not occur in type computation due to the kind
+restriction of universal types as explained in section \ref{sec:kind-restriction}.
 We also prove that well-typed reductions never occur
-at kind level, so cast operators also do not occur in type-level computation.
+for kinds, so cast operators also do not occur in type-level computation.
 
 \begin{figure}
     \drules[dr]{$[[A1 ==> A2]]$}{Deterministic Reduction}
@@ -603,9 +603,9 @@ Note that the result of this lemma may, at first sight, be surprising
 because it means that we cannot construct
 a reducible expression like: $([[lambda x : int. *]])~42$ which has kind $[[box]]$.
 In reality, the lambda expression must be of type $[[int]] \rightarrow [[box]]$
-for the application to be well-typed. However, the conventional typing rule for
-lambda abstractions in Calculus of Constructions~\citep{coc}, which we also employ,
-forbids this. The function types of the lambda abstractions themselves
+for the application to be well-typed. However, as we employ the conventional
+typing rule for lambda abstractions of Calculus of Constructions~\citep{coc},
+the function types of the lambda abstractions themselves
 must be well-kinded (see \rref{s-abs}). Since $[[box]]$ itself does not have a kind,
 $[[int]] \rightarrow [[box]]$ is not well-kinded, therefore the whole application
 is not well-typed. For a similar reason, the position of occurence of $[[*]]$
@@ -620,8 +620,8 @@ With the previous lemmas, the subtype preservation lemma for type computation is
 
 \paragraph{Implicit Instantiations}
 The proof of two cases for implicit instantiations (\rref{r-inst,r-cast-inst})
-are quite similar. In our language, implicit instantiations are only triggered by
-\rref{s-forall-l}, which is exactly where polymorphic types are instantiated.
+are quite similar. In our language, implicit instantiations of implicit functions
+are only triggered by \rref{s-forall-l}, which is exactly where polymorphic types are instantiated.
 The implicit argument is the same mono-expression ($\tau$) that
 instantiates the polymorphic type in \rref{s-forall-l}.
 The type of the instantiation result of $\Lambda$ expression is the same as the
@@ -632,9 +632,11 @@ inversion lemmas, with the help of the \emph{substitution} theorem to handle typ
 preservation after the instantiations.
 
 \subsection{Equivalence to a Simplified System}
-We mentioned in Section \ref{sec:type-system} that the premises marked in gray in the
-unified subtyping rules are redundant. They help in the formalization, but the calculus
-is equivalent to a variant of the calculus without them. We define unified subtyping relation
+We mentioned in Section \ref{sec:type-system} that the premises boxed by dashed
+lines in the unified subtyping rules are redundant.
+They help in the formalization, but the calculus
+is equivalent to a variant of the calculus without them.
+We define unified subtyping relation
 $[[G |= e1 <: e2 : A]]$, whose rules are the same as the unified subtyping rules of \name,
 but with all redundant premises eliminated. Also, \rref{s-castdn,s-castup}
 are simplified to use deterministic reduction ($A \longrightarrow_D B$)

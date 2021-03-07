@@ -40,14 +40,14 @@ mechanized) for such algorithms.
 The current GHC Haskell's language of types and kinds
 is already dependently typed, but has no type conversion. Thus
 it is able to avoid higher-order unification. Recent work by
-Xie et al.~\citep{xie20kind} describes algorithms and specifications
+\cite{xie20kind} describes algorithms and specifications
 for the form of (dependently typed) kind-inference currently present in GHC Haskell.
 The dependently typed language of types and kinds is closely related
 to \name. In particular in both calculi type equality is based only
 on $\alpha$-equivalence. One difference is that in GHC Haskell and, more precisely,
 in the core language employed by GHC, there
 are no type-level lambdas. The GHC Haskell source language does allow
-type families~\citep{assoctypes}, which mimick type-level functions. However,
+type families~\citep{assoctypes}, which mimic type-level functions. However,
 type families, unlike lambda functions, are not first class, and do not support partial application.
 They are encoded
 in terms of equality constraints, casts and mechanisms similar to those
@@ -88,12 +88,12 @@ the monotype restriction in their subtyping rules (rule $\forallL$) to prevent
 choosing a polytype in the instantiation. Based on polymorphic subtyping as
 their declarative system,
 % \bruno{mention Odersky and Laufer here before moving on to DK}
-Dunfield and Krishnaswami (DK)~\citep{dunfield2013complete} develop an
+\cite{dunfield2013complete} (DK) develop an
 algorithmic system for predicative HRP type inference. DK's algorithm was
 manually proved to be sound, complete, and decidable.
 With a more complex declarative system~\citep{dunfield2019sound}, DK
 extended their original work with new features.
-Recently Zhao et al.~\citep{zhao19mechanical} formalized DK's type system in the Abella
+Recently \cite{zhao19mechanical} formalized DK's type system in the Abella
 theorem prover.
 
 \paragraph{Dependent Types and Subtyping}
@@ -114,7 +114,7 @@ Iso-types generalize \emph{iso-recursive
 types}~\citep{tapl}, and provide a simple form of
 type casts to address the combination of recursion and
 dependent types.
-Yang and Oliveira~\citep{full} introduce a calculus, called $\lambda_{I}$, supporting OOP features such as
+\cite{full} introduce a calculus, called $\lambda_{I}$, supporting OOP features such as
 \emph{higher-order subtyping}~\citep{fsubo}, \emph{bounded quantification} and
 \emph{top types}.
 To address the challenges posed by
@@ -218,7 +218,8 @@ often fail to reason about polymorphism at higher ranks.
 
 \paragraph{Feature Comparison}
 
-Lastly we present a summary comparing \name and some of its related work in table \ref{table:comparison}.
+Lastly we present a summary comparing \name and some of its related work in
+table \ref{table:comparison} to wrap up the discussion of related work.
 
 \begin{table}
   \centering

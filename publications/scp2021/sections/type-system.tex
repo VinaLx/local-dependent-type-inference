@@ -9,7 +9,7 @@ and has a single relation that generalizes both typing and subtyping.
 The calculus can be seen as a variant of the \emph{Calculus of Constructions}~\citep{coc},
 but it uses a simple form of casts~\citep{isotype,yang2019pure} with $\castup$ and $\castdn$ operators
 instead of the conversion rule and features unrestricted recursion with the fixpoint operator.
-We present syntax, unified subtyping, and reduction for \name.
+We present the syntax, the unified subtyping relation, and operational semantics for \name.
 
 \begin{figure}[t]
 \centering
@@ -56,7 +56,7 @@ via casts. These constructs are discussed next.
 % In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
 % polymorphism.
 In \name, universal types $[[forall x : A. B]]$ generalizes the implicit
-polymorphic type ($\forall x.\, A$) found in conventional functional languages.
+polymorphic types ($\forall x.\, A$) in conventional functional languages.
 % In contrast to universal quantification in conventional functional languages, the
 % parameter $x$ ranges over all well-typed expressions besides well-formed
 % types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
@@ -66,7 +66,7 @@ types (i.e. $x$ can have any type $A$ instead of just kind $\star$). The idea of
 \emph{Mono-expressions} $\tau$ exclude polymorphic types ($[[forall x : A. B]]$) from the syntax,
 which follows a similar design in various work about predicative
 higher-ranked polymorphism~\citep{odersky1996putting,dunfield2013complete,jones2007practical}.
-With dependent types, we choose to only exclude universal types, but not
+With dependent types, only generalized universal types are excluded, but not
 any other related expressions.
 
 Notably,
@@ -102,7 +102,7 @@ annotations are only needed during type expansions ($\castup$). We add
 fixpoints ($[[mu x : A. e]]$) to support general recursion for both
 term-level and type-level. Iso-recursive types are supported due to
 the presence of $\castup$ and $\castdn$, which correspond to the
-\verb|fold| and \verb|unfold| operations when working on iso-recursive types.
+\verb|fold| and \verb|unfold| operations when working on conventional iso-recursive types.
 
 \subsection{Operational Semantics}\label{subsec:semantics}
 
@@ -112,7 +112,7 @@ it is used at the type-level to allow type conversions induced
 by the cast operators. The second reduction relation is deterministic and
 is employed to give the run-time semantics of expressions.
 
-\paragraph{Non-deterministic Reduction}
+\paragraph{Non-deterministic Implicit Instantiations}
 Figure \ref{fig:semantics} presents the small-step operational semantics of \name.
 It mostly follows the ``Call-By-Name'' (CBN) variant of \emph{Pure Iso-Type Systems} (PITS)
 ~\citep{yang2019pure} corresponding to the calculus of constructions. In such variant
@@ -211,10 +211,9 @@ function preserves the structure of the original syntax
 by not eliminating the implicit binder altogether. This design
 has the advantage that the correspondence
 between the original and the erased expression can be established more easily,
-since we can find a direct correspondence between
-the reductions of unerased expressions and reductions of erased expressions.
-The type safety of our system is built around the erased expressions and the
-correspondence to their unerased counterpart, which is discussed in Section \ref{sec:type-safety}.
+when the reductions of erased expressions correspond directly to their erased counterpart.
+The proof of type safety of our system is built around this idea of correspondence,
+which is discussed in Section \ref{sec:type-safety}.
 
 \subsection{Unified Subtyping}
 \label{sec:type-system}
@@ -323,10 +322,10 @@ if $C$ is is less general than $A$ when the argument with the polytype ($x:B$)
 is instantiated abstractly (\rref{s-forall-r}).
 
 Notably, our formalization is not the direct generalization of
-Odersky and L\"aufer's polymorphic subtyping, which we mentioned in Section \ref{sec:feature-overview}.
+Odersky and L\"aufer's polymorphic subtyping, as we mentioned in Section \ref{sec:feature-overview}.
 As highlighted in Figure~\ref{fig:typing}:
-\rref{s-forall} is added to axiomatize the subtyping relation between two universal types,
-and additional premises are added to \rref{s-forall-l,s-forall-r} aside from the
+we add \rref{s-forall} that axiomatizes the subtyping relation between two universal types,
+and additional premises are added to \rref{s-forall-l,s-forall-r} besides the
 ones that appear in rules $\forallL''$ and $\forallR''$ in section \ref{sec:feature-overview}.
 We discuss the motivations for these changes in more detail in Section \ref{sec:adaptation}.
 
@@ -359,7 +358,7 @@ restriction has little impact on the expressiveness of our language.
 Since we expect the types of well-typed expressions to be well-kinded,
 the restriction propagates to the introduction rule of $\forall$ types (\rref{s-bind}).
 In this rule, $[[B]]$ is required to only have kind $[[*]]$ but not $[[box]]$.
-In contrast, for \rref{s-pi}, the $[[B]]$ at a similar position can be of any kind.
+In contrast, for \rref{s-abs}, the type $[[B]]$ at a similar position can have any kind.
 As a result, implicit polymorphic functions at type level are \emph{never well-typed}.
 For example, $\Lambda a : [[*]].\, \lambda b : n.\, a$ is not
 well-typed since it would have been a polymorphic function of type
@@ -394,4 +393,3 @@ All the premises boxed by dash lines are redundant in a way that
 the system without them is proved equivalent to the system with them.
 These redundant premises are there to simplify the mechanized proofs of
 certain lemmas, but can be safely dropped in an actual implementation.
-

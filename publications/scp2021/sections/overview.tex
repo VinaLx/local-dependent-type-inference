@@ -114,12 +114,14 @@ show the definition for \lstinline{List}, and the types for the constructors nex
 \begin{lstlisting}
   List : $\star$ $\rightarrow$ Nat $\rightarrow$ $\star$
   List = $\mu$L:($\star$ $\rightarrow$ Nat $\rightarrow$ $\star$).$\lambda$a:$\star$.$\lambda$n:Nat.$\Pi$r:$\star$.
-           r $\rightarrow$ (a $\rightarrow$ L a (Succ n) $\rightarrow$ r) $\rightarrow$ r
-  Nil : $\forall$a:$\star$.$\forall$n:Nat. List a n
+             r                          -- Nil branch
+          $\rightarrow$ (a $\rightarrow$ L a (Succ n) $\rightarrow$ r) -- Cons branch
+          $\rightarrow$ r
+  Nil  : $\forall$a:$\star$.$\forall$n:Nat. List a n
   Cons : $\forall$a:$\star$.$\forall$n:Nat. a $\rightarrow$ List a (Succ n) $\rightarrow$ List a n
 \end{lstlisting}
 \noindent
-In later subsequent examples we will just assume some
+In subsequent examples we will just assume some
 Haskell-style syntactic sugar for datatype definitions and constructors.
 Using the above definitions, we can define a \lstinline{map} function over \lstinline{List} with the type:
 % \begin{flalign*}
@@ -234,17 +236,17 @@ are not compatible and the example above would be rejected.
 \label{sec:feature-overview}
 
 We briefly discuss the major features of \name itself and
-its formalization. A more formal and technical discussion will be left to
+its formalization. More formal and technical discussions will be left to
 Sections \ref{sec:system} and \ref{sec:metatheory}.
 
 \paragraph{Polymorphic Subtyping Relation}
 Figure \ref{fig:polymorphic-subtyping} shows the syntax of types, monomorphic types (or monotypes),
 and the polymorphic subtyping relation in
 Odersky and L\"aufer's declarative type system \citep{odersky1996putting}.
-Here the syntax includes polymorphic types (or polytypes), which are universally quantified over type parameters
-($\forall$ types). The definition of monotypes
+Here the syntax includes $\forall$ types that represent polymorphic types (or polytypes),
+which are universally quantified over type parameters. The definition of monotypes
 is standard, and includes all types without occurences of universal quantifiers.
-Context $\Gamma$ is a list of variables that are allowed to occur free in types
+Context $\Gamma$ is a list of type variables that are allowed to occur free in types
 $A$ and $B$ in the subtyping relation.
 The polymorphic subtyping relation captures a \emph{more-general-than} relation
 between types. The key rules in their subtyping relation are rules $\forallL$
@@ -324,7 +326,7 @@ Similarly, for rule $\forallR'$ the context for the subtyping rule should includ
 for the universally quantified variable.
 However, this idea introduces the issue of potential mutual dependency between
 subtyping and typing judgements, so further adjustments have to be made to formalize
-this idea, which is discussed later in this section and Sections
+this idea, which is discussed later in this section, Sections
 \ref{sec:type-system} and \ref{sec:adaptation}.
 
 \paragraph{Higher-Ranked Polymorphic Subtyping}
@@ -333,9 +335,9 @@ As the \verb|callcc| example in Section \ref{sec:higher-ranked-poly} shows, the 
 rules based on polymorphic subtyping, combined with other subtyping rules,
 are able to handle the subtyping relations that occur at not only top-level,
 but also at a higher-ranked level. This feature distinguishes our \name from the
-Implicit Calculus of Constructions (ICC) \citep{miquel2001implicit} which also talks about
-the implicit polymorphism of dependent type languages. The ICC features the two related rules
-in the \emph{typing relation}:
+Implicit Calculus of Constructions (ICC) \citep{miquel2001implicit} which also discusses
+the implicit polymorphism of dependent type languages. The ICC features these two related rules
+in their \emph{typing} relation:
 
 \begin{mathpar}
   \inferrule*[lab=inst]
@@ -352,9 +354,9 @@ to handle subtyping at higher-ranked positions. The approach taken by the ICC
 is similar to that of the Hindley-Milner type system~\citep{hindley1969principal,damas1982principal},
 which is also designed for dealing only with rank-1 polymorphism.
 Hindley-Milner's declarative system also has a \textsc{GEN} rule to
-convert expressions to polymorphic types, and a
+convert expressions to polymorphic types, and an
 \textsc{INST} rule to instantiate polymorphic parameters.
-Both rules work only
+Similar to \rref{GEN,INST} we show above, both rules in HM work only
 for polymorphic types at top-level positions. In Hindley-Milner
 the universal quantifier can only quantify over types, whereas in the ICC
 it can quantify over terms of an arbitrary type (including types themselves).
@@ -376,19 +378,19 @@ the rule $\forallL$ depends only on well-formedness ($\Gamma \vdash \tau$).
 In contrast, note that rule $\forallL'$ now mentions the typing relation
 in its premise ($\Gamma \vdash \tau : A$). Moreover, as usual,
 the subsumption rule of
-the typing relation (shown below) depends on the subtyping relation.
+the typing relation depends on the subtyping relation as shown below.
 \begin{mathpar}
   \inferrule*[lab=t-sub]
     {\Gamma \vdash e : A \\ \Gamma \vdash A \le B}
     {\Gamma \vdash e : B}
 \end{mathpar}
-This mutual dependency problem has been a significant
+This mutual dependency has been a significant
 problem when combining subtyping and dependent types~\citep{subdep, hutchins},
 and presents itself on our way to the direct generalization of polymorphic subtyping.
 
-To tackle this issue, we adopt a technique called
+To tackle this issue, we adopt a technique called the
 \emph{unified subtyping}~\citep{full}. Unified subtyping merges the typing relation and
-subtyping relation into a single relation to avoid the mutual dependency:
+subtyping relation into a single relation to avoid this mutual dependency:
 \begin{mathpar}
   \Gamma \vdash e_1 \le e_2 : A
 \end{mathpar}
@@ -401,8 +403,9 @@ are both special forms of unified subtyping: % with the involvement of kind $[[*
   \Gamma \vdash e : A \triangleq \Gamma \vdash e \le e : A
 \end{mathpar}
 The technique simplifies the formalization of dependently typed calculi with subtyping,
-and especially the proof of transitivity in the original work. Ideally after applying the technique,
-the generalization of the polymorphic subtyping should be:
+and especially the proof of transitivity in the original work by \cite{full}.
+Ideally after applying the technique, the generalization of the polymorphic
+subtyping should be:
 
 \begin{mathpar}
   \inferrule*[lab=$\forallL''$]
@@ -428,7 +431,7 @@ implicit instantiation). For example:
   (\lambda x.\, x)~42 \longrightarrow 42
 \end{mathpar}
 \noindent Here $\lambda x.\, x$ has type $\forall A.\, A \rightarrow A$, and
-instantiation implicitly discovers that $A = Int$.
+instantiation implicitly discovers that $A = \mathrm{Int}$.
 Notably, and in contrast with explicitly polymorphic languages like System F, implicit
 instantiation is not reflected anywhere at term level.
 The design that we adopt still provides implicit instantiation, but
@@ -447,7 +450,7 @@ We purposely omitted the explicit binders for implicit parameters for all the ex
 in Section \ref{sec:examples} for conciseness. Such explicit binders can
 be recovered with a simple form of syntactic sugar:
 
-\[e : \forall (x : A).\, B \triangleq \Lambda x : A.\, e : \forall (x : A).\, B\]
+\[e : \forall x : A.\, B \triangleq \Lambda x : A.\, e : \forall x : A.\, B\]
 
 %\noindent When polymorphic parameters are used, \name provides a binder ($\Lambda x : A.\, e$)
 %to ensure that the parameters are well-scoped at the term-level.
@@ -472,7 +475,7 @@ For example, accessing the length of a length-indexed vector in constant time:
   length : $\forall$n:Nat. Vector n $\to$ Nat
   length = $\Lambda$n:Nat.$\lambda$v:(Vector n). n
 \end{lstlisting}
-\noindent Here the implicit parameter $n$ is computationally relevant as it is used as
+\noindent Here the implicit parameter \lstinline{n} is computationally relevant as it is used as
 the return value of the function which is likely to be executed at runtime.
 Languages like Agda, Coq or Idris support such programs. However,
 computationaly relevant implicit parameters are challenging for proofs of

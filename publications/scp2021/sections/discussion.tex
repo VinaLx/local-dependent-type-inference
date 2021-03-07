@@ -15,7 +15,7 @@ to capture the scenario that open terms like $x~e$
 (applying variable $x$ to the argument $e$) is also irreducible, which considerably
 complicates their metatheory around the operational semantics.
 Fortunately, our call-by-name reduction rules do not rely on the notion of value,
-which, for closed terms, represents irreducible forms.
+which for closed terms, represents irreducible forms.
 In other words, there is no premise in our reduction rules that require
 some expression to be a value or irreducible.
 %Our call-by-name reduction relation only applies when a term \emph{can} reduce
@@ -49,7 +49,7 @@ be a need for inert terms as mentioned in Section~\ref{sec:open-term-reduction}
 However, a simple design with CBV-style cast semantics and inert terms
 potentially leads to a system where \emph{reduction substitution}
 (see section \ref{sec:typing-properties}) does not hold.
-With the CBV-style reduction rules, which consist of:
+With the CBV-style reduction rules, which consist of the following rules:
 \begin{mathpar}
   \inferrule*[lab=cbv-r-castdn]
     {e_1 \longrightarrow_\mathrm{cbv} e_2}
@@ -84,7 +84,7 @@ leave the discussion of other possibilities of design in future work.
 \subsection{Kind Restrictions on Polymorphic Types}
 
 Currently, we impose restrictions on the kinding of polymorphic types
-($\forall x : A. B$) to require that they only have kind $\star$ but not $[[box]]$.
+($\forall x : A.\,B$) to require that they only have kind $\star$ but not $[[box]]$.
 We believe that this has little impact on the usability
 of our system since polymorphic kinds such as $\forall x : [[int]].\,\star$
 do not appear frequently in practice.
