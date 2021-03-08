@@ -33,8 +33,8 @@ We present the syntax, the unified subtyping relation, and operational semantics
 \subsection{Syntax}
 
 Figure \ref{fig:syntax} shows the syntax of \name. The syntax is similar
-to the Calculus of Constructions, featuring the unified concept of terms and types,
-and the kind hierarchy of $[[*]]$ and $[[box]]$.
+to the Calculus of Constructions, featuring unified terms and types,
+and a kind hierarchy with $[[*]]$ and $[[box]]$.
 % $[[*]]$ and $[[box]]$ in the kind hierarchy,
 The term $[[*]]$ is the type (or kind) of other types like $[[int]]$ and $\Pi$ types,
 the type of $[[*]]$ itself is $[[box]]$, but $[[box]]$ itself has no type/kind.
@@ -55,7 +55,7 @@ via casts. These constructs are discussed next.
 \paragraph{Implicit Polymorphism}
 % In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
 % polymorphism.
-In \name, universal types $[[forall x : A. B]]$ generalizes the implicit
+In \name, universal types $[[forall x : A. B]]$ generalize implicit
 polymorphic types ($\forall x.\, A$) in conventional functional languages.
 % In contrast to universal quantification in conventional functional languages, the
 % parameter $x$ ranges over all well-typed expressions besides well-formed
@@ -106,7 +106,7 @@ the presence of $\castup$ and $\castdn$, which correspond to the
 
 \subsection{Operational Semantics}\label{subsec:semantics}
 
-For the operational semantics we employ two different but closely related
+For the operational semantics we employ two different, but closely related,
 reduction relations. The first reduction relation is non-deterministic, and
 it is used at the type-level to allow type conversions induced
 by the cast operators. The second reduction relation is deterministic and
