@@ -7,10 +7,8 @@
 > feature table comparing the features lAI shares (and does not share) with a
 > variety of systems. In particular...
 
-DONE?
-
-We added a feature comparison table at the end of the related work section,
-featuring some work that we consider are relatively the most relevant to our work,
+DONE: We added a feature comparison table at the end of the related work section,
+featuring some work that we consider the closest to our work,
 including some of the topics that are suggested by the reviewer.
 
 > The related work section omits two significant areas of inquiry:
@@ -33,9 +31,7 @@ including some of the topics that are suggested by the reviewer.
 > and some of its followup work (e.g., "DOT with Implicit Functions"
 > from Jeffery, Scala Symposium 2019).
 
-DONE?
-
-We mention the DOT (by Amin et al.) and DIF (by Jeffery) and the manifest
+DONE: We now mention DOT (by Amin et al.) and DIF (by Jeffery) and the manifest
 systems (System lambdaH, FH, FH^sigma) in the related work section.
 
 However we consider the substitution problem mentioned
@@ -43,7 +39,7 @@ by Sekiyama et al. a different problem from what we mentioned in the discussion
 (although we call them the same "reduction substitution").
 The reduction substitution of FH is a problem in their axioms that causes a
 contradiction in their system (an ill-formed interaction between convertible
-types and reduction rules). And our problem of
+types and reduction rules). Our problem of
 substitution is much "milder" one that limits the design of our operational
 semantics (we cannot include some reduction rule, because that would cause
 trouble when proving relevant theorems).
@@ -58,15 +54,16 @@ function types are computationally irrelevant (i.e. they cannot be
 used in runtime computation)."
 
 We have also added a new paragraph and an example in Section 2
-called ``Computational Irrelevance``
+called ``Computational Irrelevance``.
+
+More general, we believe that the new revision is clearer, in several
+places, about this restriction.
 
 > A stronger conclusion. Rather than just summarizing the ideas and
 > listing future work, can you give a broader outlook? Supposing you
 > had an algorithmic system... what would you be able to do now?
 
-DONE:
-
-We added one more paragraph to the conclusion (at the end) where
+DONE: We added one more paragraph to the conclusion (at the end) where
 we describe what we think could be achieved now (if an implementation
 would be available).
 
@@ -79,9 +76,7 @@ would be available).
 > metatheoretical concerns would be well justified. But if all types
 > are inhabited, perhaps the theory can be made a touch simpler!
 
-DONE
-
-We rewrote the discussion around the problem of habitability and strengthening,
+DONE: We rewrote the discussion around the problem of habitability and strengthening,
 to hopefully clarify why we do not have the strengthening lemma for now, which
 leads to a series of changes during the generalization of polymorphic subtyping.
 
@@ -92,24 +87,21 @@ leads to a series of changes during the generalization of polymorphic subtyping.
 > typo. It doesn't---I must have an 'understand-o'. But... what am I
 > missing? There's some invariant or idea in the system that I haven't gotten.
 
-DONE
-
+DONE: 
 We choose to only eliminate the type annotation, and maintain the syntax
 structure after elimination (likewise, we leave all the casts in the expression
 although they practically should not have real runtime impact) for the simplicity
 of development of metatheory. So that we can find direct correspondence between
-the reductions of unerased expressions and reductions of erased expressions,
-the type safety (subtype preservation) is much simpler to reason about this way,
+the reductions of unerased expressions and reductions of erased expressions.
+The type safety (subtype preservation) is much simpler to reason about this way,
 than changing the structure of expressions during erasure.
 
 A brief explanation of this idea is added to the paragraph
-"Deterministic Erased Reduction" in section 3.2.
+"Deterministic Erased Reduction" in Section 3.2.
 
 > p14L50-57 I struggled with this paragraph. Can lAI handle vectors of
 > implicit length, i.e., `Λn:Nat. λx:Vec n. ...`? A concrete example
 > would really help here.
-
-DONE?
 
 ANSWER: The "map" function in page 5 (assuming that the arguments are flipped)
 is of a similar form. So the answer is yes: functions taking Vector-like
@@ -120,18 +112,16 @@ is regarding *kinds*. Now that the type of the "map" function is at the type lev
 (like in the map function) then that's fine, but if it is a type, then that's not allowed
 (since its kind cannot be polymorphic).
 
-And we rephrased the paragraph of "Kind Restriction for Universal Types" in Section 3.
+We rephrased the paragraph of "Kind Restriction for Universal Types" in Section 3.
 Added two little examples to illustrate the point and hopefully clarified what
 the restriction forbids.
 
 > p16L12-20 This paragraph is quite technical, but the gist of it should
 > show up much earlier in the paper.
 
-DONE
-
-We added another paragraph called
+DONE: We added another paragraph called
 "Computational Irrelevance" in Section 2.2 that talks about the computational
-irrelevance of implicit parameters. And the related paragraph in section 3 refers
+irrelevance of implicit parameters. The related paragraph in Section 3 refers
 back to the added section.
 
 > p24L40 When you say "Implicit abstractions do not occur in type
@@ -140,9 +130,7 @@ back to the added section.
 > forbidden... such an example would go a long way towards making it
 > clear what your system can and can't handle!
 
-DONE:
-
-Please refer to the paragraph "Kind Restriction for Universal Types"
+DONE: Please refer to the paragraph "Kind Restriction for Universal Types"
 in Section 3.
 
 > p24L56 I didn't understand this lemma. Shouldn't it be the case that
@@ -151,9 +139,7 @@ in Section 3.
 > and I just wonder what needs to be said to clear up my
 > confusion. Sadly, stepping through the Coq proofs didn't help me.)
 
-DONE
-
-Added a paragraph under Lemma 22 to explain why such expression is not
+DONE: Added a paragraph under Lemma 22 to explain why such expression is not
 well-typed.
 
 ## Syntax, naming, and notation
@@ -163,13 +149,11 @@ well-typed.
 > (or that the distinction matters, depending on their familiarity with
 > polymorphic subtyping and/or implicits!).
 
-DONE
+DONE: We added the syntax of types and monotypes to Figure 1, and
+briefly introduced it in the first paragraph of Section 2.2.
 
-We added the syntax of types and monotypes to Figure 1, and briefly introduced it in
-the first paragraph of Section 2.2.
-
-The role of monotypes is mentioned just below in the introduction of the forall-L
-rule (for the predicativity of relation).
+The role of monotypes is mentioned just below in the introduction of the
+forall-L rule (for the predicativity of relation).
 
 > p9L55 We still haven't seen the grammar... I had to flip forward at
 > this point to be able to know which direction the definition was going
@@ -191,9 +175,7 @@ it refer to the inhabitants of `forall` types.
 > one? Right? More clarity here would be very helpful! Some kind of
 > discussion should also go in "Implicit Polymorphism" on p11L24-38.
 
-DONE:
-
-We rephrased the paragraph of implicit polymorphism, which first
+DONE: We rephrased the paragraph of implicit polymorphism, which first
 emphasizes the idea of generalization of polymorphic types (and
 emphasize that the mono-types only excludes forall types not
 everything else). We also mention the implicit lambda expression
@@ -205,7 +187,6 @@ at that point.
 > too. The discussion here should perhaps cite Zombie.
 
 ANSWER: We follow the convention of the iso-type systems here.
-
 We added a couple of sentences explaining that there are some other cast
 designs, such as those from Zombie.
 
@@ -225,7 +206,6 @@ but there are subtle differences in different contexts where it may matter.
 > form remain in `R-Castdn`?
 
 DONE:
-
 Because castdn triggers type-level reduction, which is performed in
 the typing rules, while in R-Castdn the castdn operator only serves as
 an evaluation context. We added a sentence in Section 3.2 to
@@ -237,16 +217,13 @@ clarify this point.
 > property!
 
 ANSWER:
-
 We are not sure that rules being structural or not is an important property
 to mention. While the orginal polymorphic subtyping rules are already non-structural,
 and subsumption rule is very common in a system with subtyping.
 
 > p14L36 Maybe highlight the new kinding premises?
 
-DONE
-
-See below.
+DONE: See below.
 
 > p16L21-25 I assumed the highlighted parts were important when I first
 > read the figure, and I was surprised to see they were in fact
@@ -257,31 +234,27 @@ See below.
 > importance. Maybe you can draw some `\fbox`en with various forms of
 > dashing, or use colors, or something?
 
-DONE
-
-Now the redundant premises are enclosed in dashed lines instead of being highlighted.
-And we highlight the newly added premises for rules s-forall-l and s-forall-R,
-as well as the entire s-forall, point them out in the paragraph "Subtyping Rules
-for Universal Quantification", and leave the display of other premises
-unchanged to avoid the figure to be cluttered by too many notations
-(kinding restrictions and mono-type restrictions are relatively easy to see).
+DONE: Now the redundant premises are enclosed in dashed lines instead
+of being highlighted.  And we highlight the newly added premises for
+rules s-forall-l and s-forall-R, as well as the entire s-forall, point
+them out in the paragraph "Subtyping Rules for Universal
+Quantification", and leave the display of other premises unchanged to
+avoid the figure to be cluttered by too many notations (kinding
+restrictions and mono-type restrictions are relatively easy to see).
 
 > p26L24-28 It'd be good to mark some turnstiles with a DK or
 > something---it wasn't immediately obvious that the first turnstile was
 > Dunfield and Krishnaswami's model of Oderskey and Läufer, and the
 > second was your judgment.
 
-DONE
-
-We now specify directly that we prove the subsumption of polymorphic subtyping, based
-on the subsumption of DK's declarative subtyping. Furthermore, we added
-DK subscripts to the corresponding turnstiles.
+DONE: We now specify directly that we prove the subsumption of
+polymorphic subtyping, based on the subsumption of DK's declarative
+subtyping. Furthermore, we added DK subscripts to the corresponding
+turnstiles.
 
 > p26L30-43 I didn't understand these paragraphs at all.
 
-DONE:
-
-For 30-33, we expanded the discussion of proofs of the subsumption of the
+DONE: For 30-33, we expanded the discussion of proofs of the subsumption of the
 polymorphic subtyping and hopefully it makes more sense.
 
 For 38-43, we rephrased the discussion of the possibility of the reduction of
@@ -289,9 +262,7 @@ open terms and made it a standalong subsection.
 
 > p28L37-38 "However, we still face..." didn't make any sense to me.
 
-DONE
-
-We rephrased and detailed the said discussion, by specifying that the
+DONE: We rephrased and detailed the said discussion, by specifying that the
 either of the two choices of instantiation are not more general than the other.
 
 > It would be good to emphasize up front that pi and forall are
@@ -300,9 +271,7 @@ either of the two choices of instantiation are not more general than the other.
 > Calling out the difference between `S-Pi` and `S-Forall` would be a
 > key move (p15).
 
-DONE:
-
-We added a sentence in Section 3, "Implicit Polymorphism" to emphasize the
+DONE: We added a sentence in Section 3, "Implicit Polymorphism" to emphasize the
 difference between \Lambda and \lambda expressions. As for the difference
 between S-Pi and S-Forall, S-Pi is meant to be a generalization of the standard
 subtyping rule of function types, and the motivation of S-Forall is explained in
@@ -313,11 +282,10 @@ Section 4.1.
 > It would be great to relate each theorem in the paper to its name in
 > Coq and the file its proven in---I had to dig around a bit.
 
-DONE
-
-Renamed some of the names in the implementation to better match the name in the
-paper. Moreover there is a Readme file, that comes with the Coq formalization,
-that states the correspondence between the theorems in the paper and the theorems in Coq.
+DONE: We renamed some of the names in the implementation to better
+match the name in the paper. Moreover there is a Readme file, that
+comes with the Coq formalization, that states the correspondence
+between the theorems in the paper and the theorems in Coq.
 
 > p18L20-23 These lemmas have identical proof scripts. Why can't you
 > prove it in one go? (You'd have to generalize your fancy tactic...)
@@ -334,9 +302,7 @@ we prefer to leave them this way.
 > that "imposes a mono-expression restriction", but rather, the type
 > system itself.
 
-DONE
-
-It was the substitution lemma which imposed the monotype restriction
+DONE: It was the substitution lemma which imposed the monotype restriction
 back to the typing rule of s-app. Because of the reason explained under
 the substitution theorem, because of the subtyping aspect of substitution, and
 the monotype restriction imposed by s-forall-L, substutition of polytypes does
@@ -350,9 +316,7 @@ Rephrased the paragraph under substitution to better reflect this logic.
 > induction (i.e., due to the <= on the measures). Might be good to
 > mention this in the paper.
 
-DONE:
-
-Added the word "strong" before the word "induction".
+DONE: Added the word "strong".
 
 > p21L11 Might be good to mention that Γ |- τ : A here.
 
@@ -363,17 +327,13 @@ DONE
 > a minute later below. Maybe mention up front which cases call for
 > which measures?
 
-DONE
-
-Added high-level explanations of what those measures do when introducing them.
+DONE: Added high-level explanations of what those measures do when introducing them.
 
 > p22L31-33 The Coq proofs of these progress theorems are more
 > general. Maybe a short paragraph explaining the generality would be
 > helpful?
 
-DONE
-
-We eeplaced the version of progress with what were proved in the script.
+DONE: We replaced the version of progress with what were proved in the script.
 Moreover, we added a short paragraph talking about "generalization" very briefly.
 
 > p23L39 I was surprised that the proof of subtype preservation is able
@@ -381,9 +341,7 @@ Moreover, we added a short paragraph talking about "generalization" very briefly
 > see the moment where that's happening in the custom tactics for the
 > Coq proof, though. Some more intuition here would be nice.
 
-DONE
-
-The intuition is explained the "Implicit Instantiation" paragraph under
+DONE: The intuition is explained the "Implicit Instantiation" paragraph under
 the "Subtype Preservation" theorem, which is rephrased a little bit to hopefully
 explain clearer.
 
@@ -419,9 +377,7 @@ The admissible rules in the final system are mentioned in subsection
 > p8L32 Can you explain how Hindley-Milner relates to the ICC rules
 > (i.e., INST at variables and GEN at `let`s)?
 
-DONE
-
-We add some sentences to point out the similar rules (INST and GEN) in HM's
+DONE: We add some sentences to point out the similar rules (INST and GEN) in HM's
 declarative system that talks about first rank polymorphic types.
 
 > p17L18 You should indicate up front that this "possible
@@ -438,9 +394,7 @@ which is not true for rule s-forall-L without this premise.
 > p17L43 The core issue here is that the type A may be bottom, i.e.,
 > uninhabited... right?
 
-DONE
-
-We rewrote discussion related to the habitability and strengthening.
+DONE: We rewrote discussion related to the habitability and strengthening.
 
 > p29L54 GHC has type families, which certainly _feel_ like type-level
 > lambdas. What do you mean here?
@@ -520,8 +474,7 @@ DONE
 
 > Consider proving whether or not all types are inhabited.
 
-DONE
-
+ANSWER:
 We rewrote the discussion around the problem of habitability and strengthening,
 to hopefully clarify why we do not have the strengthening lemma for now, which
 leads to a series of changes during the generalization of polymorphic subtyping.
@@ -551,27 +504,21 @@ of cast operators over a conversion rule, hopefully it makes more sense now.
 > normalization and explicit casts. Could you explain how explicit casts
 > solve the problem? (see comment above, this is explained in [25])
 
-DONE
-
-We added explanantions around the suggested position (P2L41-42) trying to connect
+DONE: We added explanantions around the suggested position (P2L41-42) trying to connect
 the relations among strongly normalization, explicit casts and type checking.
 
 > 17 at this point it is not clear what you mean by "conversion rule"
 
-DONE
-
-We rephrased the paragraph and included a brief explanation of "conversion rule".
+DONE: We rephrased the paragraph and included a brief explanation of "conversion rule".
 
 > page 5
 > the example of indexed lists is not completely clear. Is the n:N
 > parameter the initial index of the list? if it is the case can you say
 > this? because the role of indexes is never shown
 
-DONE
-
-We added an explanation after showing the definition that we did not choose a
-more intuitive example is because it would require the GADT which our language
-does not currently support.
+DONE: We added an explanation after showing the definition that we did not choose a
+more intuitive example is because it would require GADT encodings, which are
+considerably more complex (as they involve equality witnesses).
 
 > 29
 > I do not understand the role of the "r" parameter in the definition of
@@ -590,9 +537,7 @@ DONE
 
 > line 52: However, you do not show the definition of map
 
-DONE
-
-We rephrased the paragraph to avoid the mentioning of the omitted definition
+DONE: We rephrased the paragraph to avoid the mentioning of the omitted definition
 of `map`.
 
 > page 6:
@@ -603,17 +548,13 @@ of `map`.
 > the name of the field selector, and field selection is written as
 > application of the field selector.
 
-DONE
-
-You are right, the Functor here is a record type that mimic the typeclass.
+DONE: You are right, the Functor here is a record type that mimic the typeclass.
 We added explanations to point this out.
 
 > It will also be useful to point out exactly what could not be expressed in, e.g., Haskell.
 > You say (line 33) that F is implicitly instantiated, but F is not Functor Id here?
 
-DONE
-
-We added a sentence to explain with this formulation of Functor, unlike with
+DONE: We added a sentence to explain with this formulation of Functor, unlike with
 type classes, the instance has to be explicitly passed as argument.
 
 The parameter `F`, as shown in the type of fmap, refers to the higher-kinded
@@ -622,9 +563,7 @@ type parameter of `Functor`, in this case, `Id`.
 > page 7 you should explain which is the role of the type variables in Gamma;
 > that is, what is only allowed if the type variable is available in Gamma
 
-DONE
-
-We added a sentence to explain the role of \Gamma in section 2.2.
+DONE: We added a sentence to explain the role of \Gamma in section 2.2.
 
 > page 10 line 50: should reference [42] be [41]? (that is, [25])
 
@@ -632,25 +571,19 @@ DONE
 
 > Figure 2: you should at least mention the meaning of the "box" kind
 
-DONE
-
-We added a brief explanation to the role of star and box kind to the first
+DONE: We added a brief explanation to the role of star and box kind to the first
 paragraph in Section 3.1.
 
 > page 12: perhaps you should justify better why upcasts are values
 
-DONE
-
-We added the intuitive motivation of why upcasts are values in the call-by-name
+DONE: We added the intuitive motivation of why upcasts are values in the call-by-name
 design of Pure Iso-type System, and a reference to the discussion section about
 why we did not choose an alternative design.
 
 > Figure 4: to use E both as metavariable and as index of the relation
 > is a very bad choice (I was confused at the beginning)
 
-DONE
-
-We now use \Longrightarrow as the new symbol for erased reductions instead of
+DONE: We now use \Longrightarrow as the new symbol for erased reductions instead of
 \longrightarrow_E.
 
 > page 17 line 34 you use "fresh in A" to mean "not occurring in A", right?
@@ -745,9 +678,7 @@ DONE
 > work once you get to zero, which kind of defeats the purpose...or
 > perhaps I'm not understanding something.
 
-DONE
-
-We added an explanation after showing the definition that we did not choose a
+DONE: We added an explanation after showing the definition that we did not choose a
 more intuitive example is because it would require GADTs
 (which have significantly more complex encodings and require additional cast
 support).
@@ -767,7 +698,7 @@ The parameter `r` is the "final return type" of the CPS functions.
 > it, but the example will be obscure for anyone not fully initiated
 > into typed functional programming.
 
-We have tried to improve the examplanation to at least clarify the syntax,
+We have tried to improve the explanation to at least clarify the syntax,
 following some suggestions from reviewer 2. We admit that the Functor
 example may not be very intuitive for someone not very familiar with
  typed functional programming. However, we do think it is a fairly common one
