@@ -18,23 +18,9 @@ Fortunately, our call-by-name reduction rules do not rely on the notion of value
 which for closed terms, represents irreducible forms.
 In other words, there is no premise in our reduction rules that require
 some expression to be a value or irreducible.
-%Our call-by-name reduction relation only applies when a term \emph{can} reduce
-%instead of when it \emph{cannot} reduce
-%(there is no rule like ``if $e$ is a value, then $e_1 \longrightarrow e_2$'').
 Thus, the definition of values or irreducible terms does not matter when reasoning about
 type-level call-by-name reductions, and we do not have to complicate the metatheory of our system
 with inert terms.
-% \bruno{I modified this text a bit since it didn't seem very clear. However I'm not sure if my
-% rewrite captures what you wanted to say. Please double-check carefully.}
-
-% The type reduction in cast operators is potentially under a context that
-% is not empty, so it is likely that we are performing reduction on an open term.
-% Intuitively we should generalize the definition of value by introducing inert
-% terms~\citep{full} to handle open term reduction.
-% However since we adopt the call-by-name semantics of PITS~\citep{yang2019pure},
-% there is no value check during the reduction. Whether the result of reduction
-% inside a cast operator is a value or not does not matter during the reasoning of
-% type safety. It is not necessary to complicate the metatheory by introducing inert terms.
 
 \subsection{Call-by-value Semantics of Cast Operators}
 \label{sec:cast-design}
@@ -74,9 +60,6 @@ capture irreducible open terms, these rules allow reductions like:
 The reduction rule prioritizes reducing the inner expression of two casts,
 while \emph{reduction substitution} expects
 $[\lambda y : B. \, x / f] \, \castdn \, (\castup \, [A] \, (f ~ x))$ to reduce to $(\lambda y : B.\, y)~x$.
-% \bruno{You are missing some parenthesis here, aren't you? Around the castUp's?
-%   Also, please state briefly why is the property broken. I.e. state what you were you expecting in the example
-% above if the property did hold, and how what you get instead isn't the same.}
 
 So we stick with the call-by-name style semantics around cast operators for now and
 leave the discussion of other possibilities of design in future work.
@@ -84,9 +67,9 @@ leave the discussion of other possibilities of design in future work.
 \subsection{Kind Restrictions on Polymorphic Types}
 
 Currently, we impose restrictions on the kinding of polymorphic types
-($\forall x : A.\,B$) to require that they only have kind $\star$ but not $[[box]]$.
+($\forall x : A.\,B$) to require that they only have kind $[[*]]$ but not $[[box]]$.
 We believe that this has little impact on the usability
-of our system since polymorphic kinds such as $\forall x : [[int]].\,\star$
+of our system since polymorphic kinds such as $[[forall x : int. *]]$
 do not appear frequently in practice.
 It would be reasonable not to have this restriction, but this would
 complicate the development of the metatheory significantly.
@@ -153,9 +136,7 @@ While comparing to existing algorithmic systems
 for higher-ranked polymorphic type inference for System F-like languages
 ~\citep{dunfield2013complete,zhao19mechanical},
 we identify one of the interesting challenges to develop an algorithmic system for \name.
-% the following challenges to develop an algorithmic system for \name.
 
-% \paragraph{Unification Inside Binders}
 In dependent type systems, function types ($\Pi$ types) are dependent:
 the type of applications potentially depends on the values of their arguments.
 Therefore the unification problem we meet is potentially inside binders and
@@ -170,8 +151,6 @@ In a non-dependent setting, one can easily conclude the instantiation for type $
 $F~42 \rightarrow [[int]]$. However in our system, the type of $A$ is a
 dependent function type, with the shape of $(\Pi x : [[int]].\, F~e)$,
 where expression $e$ satisfies the equation $[42/x]\,e = 42$ according to \rref{s-app}.
-% Since implicit type-level computation is not allowed in our system,
-% the unification problem here remains to be first order.
 Here we have two choices for the instantiation of $e$, namely $x$ and $42$,
 but neither choice ($\Pi x.\, F~x$ or $\Pi x.\, F~42$) for type $A$ leads to a more general
 solution than choosing the other.
@@ -193,15 +172,6 @@ this kind of conflicts entirely. Alternatively, we can only infer non-dependent 
 facing a unification variable, which is the choice by \citet{dh}. But which is
 the better method for our system remains to be studied.
 
-% However, we still face the
-% problems with substitutions. For example, in the program above,
-% the expression $e$ has two solutions, namely variable $x$
-% and $42$.\bruno{So what's the problem of multiple solutions: explain that here.
-%   No principal type? The two types are incomparable? If we pick one over the other then
-% something may not type-check afterwards?}
-%We consider coming up with a formal system a challenging problem to
-%resolve the general issues that this example implies.
-
 \subsection{The Issues of Strengthening}
 \label{sec:habitability}
 
@@ -221,7 +191,7 @@ which is a key reason for strenghtning not holding in general. For example:
     A : [[*]], \rulehl{a : A} \vdash [[(bind x : A. lambda y : int. y)]]~42 : [[int]]
 \end{equation*}
 
-Here to conclude that $[[bind x : A. lambda y : int. y]]$ has type $[[int]] \rightarrow [[int]]$,
+Here, to conclude that $[[bind x : A. lambda y : int. y]]$ has type $[[int]] \rightarrow [[int]]$,
 we want to derive $\forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$ by
 using \rref{s-forall-l}. That would require a well-typed instantiation
 for the abstract type $A$, and that is where the variable $a$ in the context
@@ -238,12 +208,12 @@ to the issue discussed in Section~\ref{sec:reverse-subst}, our fixpoints only su
 For instance, we do not need the variable $a$ in the context in the example above,
 we can just find the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l}, if $A$ is a
 monotype.
-Moreover, it is \emph{likely} that any polytype can have an inhabitant with the help
-of monotype fixpoints, for example, type $\forall A : [[*]],\, A \rightarrow B$ with $B$
+Moreover, it is \emph{likely} that any polytype is inhabited with the help
+of monotype fixpoints. For example, type $\forall A : [[*]],\, A \rightarrow B$ with $B$
 being an abstract type, has an inhabitant $\Lambda A : [[*]].\,[[lambda x : A. mu y : B. y]]$.
 
 Nevertheless, since polymorphic types in our system also serve as ``implicit function types'',
-it seems a weird choice to infer diverging programs as their implicit arguments.
+it seems to be a weird choice to infer diverging programs as their implicit arguments.
 Inferring infinite loops is not a big deal for the time being,
 because we guarantee the runtime irrelevance
 of all the implicit arguments. But this design will not be reasonable if we are
@@ -258,8 +228,8 @@ Another issue for the strengthening is that even if we have the issue of
 inhabitability covered, it is tricky to guarantee that a variable unused in the
 final subtyping conclusion, does not matter for the whole derivation.
 For example in \rref{s-app}, where type $A$ in the premises does not
-occur at all in the conclusion, we cannot guarantee that a variable that
-does not occur in the conclusion, does not occur in type $A$. We can construct
+occur at all in the conclusion, we cannot guarantee that a variable
+not occurring in the conclusion, does not occur in type $A$. We can construct
 the following example:
 
 \begin{mathpar}
@@ -275,30 +245,9 @@ the premises. The interesting part is that although it occurs in the premises, w
 it, the conclusion holds with a different derivation tree (by directly deriving $\vdash 42 : [[int]]$).
 For this example, although the strengthening property holds, we do not currently
 know how to determine whether a variable really \emph{matters} for a derivation
-in general.
+in general so that we can safely remove it from the context.
 
 So for the two issues we discussed above, we decide to live with the lack of
 strengthening property in our system for now, at the cost of a slightly more
 complicated system with additional kinding premises in \rref{s-forall-r}
 and the addition of \rref{s-forall}.
-
-% In polymorphic subtyping, we do not need a ``real'' instantiation to conclude
-% that a subtyping relation holds. For example, in polymorphic subtyping:
-% \begin{equation*}
-%     \forall A.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A.\, A \rightarrow A) \rightarrow [[int]]
-% \end{equation*}
-% \noindent holds by first applying rule $\forallL$ with a dummy instantiation,
-% say $[[int]]$, and then showing $\forall A.\, A \rightarrow A \le [[int]] \rightarrow [[int]]$.
-% This clearly holds by applying rule $\forallL$ again. However such dummy instantiations
-% pose extra difficulties in \name:
-% \begin{equation*}
-%     \forall A : T.\, (A \rightarrow A) \rightarrow [[int]] \le (\forall A : T.\, A \rightarrow A) \rightarrow [[int]]
-% \end{equation*}
-% We cannot apply \rref{s-forall-l} until we find a valid instantiation for type $A$,
-% therefore we encounter an \emph{inhabitation problem} for \name. This problem is
-% undecidable for System F~\citep{dudenhefner2019simpler}. We do not expect it to be
-% decidable in a more complicated system with strong normalization.
-% Since we support general recursion in our language with a mono-expression
-% restriction we expect that all types are
-% inhabited. However, we currently do not have the proof backing the claim that
-% this is the case.

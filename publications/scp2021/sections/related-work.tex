@@ -171,16 +171,14 @@ family of systems that discusses subtyping in a dependently typed setting.
 Unlike the traditional dependent type systems that based on lambda calculus, DOT
 embraces the idea of ``everything is an object'' and features the \emph{path-dependent types}.
 A path-dependent type is a restricted form of dependent types.
-Path-dependent types
-support return types of functions
-to mention their parameters, but only
+Path-dependent types support return types of functions to mention their parameters, but only
 member accessing operations are allowed for the ``depended value'',
 and instead of all terms, only variable names can occur in the accessing path.
 This restriction rules out traditional problems in dependent type systems,
 like handling type-level computation and allows DOT to focus more on the subtyping
-aspect like reasoning about type bounds. Also, DOT can still separate the
-concept of terms and types due to the restriction. Therefore, the mutual dependency of
-typing and subtyping is also not an issue.
+aspect like reasoning about type bounds. Also, thanks to this restriction, DOT
+can still separate the concept of terms and types unlike conventional dependent type system.
+Therefore, the mutual dependency of typing and subtyping is also not an issue for DOT.
 
 DOT with Implicit Functions (DIF)~\citep{dif} is an interesting extension of DOT
 that adds implicit functions to DOT.
@@ -189,7 +187,7 @@ polymorphism, adding implicit functions implies adding implicit polymorphism.
 The treatment of implicit parameters in DIF is quite similar
 to ICC~\citep{miquel2001implicit} in terms of the generalization and
 instantiation rules shown in section \ref{sec:polymorphic-subtyping}.
-So their system shares similar restrictions of being unable to handle implicits
+Hence their system shares a similar constraint of being unable to handle implicits
 at higher-ranked positions. However in DIF, implicit arguments are runtime relevant,
 and can be retrieved by a special variable. This comes with a restriction that
 implicit arguments can only be variables in the typing context when inferred.
@@ -209,13 +207,13 @@ complications in terms of metatheory.
 System $\mathrm{F}_\mathrm{H}$~\citep{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
 ~\citep{fhsigma} provide another
 interesting idea to deal with this mutual dependency. They get rid of the
-subtyping aspect entirely in the type system, but recover it after the system is
-defined to prove the ideas expressed by subtyping hold for their systems,
-which \citet{fhsigma} also called a \emph{subsumption free formulation}.
-However such technique is likely to be difficult to apply for systems that
+subtyping aspect in their type system. But they later ``recover'' it after
+the system is by proving the ideas expressed by subtyping hold for their systems.
+And \citet{fhsigma} called this technique the \emph{subsumption free formulation}.
+However such it is likely to be difficult to apply for systems that
 reason about implicit polymorphism,
-as systems like ICC~\citep{miquel2001implicit} that mentions subtyping relations \emph{post facto}
-often fail to reason about polymorphism at higher ranks.
+as systems like ICC~\citep{miquel2001implicit} that mentions subtyping relations
+\emph{post facto} often fail to reason about polymorphism at higher ranks.
 
 \paragraph{Feature Comparison}
 Lastly we present a summary comparing \name and some of the closest related calculi
@@ -226,7 +224,7 @@ We select the following features for the comparision:
 \begin{itemize}
 \item {\bf Dependent types:} Whether the system supports dependent types.
 \item {\bf Subtyping:} Whether there is a subtyping relation in the typing rules. The complexity of subtyping relations varies but we do not dive into details here.
-\item {\bf Implicit arguments:} Whether some form of implicit polymorphism is supported. The monotype restriction on instantiation is assumed. 
+\item {\bf Implicit arguments:} Whether some form of implicit polymorphism is supported. The monotype restriction on instantiation is assumed.
 \item {\bf Relevant arguments:} Whether implicit instantiations can be runtime relevant.
 \item {\bf Rank-n polymorphism:} Whether polymorphic subtyping supports higher-ranked polymorphism.
 \item {\bf Mechanization:} Whether the correctness of metatheory (and algorithm, if available) is mechanically checked instead of manually.
@@ -244,37 +242,21 @@ apply''.
   \begin{tabular}{l|cccccc}
    & ICC & $\lambda I_\le$ & Zhao19 & DK19 & DH & \name \\
    \hline
-   Dependent types & $\checkmark$ & $\checkmark$ & $\times$ & Equality\mpfootnotemark[9] & $\checkmark$ & $\checkmark$  \\
+   Dependent types & $\checkmark$ & $\checkmark$ & $\times$ & Equality\mpfootnotemark[1] & $\checkmark$ & $\checkmark$  \\
    \hline
    Subtyping & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\times$ & $\checkmark$ \\
    \hline
    Implicit arguments & $\checkmark$ & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
    \hline
-   Relevant arguments & $\times$ & - & $\times$ & ? & $\checkmark$ & $\times$ \\
+   Relevant arguments & $\times$ & - & $\times$ & $\times$ & $\checkmark$ & $\times$ \\
    \hline
-   Rank-n polymorphism & $\times$ & - & $\checkmark$ & $\checkmark$ & ? & $\checkmark$ \\
+   Rank-n polymorphism & $\times$ & - & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
    \hline
 %   Alg\mpfootnotemark[15] & $\times$ & S\&C & S\&C & S\&C & S\&C\footnotemark[16] & S & $\times$ & $\times$ \\
 %   \hline
    Mechanization & $\times$ & $\checkmark$ & $\checkmark$ & $\times$ & $\times$ & $\checkmark$
   \end{tabular}
-%  \footnotetext[1]{Implicit Calculus of Constructions~\citep{miquel2001implicit,barras2008implicit}}
-%  \footnotetext[2]{\cite{full}}
-%  \footnotetext[3]{Novel algorithm by \cite{zhao19mechanical}, declarative system is the same as \cite{dunfield2013complete}}
-%  \footnotetext[4]{\cite{dunfield2019sound}}
-%  \footnotetext[5]{\cite{zombie:popl15}}
-%  \footnotetext[6]{Dependent Haskell \citep{dh}}
-%  \footnotetext[7]{Dependent-object-type with Implicit Functions~\citep{dif}}
-  %\footnotetext[8]{Whether the system support dependent types. $\checkmark$, if general dependent function and some form of type-level computation is supported. $\times$, if dependent types are not supported at all. Other entries see footnotes.}
-  \footnotetext[9]{Only type-level equality is dependent, other parts of the system are not.}
-  %\footnotetext[10]{Path-dependent Types~\citep{dot:path}}
- % \footnotetext[11]{Whether there is a subtyping relation in the typing rules. The complexity of subtyping relations varies but we do not dive into details here.}
-  %\footnotetext[12]{Whether some form of implicit polymorphism is supported. Monotype restriction on instantiation is assumed. $\checkmark$, if implicit polymorphism is supported at higher rank. FR, if only first-rank implicit polymorphism are supported.}
-  %\footnotetext[13]{Implicit instantiations are runtime irrelevant.}
-  %\footnotetext[14]{Implicit instantiations can only be variables.}
-  %\footnotetext[15]{Whether there is an algorithmic system. S, if the algorithm is sound (with respect to \emph{some criteria}). C, if the algorithm is complete.}
-  %\footnotetext[16]{The congruence relation does not have a algorithmic system, its algorithm is stated and proved seperately from the type system.}
-  %\footnotetext[17]{Whether the correctness of metatheory (and algorithm, if available) is mechanically checked instead of manually.}
+  \footnotetext[1]{Only type-level equality is dependent, other parts of the system are not.}
   \caption{Feature Comparison of calculi closely related to \name.}
   \label{table:comparison}
 \end{table}
@@ -284,7 +266,7 @@ apply''.
 \begin{tabular}{|l|l|}
 \hline
 Shorthand & Reference/Description \\
-\hline  
+\hline
 ICC & Implicit Calculus of Constructions~\citep{miquel2001implicit}.\\
 \hline
 $\lambda I_\le$ & Unified Subtyping calculus by \cite{full}. \\
