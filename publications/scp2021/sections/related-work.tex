@@ -218,43 +218,86 @@ as systems like ICC~\citep{miquel2001implicit} that mentions subtyping relations
 often fail to reason about polymorphism at higher ranks.
 
 \paragraph{Feature Comparison}
+Lastly we present a summary comparing \name and some of the closest related calculi
+in the literature in Table~\ref{table:comparison}. Table~\ref{table:description} contains the
+shorthand and references for the calculi used in the comparision in Table~\ref{table:comparison}.
+We select the following features for the comparision:
 
-Lastly we present a summary comparing \name and some of its related work in
-table \ref{table:comparison} to wrap up the discussion of related work.
+\begin{itemize}
+\item {\bf Dependent types:} Whether the system supports dependent types.
+\item {\bf Subtyping:} Whether there is a subtyping relation in the typing rules. The complexity of subtyping relations varies but we do not dive into details here.
+\item {\bf Implicit arguments:} Whether some form of implicit polymorphism is supported. The monotype restriction on instantiation is assumed. 
+\item {\bf Relevant arguments:} Whether implicit instantiations can be runtime relevant.
+\item {\bf Rank-n polymorphism:} Whether polymorphic subtyping supports higher-ranked polymorphism.
+\item {\bf Mechanization:} Whether the correctness of metatheory (and algorithm, if available) is mechanically checked instead of manually.
+\end{itemize}
+
+We use $\checkmark$, if a feature is supported, $\times$ if it is not
+supported.  The features of relevant (implicit) arguments and rank-n
+polymorphism only make sense in calculi with implicit arguments. Thus
+for calculi without implicit arguments we use $-$ to mean ``does not
+apply''.
 
 \begin{table}
   \centering
   % \begin{tabular}{l|c|c|c|c|c|c|c|c}
-  \begin{tabular}{l|cccccccc}
-   & ICC\mpfootnotemark[1] & $\lambda I_\le$\mpfootnotemark[2] & Zhao19\mpfootnotemark[3] & DK19\mpfootnotemark[4] & Zombie\mpfootnotemark[5] & DH\mpfootnotemark[6] & DIF\mpfootnotemark[7] & \name \\
+  \begin{tabular}{l|cccccc}
+   & ICC & $\lambda I_\le$ & Zhao19 & DK19 & DH & \name \\
    \hline
-   Dep\mpfootnotemark[8] & $\checkmark$ & $\checkmark$ & $\times$ & Equality\mpfootnotemark[9] & $\checkmark$ & $\checkmark$ & Path\mpfootnotemark[10] & $\checkmark$  \\
+   Dependent types & $\checkmark$ & $\checkmark$ & $\times$ & Equality\mpfootnotemark[9] & $\checkmark$ & $\checkmark$  \\
    \hline
-   Sub\mpfootnotemark[11] & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\times$ & $\times$ & $\checkmark$ & $\checkmark$ \\
+   Subtyping & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\times$ & $\checkmark$ \\
    \hline
-   Imp\mpfootnotemark[12] & FR\mpfootnotemark[13] & $\times$ & $\checkmark$ & $\checkmark$ & $\times$ & $\checkmark$ & FR\mpfootnotemark[14] & $\checkmark$\mpfootnotemark[13] \\
+   Implicit arguments & $\checkmark$ & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
    \hline
-   Alg\mpfootnotemark[15] & $\times$ & S\&C & S\&C & S\&C & S\&C\footnotemark[16] & S & $\times$ & $\times$ \\
+   Relevant arguments & $\times$ & - & $\times$ & ? & $\checkmark$ & $\times$ \\
    \hline
-   Mech\mpfootnotemark[17] & $\times$ & $\checkmark$ & $\checkmark$ & $\times$ & $\times$ & $\times$ & $\times$ & $\checkmark$
+   Rank-n polymorphism & $\times$ & - & $\checkmark$ & $\checkmark$ & ? & $\checkmark$ \\
+   \hline
+%   Alg\mpfootnotemark[15] & $\times$ & S\&C & S\&C & S\&C & S\&C\footnotemark[16] & S & $\times$ & $\times$ \\
+%   \hline
+   Mechanization & $\times$ & $\checkmark$ & $\checkmark$ & $\times$ & $\times$ & $\checkmark$
   \end{tabular}
-  \footnotetext[1]{Implicit Calculus of Constructions~\citep{miquel2001implicit,barras2008implicit}}
-  \footnotetext[2]{\cite{full}}
-  \footnotetext[3]{Novel algorithm by \cite{zhao19mechanical}, declarative system is the same as \cite{dunfield2013complete}}
-  \footnotetext[4]{\cite{dunfield2019sound}}
-  \footnotetext[5]{\cite{zombie:popl15}}
-  \footnotetext[6]{Dependent Haskell \citep{dh}}
-  \footnotetext[7]{Dependent-object-type with Implicit Functions~\citep{dif}}
-  \footnotetext[8]{Whether the system support dependent types. $\checkmark$, if general dependent function and some form of type-level computation is supported. $\times$, if dependent types are not supported at all. Other entries see footnotes.}
+%  \footnotetext[1]{Implicit Calculus of Constructions~\citep{miquel2001implicit,barras2008implicit}}
+%  \footnotetext[2]{\cite{full}}
+%  \footnotetext[3]{Novel algorithm by \cite{zhao19mechanical}, declarative system is the same as \cite{dunfield2013complete}}
+%  \footnotetext[4]{\cite{dunfield2019sound}}
+%  \footnotetext[5]{\cite{zombie:popl15}}
+%  \footnotetext[6]{Dependent Haskell \citep{dh}}
+%  \footnotetext[7]{Dependent-object-type with Implicit Functions~\citep{dif}}
+  %\footnotetext[8]{Whether the system support dependent types. $\checkmark$, if general dependent function and some form of type-level computation is supported. $\times$, if dependent types are not supported at all. Other entries see footnotes.}
   \footnotetext[9]{Only type-level equality is dependent, other parts of the system are not.}
-  \footnotetext[10]{Path-dependent Types~\citep{dot:path}}
-  \footnotetext[11]{Whether there is a subtyping relation in the typing rules. The complexity of subtyping relations varies but we do not dive into details here.}
-  \footnotetext[12]{Whether some form of implicit polymorphism is supported. Monotype restriction on instantiation is assumed. $\checkmark$, if implicit polymorphism is supported at higher rank. FR, if only first-rank implicit polymorphism are supported.}
-  \footnotetext[13]{Implicit instantiations are runtime irrelevant.}
-  \footnotetext[14]{Implicit instantiations can only be variables.}
-  \footnotetext[15]{Whether there is an algorithmic system. S, if the algorithm is sound (with respect to \emph{some criteria}). C, if the algorithm is complete.}
-  \footnotetext[16]{The congruence relation does not have a algorithmic system, its algorithm is stated and proved seperately from the type system.}
-  \footnotetext[17]{Whether the correctness of metatheory (and algorithm, if available) is mechanically checked instead of manually.}
-  \caption{Feature Comparison of \name}
+  %\footnotetext[10]{Path-dependent Types~\citep{dot:path}}
+ % \footnotetext[11]{Whether there is a subtyping relation in the typing rules. The complexity of subtyping relations varies but we do not dive into details here.}
+  %\footnotetext[12]{Whether some form of implicit polymorphism is supported. Monotype restriction on instantiation is assumed. $\checkmark$, if implicit polymorphism is supported at higher rank. FR, if only first-rank implicit polymorphism are supported.}
+  %\footnotetext[13]{Implicit instantiations are runtime irrelevant.}
+  %\footnotetext[14]{Implicit instantiations can only be variables.}
+  %\footnotetext[15]{Whether there is an algorithmic system. S, if the algorithm is sound (with respect to \emph{some criteria}). C, if the algorithm is complete.}
+  %\footnotetext[16]{The congruence relation does not have a algorithmic system, its algorithm is stated and proved seperately from the type system.}
+  %\footnotetext[17]{Whether the correctness of metatheory (and algorithm, if available) is mechanically checked instead of manually.}
+  \caption{Feature Comparison of calculi closely related to \name.}
   \label{table:comparison}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Shorthand & Reference/Description \\
+\hline  
+ICC & Implicit Calculus of Constructions~\citep{miquel2001implicit}.\\
+\hline
+$\lambda I_\le$ & Unified Subtyping calculus by \cite{full}. \\
+\hline
+Zhao19 & \citet{zhao19mechanical} mechanization of DK's type system.\\
+\hline
+DK19 & \cite{dunfield2019sound}\\
+\hline
+DH & Dependent Haskell~\citep{dh}. \\
+\hline
+\name & Our calculus.\\
+\hline
+\end{tabular}
+\caption{Description of the calculi in Table~\ref{table:comparison}.}
+\label{table:description}
 \end{table}
