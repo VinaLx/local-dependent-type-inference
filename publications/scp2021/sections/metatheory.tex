@@ -2,7 +2,7 @@
 \label{sec:metatheory}
 
 This section presents the metatheory of \name, and discusses several challenges
-that arose during our typing rules designs and ensuring desired subtyping and
+that arose during the design of the typing rules to ensure desired subtyping and
 typing properties in our system.
 The three main results of the metatheory are:
 \emph{transitivity of unified subtyping}, \emph{type-soundness} and
@@ -32,7 +32,7 @@ In order for the \emph{well-formedness}~\citep{dunfield2013lemmas} property
 to hold in L\"aufer and Odersky's system, these two rules rely on certain properties
 that do not hold in our dependently typed generalization. So we make several adjustments
 in our adaptation to address these issues, which result in the difference between
-our current system and a direct generalization mentioned in section \ref{sec:feature-overview}.
+our current system and a direct generalization mentioned in Section~\ref{sec:feature-overview}.
 
 \paragraph*{Reverse Substitution of Well-Formedness}
 \label{sec:reverse-subst}
@@ -77,10 +77,10 @@ The variable $a$ does not appear in any expression, but plays a
 crucial role when considering the subtyping statement
 $\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$,
 which arises when type-checking the application $[[(bind x : A. lambda y : int. y)]]~42$.
-In this case, we cannot apply \rref{s-forall-l} while we are not able to find a
+In this case, we cannot apply \rref{s-forall-l} unless we find a
 well-typed instance for the polymorphic parameter. So the variable in the context
 is needed even though it does not occur anywhere in the final judgement.
-Note that, since our system has the fixpoint operator, theoretically we could construct
+Note that, since our system has a fixpoint operator, theoretically we could construct
 a diverging program $[[mu x : A. x]]$ to instantiate the implicit parameter, but
 this possibility leads to several other issues which we are going to discuss in
 Section~\ref{sec:habitability}. Furthermore such an approach would not work for calculi
@@ -136,7 +136,7 @@ and \rref{s-forall-r} respectively are directly solved by \rref{s-forall}.
 
 \noindent \emph{Weakening} is proved by induction on the derivation of
 $[[G1 ,, G3 |- e1 <: e2 : A]]$. The redundant premises discussed in Section
-\ref{sec:type-system} help simplify the proof, by creating the induction
+\ref{sec:type-system} help to simplify the proof, by creating the induction
 hypotheses about the type annotation of various expressions. Otherwise, we are
 not able to prove $[[|- G1 ,, G2 ,, G3 , x : A]]$ given only
 $[[|- G1 ,, G3 , x : A]]$ and no help from induction hypotheses.
@@ -234,7 +234,7 @@ have to consider when designing the reduction rules (see Section \ref{sec:cast-d
 \end{theorem}
 
 \noindent \emph{Type correctness} is a nice property that ensures that
-what appears in the position of a type are actually types.
+what appears in the position of a type is actually a type.
 The theorem is proved by induction on the derivation of $[[G |- e1 <: e2 : A]]$.
 The only non-trivial case is when the derivation ends with \rref{s-app}. We make
 use of the substitution lemma and the inductive hypothesis to demonstrate the head
@@ -277,7 +277,7 @@ Then we can have the following theorem:
 \end{theorem}
 
 \noindent The proof is achieved by generalizing the shape of $k$ to be
-$\Pi x : A.\, \dots \Pi x : B.\, \dots k$ for useful inductive hypotheses
+$\Pi x : A.\, \dots \Pi x : B.\, \dots k$ for obtaining useful inductive hypotheses
 when the derivation of $[[G |- e : k]]$ ends with \rref{s-app}. Then the proof
 proceeds with induction on the derivation of the generalized $[[G |- e : k]]$ and
 assembling various lemmas of kinding to solve different cases.
@@ -321,7 +321,7 @@ $\langle \#\forall([[e2]]) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\citep{dunf
 with some adjustments to fit in our system.
 
 The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
-and the second ends with \rref{s-forall-l}, essentially we have to show the following:
+and the second ends with \rref{s-forall-l}. Essentially we have to show the following:
 
 \begin{mathpar}
     \inferrule*[]
@@ -538,7 +538,7 @@ The main issue of the cast elimination case can be demonstrated by the following
 \end{mathpar}
 
 Here the typing of the inner $\castup$ is not directly derived by
-\rref{r-castup}, but the subsumption rule instead. We want to show that after
+\rref{r-castup}, but by the subsumption rule instead. We want to show that after
 the cast elimination (following \rref{r-cast-elim}), expression $e$ has type $B_2$,
 while in reality it has type $A_2$ (as highlighted).
 Therefore want to show $\Gamma \vdash A_2 \le B_2$ with the information that
@@ -557,7 +557,7 @@ middle of two reducible types, so we cannot adopt their proof on this case.
 
 We tackle this problem from another direction, with the observation that the
 demand for subtype preservation property shifts from the term-level to the type-level.
-With the calculus-of-constructions-like kind hierarchy, our system only have
+With the calculus-of-constructions-like kind hierarchy, our system only has
 limited layers in types (type $[[int]]$ has kind $[[*]]$, kind $[[*]]$ has kind $[[box]]$).
 In fact, we only need to go up one layer in the type hierarchy to be able to
 obtain subtype preservation directly,
@@ -567,7 +567,7 @@ Even better, we show that by going up one level in the type hierarchy
 (only discussing the types of terms), the options
 for the reduction that can be performed by a well-typed term are very limited.
 Not only implicit abstractions can not occur in type computation due to the kind
-restriction of universal types as explained in section \ref{sec:kind-restriction}.
+restriction of universal types as explained in Section \ref{sec:kind-restriction}.
 We also prove that well-typed reductions never occur
 for kinds, so cast operators also do not occur in type-level computation.
 
@@ -665,7 +665,7 @@ We prove that the two system are equivalent in terms of expressiveness.
 Finally we show that the subtyping aspect of \name subsumes
 Odersky and L\"aufer's polymorphic
 subtyping~\citep{odersky1996putting}. To be more precise
-we show that our unified subtyping relation subsumes the Dunfield and Krishnaswami (DK)'s declarative
+we show that our unified subtyping relation subsumes DK's declarative
 subtyping relation \citep{dunfield2013complete}, which is a small variant of
 Odersky and L\"aufer's polymorphic subtyping.
 
