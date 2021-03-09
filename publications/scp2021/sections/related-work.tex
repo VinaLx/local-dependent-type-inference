@@ -1,15 +1,15 @@
 \section{Related Work}
 
 \paragraph{Implicit Dependent Type Calculus}
-The implicit calculus of constructions (ICC~\citep{miquel2001implicit} and
-ICC*\citep{barras2008implicit}) discuss implicit polymorphism in a dependently-typed
-setting. ICC features generalized polymorphic types and typing rules to express
-the idea of implicit instantiation. They do not explicitly have a subtyping
+Implicit polymorphism in a dependently-typed
+setting is discussed in the implicit calculus of constructions (ICC)~\citep{miquel2001implicit} and
+ICC*\citep{barras2008implicit}. The ICC features generalized polymorphic types and typing rules to express
+the idea of implicit instantiation. The ICC does not explicitly have a subtyping
 relation between polymorphic types. Therefore the expressiveness of reasoning
-between polymorphic types are limited to the top-level polymorphic types. Like
-in \name, the implicit parameter does not impact the runtime semantics of ICC.
+between polymorphic types is limited to top-level polymorphic types. Like
+in \name, implicit parameters does not impact the runtime semantics of the ICC.
 
-Implicit function types of ICC* are not interpreted as polymorphic
+Implicit function types in ICC* are not interpreted as polymorphic
 function types. The main focus is on the distinction between implicit
 functions (universal types and implicit abstraction) and explicit functions
 ($\Pi$-types and lambda abstraction).
@@ -54,7 +54,7 @@ in terms of equality constraints, casts and mechanisms similar to those
 employed by type classes. There is some work to make type-level functions
 provided type families first-class~\citep{kiss19higher} and also partially applied, but this
 still does not enable full type-level lambdas (see also the discussion in Section~8.1
-of ~\citep{kiss19higher} for more details).
+of ~\citet{kiss19higher} for more details).
 In our work we do allow type-level lambdas
 but lambdas can only be equal up to $\alpha$-equivalence.
 Another difference is that the kind-inference system formalized by Xie et al.
@@ -63,7 +63,7 @@ the mutual dependency issue that we have in our polymorphic subtyping relation.
 
 \paragraph{Type-inference for higher-ranked polymorphism}
 Type-inference for \emph{higher-ranked polymorphism}
-(HRP)~\citep{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical,Serrano2018, odersky1996putting}
+(HRP)~\citep{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical,Serrano2018, odersky1996putting,zhao19mechanical}
 extends the classic Hindley-Milner algorithm~\citep{hindley1969principal,milner1978theory,damas1982principal},
 removing the restriction of top-level (let) polymorphism only. Type
 inference for HRP aims at providing inference for System F-like
@@ -72,14 +72,14 @@ and use type annotations to aid
 inference, since type-inference for full System F is
 well-known to be undecidable~\citep{wells1999typability}.
 
-The work on HRP is divided into two strands: \emph{predicative} HRP~\citep{dunfield2013complete,jones2007practical,odersky1996putting,dunfield2019sound}
+The work on HRP is divided into two strands: \emph{predicative} HRP~\citep{dunfield2013complete,jones2007practical,odersky1996putting,dunfield2019sound,zhao19mechanical}
 and \emph{impredicative} HRP~\citep{le2003ml,leijen2008hmf,vytiniotis2008fph,Serrano2018}.
 In predicative HRP instantiations can
 only synthesize monotypes, whereas in impredicative HRP there's no
 such restriction. However impredicative HRP is quite complex because
 the polymorphic subtyping relation for impredicative HRP is undecidable~\citep{tiuryn1996subtyping}.
 Thus reasonable restrictions that work well in practice are still
-a research frontier.
+a focus of active research.
 The monotype restriction on predicative instantiation is considered reasonable
 and practical for most programs. It is currently in use by languages such as
 (GHC) Haskell, Unison~\citep{Unison} and PureScript~\citep{PureScript}.
@@ -97,7 +97,7 @@ Recently \cite{zhao19mechanical} formalized DK's type system in the Abella
 theorem prover.
 
 \paragraph{Dependent Types and Subtyping}
-A major difficulty is that the introduction of dependent
+A major difficulty in languages with subtyping is that the introduction of dependent
 types makes typing and subtyping depend on each other. This causes
 several difficulties in developing the metatheory for calculi that
 combine dependent types and subtyping. Almost all previous
@@ -150,9 +150,7 @@ semantics in \name (see also the discussion in Sections~\ref{sec:open-term-reduc
 and the use of the $\star : \square$ axiom in \name versus the use of $\star : \star$
 in $\lambda_{I}$.
 
-\paragraph{Dependent Types with Explicit Casts} Previously
-discussed work is about the interaction between dependent types and
-subtyping. However, the other problem is the
+\paragraph{Dependent Types with Explicit Casts} Another problem is the
 interaction between dependent types and recursion. For this
 problem, a general solution that has recently emerged is the use
 of type casts to control type-level computation. In such an approach explicit casts
@@ -172,40 +170,43 @@ Dependent Object Types (DOT)~\citep{dot:dot,dot:path,dot:sound} is another
 family of systems that discusses subtyping in a dependently typed setting.
 Unlike the traditional dependent type systems that based on lambda calculus, DOT
 embraces the idea of ``everything is an object'' and features the \emph{path-dependent types}.
-The path-dependent type is a restricted form of general dependent type,
-although allowing return types of functions
-to mention their parameters, only member accessing operations are allowed for the ``depended value'',
+A path-dependent type is a restricted form of dependent types.
+Path-dependent types
+support return types of functions
+to mention their parameters, but only
+member accessing operations are allowed for the ``depended value'',
 and instead of all terms, only variable names can occur in the accessing path.
-This restriction rules out the traditional problems in dependent type system
+This restriction rules out traditional problems in dependent type systems,
 like handling type-level computation and allows DOT to focus more on the subtyping
-aspect like reasoning about type bounds. Also, since they can still seperate the
-concept of terms and types due to the restriction, the mutual dependency of
+aspect like reasoning about type bounds. Also, DOT can still separate the
+concept of terms and types due to the restriction. Therefore, the mutual dependency of
 typing and subtyping is also not an issue.
 
 DOT with Implicit Functions (DIF)~\citep{dif} is an interesting extension of DOT
-that adds implicit functions to the DOT.
+that adds implicit functions to DOT.
 Since path-dependent types can encode parametric
 polymorphism, adding implicit functions implies adding implicit polymorphism.
 The treatment of implicit parameters in DIF is quite similar
 to ICC~\citep{miquel2001implicit} in terms of the generalization and
 instantiation rules shown in section \ref{sec:polymorphic-subtyping}.
-So their system share similar restrictions of being unable to handle implicits
-at higher-ranked position. However in DIF, implicit arguments are runtime relevant,
-and can be retrieved by a specicial variable. This comes with a restriction of
-only implicit arguments can only be variables in the typing context when inferred.
+So their system shares similar restrictions of being unable to handle implicits
+at higher-ranked positions. However in DIF, implicit arguments are runtime relevant,
+and can be retrieved by a special variable. This comes with a restriction that
+implicit arguments can only be variables in the typing context when inferred.
 
 \paragraph{Refinement Types and Manifest Systems}
 
-The \emph{manifest} systems~\citep{manifestcontracts} is one of the styles of
+\emph{Manifest} systems~\citep{manifestcontracts} is one of the styles of
 contract-oriented programming (in contrast to the \emph{latent} systems~\citep{latentcontracts}),
 where contracts (the conditions that programmers expect to satisfy) are expressed
-in the type system. $\lambda_H$~\citep{hybridtypes,manifestcontracts} is one of such systems that
+in the type system. $\lambda_H$~\citep{hybridtypes,manifestcontracts} is one calculus that
 includes dependent types and subtyping simultaneously. The subtyping relation
-expresses the implication relation between contract satisfaction conditions. They
-also observed the difficulty of potential mutual dependency between typing and subtyping,
-they build another layer of denotational semantics on top of
-subtyping rules to avoid that subtyping depends on typing. However it introduces
-massive complications in terms of metatheory. System $\mathrm{F}_\mathrm{H}$~\citep{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
+expresses the implication relation between contract satisfaction conditions. Unfortunatelly,
+this brings the difficulty of potential mutual dependency between typing and subtyping.
+To overcome this issue, $\lambda_H$ builds another layer of denotational semantics on top of
+subtyping rules to avoid that subtyping depends on typing. However this introduces
+complications in terms of metatheory.
+System $\mathrm{F}_\mathrm{H}$~\citep{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
 ~\citep{fhsigma} provide another
 interesting idea to deal with this mutual dependency. They get rid of the
 subtyping aspect entirely in the type system, but recover it after the system is
@@ -213,7 +214,7 @@ defined to prove the ideas expressed by subtyping hold for their systems,
 which \citet{fhsigma} also called a \emph{subsumption free formulation}.
 However such technique is likely to be difficult to apply for systems that
 reason about implicit polymorphism,
-as systems like ICC\citep{miquel2001implicit} that mentions subtyping relations \emph{post facto}
+as systems like ICC~\citep{miquel2001implicit} that mentions subtyping relations \emph{post facto}
 often fail to reason about polymorphism at higher ranks.
 
 \paragraph{Feature Comparison}
