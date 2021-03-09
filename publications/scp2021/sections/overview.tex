@@ -356,7 +356,7 @@ which is also designed for dealing only with rank-1 polymorphism.
 Hindley-Milner's declarative system also has a \textsc{GEN} rule to
 convert expressions to polymorphic types, and an
 \textsc{INST} rule to instantiate polymorphic parameters.
-Similar to \rref{GEN,INST} we show above, both rules in HM work only
+Similarly to \rref{GEN,INST} shown above, both rules in HM work only
 for polymorphic types at top-level positions. In Hindley-Milner
 the universal quantifier can only quantify over types, whereas in the ICC
 it can quantify over terms of an arbitrary type (including types themselves).
@@ -450,7 +450,7 @@ We purposely omitted the explicit binders for implicit parameters for all the ex
 in Section \ref{sec:examples} for conciseness. Such explicit binders can
 be recovered with a simple form of syntactic sugar:
 
-\[e : \forall x : A.\, B \triangleq \Lambda x : A.\, e : \forall x : A.\, B\]
+\[e : \forall (x : A).\, B \triangleq \Lambda x : A.\, e : \forall (x : A).\, B\]
 
 %\noindent When polymorphic parameters are used, \name provides a binder ($\Lambda x : A.\, e$)
 %to ensure that the parameters are well-scoped at the term-level.
