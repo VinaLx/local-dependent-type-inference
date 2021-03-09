@@ -62,12 +62,12 @@ With the CBV-style reduction rules, which consist of the following rules:
     {[[castdn (castup [A] e)]] \longrightarrow_\mathrm{cbv} [[e]]}
 \end{mathpar}
 
-\noindent Assuming the notion of $\mathrm{value}$ is properly defined to
+\noindent Assuming that the notion of $\mathrm{value}$ is properly defined to
 capture irreducible open terms, these rules allow reductions like:
 \begin{gather*}
   \castdn \, (\castup \, [A] \, (f ~ x)) \longrightarrow_\mathrm{cbv} f ~ x
 \end{gather*}
-\noindent The \emph{reduction substitution} breaks if we substitute $f$ to an lambda expression:
+\noindent The \emph{reduction substitution} property breaks if we substitute $f$ to an lambda expression:
 \begin{gather*}
     [\lambda y : B. \, x / f] \, \castdn \, (\castup \, [A] \, (f ~ x)) \longrightarrow_\mathrm{cbv} \castdn \, (\castup \, [A] \, x)
 \end{gather*}
@@ -106,7 +106,7 @@ Note that the reverse variant of the lemma
 (If $[[G |- e : A]]$ and $[[G |- e : *]]$ then $[[G |- A <: * : box]]$) is not generally
 true. A counter example is $A : \star \vdash \forall a : A.\, \star \le \star$, which
 does not hold if we are unable to find a well-typed instantiation of an
-arbitrary type $A$, which breaks transitivity, while the derivation of the
+arbitrary type $A$. In turn, this breaks transitivity, when the derivation of the
 first premise ends with \rref{s-forall-l}:
 \begin{mathpar}
     \inferrule*[]
@@ -181,7 +181,7 @@ fragment of higher-order unification~\citep{patternunification} specifically
 forbids scenarios where a unification variable applies to constants.
 The case shown above is similar, where the ``application'' is $A~42$
 (dependent function type $A$ ``applies'' to 42) with unification variable $A$.
-Nonetheless, because our system do not allow implicit type-level
+Nonetheless, because our system does not allow implicit type-level
 computation (hence unifications remain at first-order),
 the choices of $A$ are restricted to $\Pi x : [[int]].\,F~e_1$ where $[42/x]\,e_1 = 42$.
 With higher-order unification we would instead
@@ -189,7 +189,7 @@ have $\Pi x : [[int]].\, e_2$ where $[42/x]\,e_2 = F~42$.
 
 There are potentially multiple approaches to this problem. For example, we can
 impose a similar restriction to the pattern unification and refuse to solve
-this kind of conflicts entirely, or we can only infer non-dependent function types when
+this kind of conflicts entirely. Alternatively, we can only infer non-dependent function types when
 facing a unification variable, which is the choice by \citet{dh}. But which is
 the better method for our system remains to be studied.
 
@@ -208,7 +208,7 @@ the better method for our system remains to be studied.
 The current lack of proof of \emph{strengthening} property leads to non-trivial
 changes during the generalization of polymorphic subtyping relation as
 described in Section \ref{sec:strengthening}. It would be nice to be able to
-have strengthening so the system could be simplified. However the issues are
+have strengthening to simplify \name. However the issues are
 quite tricky.
 
 \paragraph{Type Inhabitation}
