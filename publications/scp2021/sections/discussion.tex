@@ -34,7 +34,7 @@ be a need for inert terms as mentioned in Section~\ref{sec:open-term-reduction}
 
 However, a simple design with CBV-style cast semantics and inert terms
 potentially leads to a system where \emph{reduction substitution}
-(see section \ref{sec:typing-properties}) does not hold.
+(see Section \ref{sec:typing-properties}) does not hold.
 With the CBV-style reduction rules, which consist of the following rules:
 \begin{mathpar}
   \inferrule*[lab=cbv-r-castdn]
@@ -175,7 +175,7 @@ the better method for our system remains to be studied.
 \subsection{The Issues of Strengthening}
 \label{sec:habitability}
 
-The current lack of proof of \emph{strengthening} property leads to non-trivial
+The current lack of a proof for \emph{strengthening} leads to non-trivial
 changes during the generalization of polymorphic subtyping relation as
 described in Section \ref{sec:strengthening}. It would be nice to be able to
 have strengthening to simplify \name. However the issues are

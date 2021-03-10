@@ -110,24 +110,24 @@ challenging.
 Our work builds on the work done on Pure Iso-Type Systems (PITS)~\citep{yang2019pure}, and
 \emph{unified subtyping}~\citep{full}. PITS is a variant of pure type systems (PTSs),
 which captures a family of calculi with \emph{iso-types}.
-Iso-types generalize \emph{iso-recursive
-types}~\citep{tapl}, and provide a simple form of
+Iso-types generalize iso-recursive
+types~\citep{tapl}, and provide a simple form of
 type casts to address the combination of recursion and
 dependent types.
 \cite{full} introduce a calculus, called $\lambda_{I}$, supporting OOP features such as
-\emph{higher-order subtyping}~\citep{fsubo}, \emph{bounded quantification} and
-\emph{top types}.
+higher-order subtyping~\citep{fsubo}, bounded quantification and
+top types.
 To address the challenges posed by
 the combination of dependent types and subtyping, $\lambda_{I}$
-employs \emph{unified subtyping}: a novel technique that unifies
-\emph{typing}, \emph{subtyping} and \emph{well-formedness} into one
+employs unified subtyping: a novel technique that unifies
+typing, subtyping and well-formedness into one
 relation. Therefore, $\lambda_{I}$ takes a significantly different
 approach compared to previous work, which
 attempts to fight the entanglement between typing and subtyping. In
 contrast, $\lambda_{I}$ embraces such
 tangling by collapsing the typing and subtyping
 relations into the same relation. This approach is different from
-Hutchins' technique, which eliminates the typing relation and embeds it into
+Hutchins' technique, which eliminates the typing relation and replaces it with
 a combination of subtyping, well-formedness and reduction relations.
 In contrast, unified subtyping
 retains the traditional concepts of typing and subtyping, which are just two
@@ -177,7 +177,7 @@ and instead of all terms, only variable names can occur in the accessing path.
 This restriction rules out traditional problems in dependent type systems,
 like handling type-level computation and allows DOT to focus more on the subtyping
 aspect like reasoning about type bounds. Also, thanks to this restriction, DOT
-can still separate the concept of terms and types unlike conventional dependent type system.
+can more easily separate the concept of terms and types unlike conventional dependent type systems.
 Therefore, the mutual dependency of typing and subtyping is also not an issue for DOT.
 
 DOT with Implicit Functions (DIF)~\citep{dif} is an interesting extension of DOT
@@ -186,7 +186,7 @@ Since path-dependent types can encode parametric
 polymorphism, adding implicit functions implies adding implicit polymorphism.
 The treatment of implicit parameters in DIF is quite similar
 to ICC~\citep{miquel2001implicit} in terms of the generalization and
-instantiation rules shown in section \ref{sec:polymorphic-subtyping}.
+instantiation rules shown in Section \ref{sec:polymorphic-subtyping}.
 Hence their system shares a similar constraint of being unable to handle implicits
 at higher-ranked positions. However in DIF, implicit arguments are runtime relevant,
 and can be retrieved by a special variable. This comes with a restriction that
@@ -209,8 +209,8 @@ System $\mathrm{F}_\mathrm{H}$~\citep{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
 interesting idea to deal with this mutual dependency. They get rid of the
 subtyping aspect in their type system. But they later ``recover'' it after
 the system is by proving the ideas expressed by subtyping hold for their systems.
-And \citet{fhsigma} called this technique the \emph{subsumption free formulation}.
-However such it is likely to be difficult to apply for systems that
+\citet{fhsigma} called this technique the \emph{subsumption free formulation}.
+However, it is likely that such technique is difficult to apply for systems that
 reason about implicit polymorphism,
 as systems like ICC~\citep{miquel2001implicit} that mentions subtyping relations
 \emph{post facto} often fail to reason about polymorphism at higher ranks.
