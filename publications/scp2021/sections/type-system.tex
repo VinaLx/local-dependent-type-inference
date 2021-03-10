@@ -42,7 +42,7 @@ the type of $[[*]]$ itself is $[[box]]$, but $[[box]]$ itself has no type/kind.
 Due to the unified syntax, types and
 expressions ($e$, $A$ and $B$) are used
 interchangeably, but we mostly adopt the convention of using $A$ and $B$
-for the contexts where the expressions are used as types and $e$ for contexts
+for contexts where the expressions are used as types and $e$ for contexts
 where the expressions represent terms.
 The syntax includes all the constructs of the calculus of constructions:
 variables ($[[x]]$), kinds ($[[k]]$), function applications  ($[[e1 e2]]$),
@@ -375,7 +375,7 @@ at the type-level.
 \paragraph{Computational Irrelevance of Implicit Parameters}
 
 As mentioned in Section \ref{sec:computational-irrelevance-overview}, our language
-does not handle computationally relevant implicit variables.
+does not handle computationally relevant implicit parameters.
 The direct operational semantics shown in Figure \ref{fig:semantics} chooses
 arbitrary mono-expressions to instantiate the implicit arguments,
 which potentially breaks type safety.
