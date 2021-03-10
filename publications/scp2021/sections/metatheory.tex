@@ -20,15 +20,15 @@ that makes use of the erased reduction relation shown in Figure~\ref{fig:extract
 The polymorphic subtyping relation by Odersky and L\"aufer features the following two rules:
 \begin{mathpar}
     \inferrule*[right=$\forallL$]
-      {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
-      {\Gamma \vdash \forall x.\, A \le B}
+      {\Gamma \dkvdash \tau \\ \Gamma \dkvdash [\tau / x]\, A \le B}
+      {\Gamma \dkvdash \forall x.\, A \le B}
     \and
     \inferrule*[right=$\forallR$]
-      {\Gamma ,\, x \vdash A \le B}
-      {\Gamma \vdash A \le \forall x.\, B}
+      {\Gamma ,\, x \dkvdash A \le B}
+      {\Gamma \dkvdash A \le \forall x.\, B}
 \end{mathpar}
 In order for the \emph{well-formedness}~\citep{dunfield2013lemmas} property
-(\emph{If $\Gamma \vdash A \le B$, then $\Gamma \vdash A$ and $\Gamma \vdash B$})
+(\emph{If $\Gamma \dkvdash A \le B$, then $\Gamma \dkvdash A$ and $\Gamma \dkvdash B$})
 to hold in L\"aufer and Odersky's system, these two rules rely on certain properties
 that do not hold in our dependently typed generalization. So we make several adjustments
 in our adaptation to address these issues, which result in the difference between
@@ -41,7 +41,7 @@ does not hold in a dependently typed setting. Thus we need an alternative design
 still ensures well-formedness, but without relying on the reverse substitution property.
 
 The reverse substitution property is:
-\emph{If $\Gamma \vdash [B / x] \, A$ and $\Gamma \vdash B$, then $\Gamma,\, x \vdash A$}.
+\emph{If $\Gamma \dkvdash [B / x] \, A$ and $\Gamma \dkvdash B$, then $\Gamma,\, x \dkvdash A$}.
 That is if we have a type $A$ with all occurrences of $x$ substituted by $B$ and $B$
 is well-formed, we can conclude that $A$ is well-formed under $\Gamma,\, x$.
 In a dependently typed setting, a possible form of generalization of this property
@@ -52,7 +52,7 @@ In a dependent type system, the values of expressions also matter during type ch
 besides the types of expressions, a counter-example of the property is:
 \begin{align*}
 & F : [[int]] \rightarrow [[*]],\, a : F~42  \vdash (\lambda y : F~\rulehl{42}.\, [[int]]) ~ a : [[*]] \\
-& F : [[int]] \rightarrow [[*]],\, a : F~42  \rulehl{,\, x : [[int]]} \vdash (\lambda y : F~\rulehl{x}.\, [[int]]) ~ a : [[*]]
+& F : [[int]] \rightarrow [[*]],\, a : F~42  ,\, \rulehl{x : [[int]]} \vdash (\lambda y : F~\rulehl{x}.\, [[int]]) ~ a : [[*]]
 \end{align*}
 We cannot ``reverse substitute'' the $42$ in the type annotation to a variable
 of the same type: the application expression depends specifically on the value
@@ -173,8 +173,8 @@ Take the following derivation as an example:
 
 \begin{mathpar}
     \inferrule*[Right=s-forall-l]
-      {A : [[*]],\, F: A \rightarrow [[*]]\rulehl{,\, a : A} \vdash [\rulehl{a} / x]\, F ~ x \le F~\rulehl{a} : [[*]]}
-      {A : [[*]],\, F: A \rightarrow [[*]]\rulehl{,\, a : A} \vdash \forall x : A.\, F ~ x \le F~\rulehl{a} : [[*]]}
+      {A : [[*]],\, F: A \rightarrow [[*]],\, \rulehl{a : A} \vdash [\rulehl{a} / x]\, F ~ x \le F~\rulehl{a} : [[*]]}
+      {A : [[*]],\, F: A \rightarrow [[*]],\, \rulehl{a : A} \vdash \forall x : A.\, F ~ x \le F~\rulehl{a} : [[*]]}
 \end{mathpar}
 
 \noindent Assuming that we have no mono-expression restrictions on \emph{substitution}
@@ -666,8 +666,8 @@ Finally we show that the subtyping aspect of \name subsumes
 Odersky and L\"aufer's polymorphic
 subtyping~\citep{odersky1996putting}. To be more precise
 we show that our unified subtyping relation subsumes DK's declarative
-subtyping relation \citep{dunfield2013complete}, which is a small variant of
-Odersky and L\"aufer's polymorphic subtyping.
+subtyping relation \citep{dunfield2013complete}, whose syntax and subtyping relation
+are shown in figure \ref{fig:polymorphic-subtyping}.
 
 \begin{figure}
     \begin{mathpar}
@@ -691,7 +691,7 @@ by following the interpretation of unified subtyping.
 
 \begin{theorem}[Subsumption of Type Well-formedness]
 \label{thm:type-wellformedness}
-    If $\Gamma \vdash_{\text{DK}} A$, then $\lift{\Gamma} \vdash \lift{A} : [[*]]$
+    If $\Gamma \dkvdash A$, then $\lift{\Gamma} \vdash \lift{A} : [[*]]$
 \end{theorem}
 
 Straightforward. For the case where $A = \forall x. B$, \rref{s-forall} can be
@@ -699,7 +699,7 @@ used directly bypassing the complications of \rref{s-forall-l} and
 \rref{s-forall-r}.
 
 \begin{theorem}[Subsumption of Polymorphic Subtyping]
-    If $\Gamma \vdash_{\text{DK}} A \le B$, then $\lift{\Gamma} \vdash \lift{A} \le \lift{B} : [[*]]$
+    If $\Gamma \dkvdash A \le B$, then $\lift{\Gamma} \vdash \lift{A} \le \lift{B} : [[*]]$
 \end{theorem}
 
 The interesting cases are when the premise is derived by $\forallL$ or $\forallR$,

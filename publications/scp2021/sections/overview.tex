@@ -241,8 +241,11 @@ Sections \ref{sec:system} and \ref{sec:metatheory}.
 
 \paragraph{Polymorphic Subtyping Relation}
 Figure \ref{fig:polymorphic-subtyping} shows the syntax of types, monomorphic types (or monotypes),
-and the polymorphic subtyping relation in
-Odersky and L\"aufer's declarative type system \citep{odersky1996putting}.
+and the polymorphic subtyping relation in \cite{dunfield2013complete} variation of
+Odersky and L\"aufer's declarative type system \citep{odersky1996putting}. Although there
+are slight differences between two versions of subtyping relations, since they essentially express
+the same idea, we use DK's and Odersky and L\"aufer's polymorphic subtyping relation interchangeably
+in this article.
 Here the syntax includes $\forall$ types that represent polymorphic types (or polytypes),
 which are universally quantified over type parameters. The definition of monotypes
 is standard, and includes all types without occurences of universal quantifiers.
@@ -276,25 +279,29 @@ generalizes this relation to a dependently typed setting.
   \text{Monotypes} & \tau, \sigma & ~\Coloneqq~ & [[x]] \mid [[int]] \mid \tau \rightarrow \sigma
 \end{array}
 \end{equation*}
-\begin{drulepar}{$\Gamma \vdash A \le B$}{Polymorphic Subtyping}
-  \inferrule*[lab=$\tau$]
-    { }
-    {\Gamma \vdash \tau \le \tau}
+\begin{drulepar}{$\Gamma \vdash_{\text{\tiny DK}} A \le B$}{Polymorphic Subtyping}
+  \inferrule*[lab=${\le}\mathrm{Var}$]
+    { x \in \Gamma }
+    {\Gamma \dkvdash x \le x}
   \and
-  \inferrule*[lab=$\rightarrow$]
-    {\Gamma \vdash B_1 \le A_1 \\ \Gamma \vdash A_2 \le B_2}
-    {\Gamma \vdash A_1 \rightarrow A_2 \le B_1 \rightarrow B_2}
+  \inferrule*[lab=${\le}\mathrm{Int}$]
+    { }
+    {\Gamma \dkvdash [[int]] \le [[int]]}
+  \and
+  \inferrule*[lab=${\le}{\rightarrow}$]
+    {\Gamma \dkvdash B_1 \le A_1 \\ \Gamma \dkvdash A_2 \le B_2}
+    {\Gamma \dkvdash A_1 \rightarrow A_2 \le B_1 \rightarrow B_2}
   \\
   \inferrule*[lab=$\forallL$]
-    {\Gamma \vdash \tau \\ \Gamma \vdash [\tau / x]\, A \le B}
-    {\Gamma \vdash \forall x.\, A \le B}
+    {\Gamma \dkvdash \tau \\ \Gamma \dkvdash [\tau / x]\, A \le B}
+    {\Gamma \dkvdash \forall x.\, A \le B}
   \and
   \inferrule*[lab=$\forallR$]
-    {\Gamma ,\, x \vdash A \le B}
-    {\Gamma \vdash A \le \forall x.\, B}
+    {\Gamma ,\, x \dkvdash A \le B}
+    {\Gamma \dkvdash A \le \forall x.\, B}
 \end{drulepar}
 
-\caption{The polymorphic subtyping relation by Odersky and L\"aufer~\citep{odersky1996putting}.}
+\caption{The \cite{dunfield2013complete} variation of the polymorphic subtyping relation by \cite{odersky1996putting}.}
 \label{fig:polymorphic-subtyping}
 \end{figure}
 
