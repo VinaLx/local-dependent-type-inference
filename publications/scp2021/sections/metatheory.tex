@@ -364,7 +364,7 @@ when the first premise ends with \rref{s-forall-l}:
 
 \noindent In this case, $\#\forall({[[ [t / x] B]]})$ is one less than $\#\forall([[forall x : A. B]])$,
 so it can be solved by applying \rref{s-forall-l} and the inductive hypothesis of $\#\forall(e_1)$.
-And $\#\forall(e_3)$ is added to make the measure ``symmetric''
+Additionally, $\#\forall(e_3)$ is used to make the measure ``symmetric''
 to deal with the contravariance case of \rref{s-pi}.
 
 Then, most of the cases that do not involve $\forall$ can be
@@ -394,7 +394,7 @@ irrelevant at runtime with the restrictions in \rref{s-bind}.
 We define an erasure function (shown in Figure \ref{fig:extraction})
 that eliminates the type annotations
 in some of the expressions ($\lambda$, $\Lambda$, $\mu$ and $\castup$),
-and keep the implicit parameter from occurring in the erased expressions.
+and keep implicit parameters from occurring in the erased expressions.
 This way the choices of implicit instantiation only affect type annotations,
 which are not relevant for runtime computation.
 
@@ -566,9 +566,9 @@ hence no problem for the cast elimination there.
 Even better, we show that by going up one level in the type hierarchy
 (only discussing the types of terms), the options
 for the reduction that can be performed by a well-typed term are very limited.
-Not only implicit abstractions can not occur in type computation due to the kind
+Implicit abstractions cannot occur in type computation due to the kind
 restriction of universal types as explained in Section \ref{sec:kind-restriction}.
-We also prove that well-typed reductions never occur
+Furthermore, we also prove that well-typed reductions never occur
 for kinds, so cast operators also do not occur in type-level computation.
 
 \begin{figure}
@@ -627,7 +627,7 @@ instantiates the polymorphic type in \rref{s-forall-l}.
 The type of the instantiation result of $\Lambda$ expression is the same as the
 instantiation of the polymorphic types, with the same argument.
 
-With the observations above, the rest of the proofs are finished by standard
+With the observations above, the remaining proofs are finished by standard
 inversion lemmas, with the help of the \emph{substitution} theorem to handle type
 preservation after the instantiations.
 
