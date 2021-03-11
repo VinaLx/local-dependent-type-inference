@@ -1,7 +1,7 @@
 \section{Related Work}
 
 \paragraph{Implicit Dependent Type Calculus}
-Implicit polymorphism in a dependently-typed
+Implicit polymorphism in a dependently typed
 setting is discussed in the implicit calculus of constructions (ICC)~\citep{miquel2001implicit} and
 ICC*\citep{barras2008implicit}. The ICC features generalized polymorphic types and typing rules to express
 the idea of implicit instantiation. The ICC does not explicitly have a subtyping
@@ -76,7 +76,7 @@ The work on HRP is divided into two strands: \emph{predicative} HRP~\citep{dunfi
 and \emph{impredicative} HRP~\citep{le2003ml,leijen2008hmf,vytiniotis2008fph,Serrano2018}.
 In predicative HRP instantiations can
 only synthesize monotypes, whereas in impredicative HRP there's no
-such restriction. However impredicative HRP is quite complex because
+such restriction. However, impredicative HRP is quite complex because
 the polymorphic subtyping relation for impredicative HRP is undecidable~\citep{tiuryn1996subtyping}.
 Thus reasonable restrictions that work well in practice are still
 a focus of active research.
@@ -168,25 +168,25 @@ of casts could work too.
 
 Dependent Object Types (DOT)~\citep{dot:dot,dot:path,dot:sound} is another
 family of systems that discusses subtyping in a dependently typed setting.
-Unlike the traditional dependent type systems that based on lambda calculus, DOT
+Unlike the traditional dependent type systems that are based on lambda calculus, DOT
 embraces the idea of ``everything is an object'' and features the \emph{path-dependent types}.
 A path-dependent type is a restricted form of dependent types.
 Path-dependent types support return types of functions to mention their parameters, but only
 member accessing operations are allowed for the ``depended value'',
 and instead of all terms, only variable names can occur in the accessing path.
-This restriction rules out traditional problems in dependent type systems,
-like handling type-level computation and allows DOT to focus more on the subtyping
+This restriction rules out traditional problems in dependent type systems
+like handling type-level computation, and allows DOT to focus more on the subtyping
 aspect like reasoning about type bounds. Also, thanks to this restriction, DOT
 can more easily separate the concept of terms and types unlike conventional dependent type systems.
 Therefore, the mutual dependency of typing and subtyping is also not an issue for DOT.
 
 DOT with Implicit Functions (DIF)~\citep{dif} is an interesting extension of DOT
-that adds implicit functions to DOT.
+that adds implicit functions.
 Since path-dependent types can encode parametric
 polymorphism, adding implicit functions implies adding implicit polymorphism.
 The treatment of implicit parameters in DIF is quite similar
-to ICC~\citep{miquel2001implicit} in terms of the generalization and
-instantiation rules shown in Section \ref{sec:polymorphic-subtyping}.
+to ICC~\citep{miquel2001implicit} in terms of the generalization (GEN) and
+instantiation (INST) rules shown in Section \ref{sec:polymorphic-subtyping}.
 Hence their system shares a similar constraint of being unable to handle implicits
 at higher-ranked positions. However in DIF, implicit arguments are runtime relevant,
 and can be retrieved by a special variable. This comes with a restriction that
@@ -199,17 +199,17 @@ contract-oriented programming (in contrast to the \emph{latent} systems~\citep{l
 where contracts (the conditions that programmers expect to satisfy) are expressed
 in the type system. $\lambda_H$~\citep{hybridtypes,manifestcontracts} is one calculus that
 includes dependent types and subtyping simultaneously. The subtyping relation
-expresses the implication relation between contract satisfaction conditions. Unfortunatelly,
+expresses the implication relation between contract satisfaction conditions. Unfortunately,
 this brings the difficulty of potential mutual dependency between typing and subtyping.
 To overcome this issue, $\lambda_H$ builds another layer of denotational semantics on top of
-subtyping rules to avoid that subtyping depends on typing. However this introduces
+subtyping rules to avoid that subtyping depends on typing. However, this introduces
 complications in terms of metatheory.
 System $\mathrm{F}_\mathrm{H}$~\citep{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
 ~\citep{fhsigma} provide another
 interesting idea to deal with this mutual dependency. They get rid of the
-subtyping aspect in their type system. But they later ``recover'' it after
-the system is by proving the ideas expressed by subtyping hold for their systems.
-\citet{fhsigma} called this technique the \emph{subsumption free formulation}.
+subtyping aspect in their type system, but later ``recover'' it after
+the system is defined to prove the ideas expressed by subtyping hold for their systems.
+\citet{fhsigma} called this technique the \emph{subsumption-free formulation}.
 However, it is likely that such technique is difficult to apply for systems that
 reason about implicit polymorphism,
 as systems like ICC~\citep{miquel2001implicit} that mentions subtyping relations

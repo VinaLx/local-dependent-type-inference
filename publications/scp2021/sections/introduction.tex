@@ -9,9 +9,9 @@ Traditionally, variants of polymorphic subtyping (in the form of a more-general-
 have been used in functional languages based on the
 Hindley-Milner~\citep{hindley1969principal,milner1978theory,damas1982principal}
 type system, which supports full type-inference without any type annotations.
-However, the Hindley-Milner type system only supports \emph{rank-1 (or first order)
+However, the Hindley-Milner type system only supports \emph{rank-1 (or first-order)
 polymorphism}, where all universal quantifiers only occur at the top-level
-of a type.  Modern functional programming languages, such as Haskell, go beyond
+of a type. Modern functional programming languages, such as Haskell, go beyond
 Hindley-Milner and support \emph{higher-ranked polymorphism}~\citep{odersky1996putting,jones2007practical}
 with a more expressive
 polymorphic subtyping relation. With higher-ranked
@@ -64,10 +64,10 @@ decidability of type checking.
 Current proposals for dependently typed versions of Haskell~\citep{dependenthaskell},
 for instance, adopt explicit casts for type-level computation.
 
-A second challenge, for calculi that employ subtyping, is that
+The second challenge, for calculi that employ subtyping, is that
 smoothly integrating
 dependent types and subtyping is difficult. Subtyping is a
-substantial difference to traditional PTSs, which do not have such feature.
+substantial difference to traditional PTSs, which do not have this feature.
 The issue with subtyping
 is well summarized by \cite{subdep}:
 \emph{``One thing that makes the study of these systems difficult is that
@@ -81,11 +81,11 @@ Following the same spirit as Pure Type Systems,
 which attempt to unify syntax and the typing and well-formedness relations,
 unified subtyping suggests unifying typing
 and subtyping into a single relation. This solves the problem of dependencies
-in that now there is only a single relation that depends only on itself. Furthermore
-it results in a compact specification compared to a variant with multiple
-independent relations.
+in that now there is only a single relation that depends only on itself.
+Furthermore, it results in a compact specification compared to a variant with
+multiple independent relations.
 
-In this paper we investigate how polymorphic subtyping can be
+In this paper, we investigate how polymorphic subtyping can be
 adapted into a dependently typed calculus with general recursion and
 explicit casts for type-level computation. We employ unified subtyping
 to address the issues of combining dependent types with subtyping.
@@ -97,7 +97,6 @@ $\beta$-equivalent types to be equal. In essence, the use of the conversion
 rule requires (implicit) type-level computation, since terms have to be normalized
 using $\beta$-reduction to conclude whether or not they are equal.
 Dependent type systems with a conversion rule have some major complications.
-% that arise in the presence of a conversion rule
 A well-known one is that type-inference for such systems requires \emph{higher-order
   unification}, which is known to be \emph{undecidable}~\citep{goldfarb1981undecidability}.
 By employing a system with $\alpha$-equivalence only we stay closer to existing
@@ -114,25 +113,21 @@ to take a different approach than that employed by existing work on polymorphic
 subtyping~\citep{odersky1996putting, jones2007practical}, where type-safety is shown by an
 elaboration to System F. In essence elaboration into a target language
 brings significant complications to the metatheory in a dependently typed setting.
-Thus, instead of an elaboration, we use a direct operational semantics approach, which
+Thus, instead of elaboration, we use a direct operational semantics approach, which
 is partly inspired by the approach used in the \emph{Implicit Calculus of Constructions} (ICC)~\citep{miquel2001implicit,barras2008implicit},
 to prove type soundness.
-Similarly to ICC we adopt the restriction that arguments for implicit function types
+Similar to ICC, we adopt the restriction that arguments for implicit function types
 are computationally irrelevant (i.e. they cannot be used in runtime computation).
 However, our unified subtyping setting is significantly
 different from ICC due to the presence of subtyping,
-which brings complications not in the ICC.
+which brings complications the ICC does not have.
 We also prove that any valid subtyping statement in the Odersky and L\"aufer relation
 is valid in \name. Thus \name's unified subtyping subsumes the polymorphic subtyping
 relation by Odersky and L\"aufer.
 
 \name and all the proofs reported in this paper are formalized in the Coq theorem
 prover~(\citeauthor{coqsite}).
-%Moreover we have a simple prototype implementation of \name by adapting
-%the algorithms from Zhao et al.~\citep{zhao19mechanical} for polymorphic subtyping.
-%\bruno{Can the implementation run the examples we show?}
-This paper
-does not address decidability or soundness and completeness of \name to an
+This paper does not address decidability or soundness and completeness of \name to an
 algorithmic formulation, which are outside of the scope of this work.
 Nonetheless, these are important and challenging
 questions for practical implementations of \name, which are left open for future work.

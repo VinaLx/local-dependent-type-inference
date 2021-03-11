@@ -79,15 +79,15 @@ $\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightar
 which arises when type-checking the application $[[(bind x : A. lambda y : int. y)]]~42$.
 In this case, we cannot apply \rref{s-forall-l} unless we find a
 well-typed instance for the polymorphic parameter. So the variable in the context
-is needed even though it does not occur anywhere in the final judgement.
+is needed even though it does not occur anywhere in the final judgment.
 Note that, since our system has a fixpoint operator, theoretically we could construct
 a diverging program $[[mu x : A. x]]$ to instantiate the implicit parameter, but
 this possibility leads to several other issues which we are going to discuss in
-Section~\ref{sec:habitability}. Furthermore such an approach would not work for calculi
+Section~\ref{sec:habitability}. Furthermore, such an approach would not work for calculi
 without fixpoints.
 
 Due to these complications, we assume that strengthening does not hold in our system for now.
-We add a premise $[[G |- A : *]]$ to \rref{s-forall-r} to workaround this issue,
+We add a premise $[[G |- A : *]]$ to \rref{s-forall-r} to work around this issue,
 requiring $A$ to be a well-kinded type without the help of the fresh variable.
 A consequence of adding this premise is that we will encounter a circular proof
 while trying to prove $[[G |- forall x : A. B <: forall x : A . B : *]]$, for
@@ -189,7 +189,7 @@ that discusses the typing of one expression
 (If $[[G1 , x : A ,, G2 |- e : B]]$ and $[[G1 |- e1 : A]]$,
 then $[[G1 ,, [e1 / x] G2 |- [e1 / x] e : [e1 / x] B]]$)
 does not hold for similar reasons.
-Because, in dependently-typed languages, substitutions are also involved in the types of
+Because, in dependently typed languages, substitutions are also involved in the types of
 expressions as well. Due to the presence of \rref{s-sub}, we still have to
 maintain the potential subtyping relation of the types of expressions after substitution,
 for example:
@@ -320,8 +320,8 @@ system of induction on the pair of
 $\langle \#\forall([[e2]]) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\citep{dunfield2013lemmas},
 with some adjustments to fit in our system.
 
-The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
-and the second ends with \rref{s-forall-l}. Essentially we have to show the following:
+The most problematic case to solve is when the first premise is derived by \rref{s-forall-r},
+and the second is derived by \rref{s-forall-l}. Essentially we have to show the following:
 
 \begin{mathpar}
     \inferrule*[]

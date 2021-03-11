@@ -6,12 +6,12 @@ as possible future work.
 \subsection{Open Terms Reduction}
 \label{sec:open-term-reduction}
 
-Usually only closed terms are considered when designing the operational semantics,
+Usually, only closed terms are considered when designing the operational semantics,
 and irreducible open terms like variables are not considered to be values.
 However, since in \name the reduction relation $e_1 \longrightarrow e_2$ is also
 used in the unified subtyping relation, the reduced expressions can be open terms and well-typed under contexts.
 \citet{full} observed this issue and included \emph{inert terms}~\citep{opencbv} as values
-to capture the scenario that open terms like $x~e$
+to handle the situation that open terms like $x~e$
 (applying variable $x$ to the argument $e$) is also irreducible, which considerably
 complicates their metatheory around the operational semantics.
 Fortunately, our call-by-name reduction rules do not rely on the notion of value,
@@ -53,7 +53,7 @@ capture irreducible open terms, these rules allow reductions like:
 \begin{gather*}
   \castdn \, (\castup \, [A] \, (f ~ x)) \longrightarrow_\mathrm{cbv} f ~ x
 \end{gather*}
-\noindent The \emph{reduction substitution} property breaks if we substitute $f$ to an lambda expression:
+\noindent The \emph{reduction substitution} property breaks if we substitute $f$ to a lambda expression:
 \begin{gather*}
     [\lambda y : B. \, x / f] \, \castdn \, (\castup \, [A] \, (f ~ x)) \longrightarrow_\mathrm{cbv} \castdn \, (\castup \, [A] \, x)
 \end{gather*}
@@ -61,7 +61,7 @@ The reduction rule prioritizes reducing the inner expression of two casts,
 while \emph{reduction substitution} expects
 $[\lambda y : B. \, x / f] \, \castdn \, (\castup \, [A] \, (f ~ x))$ to reduce to $(\lambda y : B.\, y)~x$.
 
-So we stick with the call-by-name style semantics around cast operators for now and
+So we stick with the call-by-name style semantics for cast operators for now and
 leave the discussion of other possibilities of design in future work.
 
 \subsection{Kind Restrictions on Polymorphic Types}
@@ -74,7 +74,7 @@ do not appear frequently in practice.
 It would be reasonable not to have this restriction, but this would
 complicate the development of the metatheory significantly.
 
-One of the obstacles of removing the kind restriction is that
+One of the obstacles to removing the kind restriction is that
 there is a mutual dependency between the transitivity theorem and the subtyping
 reasoning of polymorphic kinds. We wish to have some lemma like this:
 \begin{mathpar}
@@ -116,8 +116,8 @@ such as \emph{the Calculus of Constructions}~\citep{coc},
 instead of providing the direct operational semantics.
 
 We can elaborate implicit function types (universal types) to $\Pi$ types,
-implicit abstractions to lambda expressions, and implicit instantiation to explicit
-application during type checking (when we have full information about the
+implicit abstractions to lambda expressions, and implicit instantiations to explicit
+applications during type checking (when we have full information about the
 choice of implicit instantiations). However the elaboration on a unified subtyping
 system is not an easy task. The subtyping relation cannot simply be interpreted
 as a coercion between values of different types, since some of our subtyping
@@ -163,12 +163,12 @@ The case shown above is similar, where the ``application'' is $A~42$
 Nonetheless, because our system does not allow implicit type-level
 computation (hence unifications remain at first-order),
 the choices of $A$ are restricted to $\Pi x : [[int]].\,F~e_1$ where $[42/x]\,e_1 = 42$.
-With higher-order unification we would instead
+With higher-order unification, we would instead
 have $\Pi x : [[int]].\, e_2$ where $[42/x]\,e_2 = F~42$.
 
 There are potentially multiple approaches to this problem. For example, we can
 impose a similar restriction to the pattern unification and refuse to solve
-this kind of conflicts entirely. Alternatively, we can only infer non-dependent function types when
+this kind of conflict entirely. Alternatively, we can only infer non-dependent function types when
 facing a unification variable, which is the choice by \citet{dh}. But which is
 the better method for our system remains to be studied.
 
@@ -182,7 +182,7 @@ have strengthening to simplify \name. However the issues are
 quite tricky.
 
 \paragraph{Type Inhabitation}
-As we mentioned earlier, one of the issues is centered around not being able to find an
+As we mentioned earlier, one of the issues is centered around not being able to find a
 well-typed instantiation for an arbitrary type in general. Nevertheless, in the presence of
 seemingly unused variables it may be possible to find well-typed instantiations,
 which is a key reason for strenghtning not holding in general. For example:
@@ -195,19 +195,20 @@ Here, to conclude that $[[bind x : A. lambda y : int. y]]$ has type $[[int]] \ri
 we want to derive $\forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$ by
 using \rref{s-forall-l}. That would require a well-typed instantiation
 for the abstract type $A$, and that is where the variable $a$ in the context
-comes to rescue, although not being used anywhere in the original typing relation.
+comes to rescue, although not being used anywhere in the original conclusion.
 Thus, unlike other calculi where it is possible to drop unused variables in the context
 and still have a valid typing statement, in \name this is not always possible. In the example
-above dropping $\rulehl{a : A}$ from the context results in an typing statement that does not hold
-(unless we can find another inhabitant for the type $A$ somehow).
-In other words, a conventional strenghtning property does not hold.
+above dropping $\rulehl{a : A}$ from the context sabotages the subtyping relation
+$\forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$
+we rely on to conclude the typing relation.
+(unless we can find another inhabitant for type $A$ somehow).
+In other words, the conventional strenghtning property does not hold.
 
 However, since \name supports fixpoints, all monotypes in our system
 are easily inhabited with diverging programs as inhabitants (recall that, due
 to the issue discussed in Section~\ref{sec:reverse-subst}, our fixpoints only support monotypes).
 For instance, we do not need the variable $a$ in the context in the example above,
-we can just find the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l}, if $A$ is a
-monotype.
+we can just find the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l} for any monotype $A$.
 Moreover, it is \emph{likely} that any polytype is inhabited with the help
 of monotype fixpoints. For example, type $\forall A : [[*]],\, A \rightarrow B$ with $B$
 being an abstract type, has an inhabitant $\Lambda A : [[*]].\,[[lambda x : A. mu y : B. y]]$.
@@ -219,15 +220,15 @@ because we guarantee the runtime irrelevance
 of all the implicit arguments. But this design will not be reasonable if we are
 going to relax the restriction of runtime irrelevance of implicit parameters in the future.
 Furthermore, it is also reasonable to consider similar language designs without fixpoints
-(for instance if our goals are to develop theorem provers or strongly normalizing languages).
-In such scenarios the approach of finding inhabitants by creating non-terminating terms
+(for instance, if our goals are to develop theorem provers or strongly normalizing languages).
+In such scenarios, the approach of finding inhabitants by creating non-terminating terms
 would not be possible. Thus such an approach would not be very generalizable.
 
 \paragraph{Occurences of variables that matter}
 Another issue for the strengthening is that even if we have the issue of
 inhabitability covered, it is tricky to guarantee that a variable unused in the
 final subtyping conclusion, does not matter for the whole derivation.
-For example in \rref{s-app}, where type $A$ in the premises does not
+For example, in \rref{s-app}, where type $A$ in the premises does not
 occur at all in the conclusion, we cannot guarantee that a variable
 not occurring in the conclusion, does not occur in type $A$. We can construct
 the following example:
@@ -245,7 +246,7 @@ the premises. The interesting part is that although it occurs in the premises, w
 it, the conclusion holds with a different derivation tree (by directly deriving $\vdash 42 : [[int]]$).
 For this example, although the strengthening property holds, we do not currently
 know how to determine whether a variable really \emph{matters} for a derivation
-in general so that we can safely remove it from the context.
+in general, so that we can safely remove it from the context.
 
 So for the two issues we discussed above, we decide to live with the lack of
 strengthening property in our system for now, at the cost of a slightly more
