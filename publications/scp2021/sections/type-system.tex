@@ -35,10 +35,8 @@ We present the syntax, the unified subtyping relation, and operational semantics
 Figure \ref{fig:syntax} shows the syntax of \name. The syntax is similar
 to the Calculus of Constructions, featuring unified terms and types,
 and a kind hierarchy with $[[*]]$ and $[[box]]$.
-% $[[*]]$ and $[[box]]$ in the kind hierarchy,
-The term $[[*]]$ is the type (or kind) of other types like $[[int]]$ and $\Pi$ types,
-the type of $[[*]]$ itself is $[[box]]$, but $[[box]]$ itself has no type/kind.
-% , and unifying the concepts of terms and types as expressions.
+The kind $[[*]]$ is the type (or kind) of other types like $[[int]]$ and $\Pi$ types,
+the kind $[[box]]$ is the type of $[[*]]$, but $[[box]]$ itself has no type/kind.
 Due to the unified syntax, types and
 expressions ($e$, $A$ and $B$) are used
 interchangeably, but we mostly adopt the convention of using $A$ and $B$
@@ -48,18 +46,14 @@ The syntax includes all the constructs of the calculus of constructions:
 variables ($[[x]]$), kinds ($[[k]]$), function applications  ($[[e1 e2]]$),
 lambda expressions ($[[lambda x : A. e]]$), dependent function types ($[[pi x : A. B]]$)
 as well as integer types ($[[int]]$) and integers ($[[n]]$).
-Moreover, there are several additional language constructs for
-supporting implicit polymorphism, recursion, and explicit type-level computation
+Moreover, there are several additional language constructs to
+support implicit polymorphism, recursion, and explicit type-level computation
 via casts. These constructs are discussed next.
 
 \paragraph{Implicit Polymorphism}
-% In \name, universal types $[[forall x : A. B]]$ are used to generalize implicit
-% polymorphism.
+
 In \name, universal types $[[forall x : A. B]]$ generalize implicit
 polymorphic types ($\forall x.\, A$) in conventional functional languages.
-% In contrast to universal quantification in conventional functional languages, the
-% parameter $x$ ranges over all well-typed expressions besides well-formed
-% types (i.e. $x$ can have any type $A$ instead of just kind $\star$).
 The parameter $x$ in $[[forall x : A. B]]$ ranges over all well-typed expressions besides well-formed
 types (i.e. $x$ can have any type $A$ instead of just kind $\star$). The idea of
 \emph{monomorphic types} (or monotypes) is also generalized.
@@ -70,43 +64,32 @@ With dependent types, only generalized universal types are excluded, but not
 any other related expressions.
 
 Notably,
-% In other words,
 generalized ``polymorphic types'' are naturally dependent, and $\forall$
 types can be viewed as the implicit counterpart of $\Pi$ types.
 So we also have implicit lambda expressions ($[[bind x : A. e]]$),
-% , which are the implicit counterpart of $\lambda$ abstractions
 which is different from the ``usual'' $\lambda$ expressions and explicit function
 types ($\Pi$ types), for which arguments should be explicitly passed. The arguments
 of implicit lambda ($\Lambda$) expressions are deduced during type checking.
-% The design used in \name
 This is a similar design to
-% is similar to the design of
 the \emph{Implicit Calculus of Constructions} ($\text{ICC}^*$)~\citep{barras2008implicit}, which
 employs similar constructs for implicit dependent products.
-% Like conventional universal quantification, the arguments of $\forall$ types are
-% deduced during applications rather than explicitly passed.
-
-% Also, following the designs for predicative higher-ranked
-% polymorphism~\citep{odersky1996putting,dunfield2013complete,jones2007practical},
-% we have generalized the concept of \emph{monotypes} to
-% \emph{mono-expressions} ($\tau$), essentially excluding $\forall$ types from expressions.
 
 \paragraph{Recursion and Explicit Type-level Computation}
 \label{sec:cast}
 The \name calculus adopts \emph{iso-types}~\citep{isotype,yang2019pure},
 featuring explicit type-level computation with cast operators
 $\castdn$ and $\castup$. These operators respectively perform one-step
-type reduction and type expansion based on the operational semantics.
+type \emph{reduction} and \emph{expansion} based on the operational semantics.
 The reduction in cast operators is deterministic, thus type
 annotations are only needed during type expansions ($\castup$). We add
 fixpoints ($[[mu x : A. e]]$) to support general recursion for both
-term-level and type-level. Iso-recursive types are supported due to
-the presence of $\castup$ and $\castdn$, which correspond to the
+term-level and type-level. Iso-recursive types are supported by $\castup$ and
+$\castdn$ operators, which correspond to the
 \verb|fold| and \verb|unfold| operations when working on conventional iso-recursive types.
 
 \subsection{Operational Semantics}\label{subsec:semantics}
 
-For the operational semantics we employ two different, but closely related,
+For the operational semantics we employ two different, but closely related
 reduction relations. The first reduction relation is non-deterministic, and
 it is used at the type-level to allow type conversions induced
 by the cast operators. The second reduction relation is deterministic and
@@ -197,10 +180,10 @@ a design similar to $\mathrm{ICC}^*$~\citep{barras2008implicit},
 employing type-erased expressions. The erased expressions
 essentially mirror the syntax and semantics
 of normal expressions, except for the elimination of type annotations in $\lambda$,
-$\Lambda$, $\mu$ and $\castup$ expressions.
+$\Lambda$, $\mu$, and $\castup$ expressions.
 Figure \ref{fig:extraction} shows the syntax of the erased expressions and
 the companion operational semantics. Restrictions are imposed in the
-typing rules to forbid the implicit parameter occurring in runtime-relevant part
+typing rules to forbid the implicit parameter occurring in runtime-relevant parts
 of the expression, i.e. the erased expressions (see Section \ref{sec:type-system}).
 With such restriction, implicit parameters can be directly eliminated in
 \rref{er-elim,er-cast-inst}.
@@ -242,12 +225,14 @@ $[[G |- A : *]]$.
 
 \begin{figure}
     \centering
+\setlength{\abovedisplayskip}{8pt}
     \begin{drulepar}[wf]{$[[|- G]]$}{Well-formed Context}
       \mprset{sep=1.2em}
       \drule{nil}
       \drule[width=30em]{cons}
     \end{drulepar}
-\setlength{\belowdisplayskip}{3pt} \setlength{\belowdisplayshortskip}{1.5pt}
+\setlength{\belowdisplayskip}{2.5pt}
+\setlength{\belowdisplayshortskip}{1.3pt}
 
     \begin{drulepar}[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}
       \mprset{sep=1.3em}
@@ -326,7 +311,7 @@ Odersky and L\"aufer's polymorphic subtyping, as we mentioned in Section \ref{se
 As highlighted in Figure~\ref{fig:typing}:
 we add \rref{s-forall} that axiomatizes the subtyping relation between two universal types,
 and additional premises are added to \rref{s-forall-l,s-forall-r} besides the
-ones that appear in rules $\forallL''$ and $\forallR''$ in section \ref{sec:feature-overview}.
+ones that appear in rules $\forallL''$ and $\forallR''$ in Section \ref{sec:feature-overview}.
 We discuss the motivations for these changes in more detail in Section \ref{sec:adaptation}.
 
 \paragraph{Mono-expression Restrictions}
@@ -344,11 +329,6 @@ discuss the reason behind these restrictions in Section \ref{sec:metatheory}.
 For the kinding of types, we mainly follow the design of the Calculus of
 Constructions~\citep{coc}. However, we specifically restrict
 the polymorphic type $[[forall x : A. B]]$ to only have kind $[[*]]$, but not $[[box]]$.
-% This restriction prevents types of kind $[[*]]$ from having implicit
-% polymorphic kind such as $[[forall x : int. *]]$ through
-% \rref{s-forall-l,s-forall-r,s-sub} (for example, $[[int]]$
-% is always of kind $[[*]]$ and can never be of kind $[[forall x : int. *]]$),
-% which significantly complicates the kinding reasoning of types in metatheory.
 Without this restriction, types of kind $[[*]]$ (such as $[[int]]$) are able to
 have ``polymorphic kinds'' like $[[forall x : int. *]]$ through \rref{s-forall-l,s-forall-r,s-sub},
 which significantly complicates the kinding reasoning in the metatheory.
@@ -364,9 +344,6 @@ For example, $\Lambda a : [[*]].\, \lambda b : n.\, a$ is not
 well-typed since it would have been a polymorphic function of type
 $\forall a : [[*]].\, a \rightarrow [[*]]$, which is not well-kinded due to the
 kinding restriction of universal types.
-% This way well-typed implicit abstractions ($\Lambda$ expressions) are kept away
-% from type computations. Therefore, in cast operators,
-% the possibility of non-deterministic implicit instantiations is eliminated.
 Moreover, type-level function applications that involve implicit
 abstractions ($\Lambda$ expressions) are also never well-typed
 because of the restriction. So well-typed non-deterministic implicit instantiation can never occur

@@ -79,15 +79,15 @@ $\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightar
 which arises when type-checking the application $[[(bind x : A. lambda y : int. y)]]~42$.
 In this case, we cannot apply \rref{s-forall-l} unless we find a
 well-typed instance for the polymorphic parameter. So the variable in the context
-is needed even though it does not occur anywhere in the final judgement.
+is needed even though it does not occur anywhere in the final judgment.
 Note that, since our system has a fixpoint operator, theoretically we could construct
 a diverging program $[[mu x : A. x]]$ to instantiate the implicit parameter, but
 this possibility leads to several other issues which we are going to discuss in
-Section~\ref{sec:habitability}. Furthermore such an approach would not work for calculi
+Section~\ref{sec:habitability}. Furthermore, such an approach would not work for calculi
 without fixpoints.
 
 Due to these complications, we assume that strengthening does not hold in our system for now.
-We add a premise $[[G |- A : *]]$ to \rref{s-forall-r} to workaround this issue,
+We add a premise $[[G |- A : *]]$ to \rref{s-forall-r} to work around this issue,
 requiring $A$ to be a well-kinded type without the help of the fresh variable.
 A consequence of adding this premise is that we will encounter a circular proof
 while trying to prove $[[G |- forall x : A. B <: forall x : A . B : *]]$, for
@@ -189,7 +189,7 @@ that discusses the typing of one expression
 (If $[[G1 , x : A ,, G2 |- e : B]]$ and $[[G1 |- e1 : A]]$,
 then $[[G1 ,, [e1 / x] G2 |- [e1 / x] e : [e1 / x] B]]$)
 does not hold for similar reasons.
-Because, in dependently-typed languages, substitutions are also involved in the types of
+Because, in dependently typed languages, substitutions are also involved in the types of
 expressions as well. Due to the presence of \rref{s-sub}, we still have to
 maintain the potential subtyping relation of the types of expressions after substitution,
 for example:
@@ -200,11 +200,7 @@ for example:
       {A : [[*]],\, F: A \rightarrow [[*]],\, a : A,\, b : \forall x : A.\, F~x \vdash b : \rulehl{F ~ a}}
 \end{mathpar}
 
-% \noindent As a result, we put mono-expression restriction on the \emph{substitution} theorem,
-% as well as the typing rules involving expressions that potentially ``trigger''
-% substitutions during reductions, including the arguments of applications and the
-% fixpoint expressions.
-\noindent As a result, \emph{substitution} only holds with the mono-expression
+\noindent As a result, the substitution theorem only holds with the mono-expression
 restriction. This has a cascading effect on typing rules like \rref{s-app, s-mu}
 whose expressions trigger substitutions during reduction. So the mono-expression
 restriction has to be added for those rules for the system to be type-safe.
@@ -287,7 +283,7 @@ we ensure the equivalence of $A$ and $[[*]]$ on this and other similar situation
 
 \paragraph{The Induction}
 
-We prove \emph{Generalized Transitivity} by performing a strong induction on
+We prove \emph{generalized transitivity} by performing a strong induction on
 the ordered 3-tuple of measures:
 
 $$
@@ -320,8 +316,8 @@ system of induction on the pair of
 $\langle \#\forall([[e2]]) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\citep{dunfield2013lemmas},
 with some adjustments to fit in our system.
 
-The most problematic case to solve is when the first premise ends with \rref{s-forall-r},
-and the second ends with \rref{s-forall-l}. Essentially we have to show the following:
+The most problematic case to solve is when the first premise is derived by \rref{s-forall-r},
+and the second is derived by \rref{s-forall-l}. Essentially we have to show the following:
 
 \begin{mathpar}
     \inferrule*[]
@@ -362,8 +358,10 @@ when the first premise ends with \rref{s-forall-l}:
       {[[G |- forall x : A. B <: e3 : *]]}
 \end{mathpar}
 
-\noindent In this case, $\#\forall({[[ [t / x] B]]})$ is one less than $\#\forall([[forall x : A. B]])$,
-so it can be solved by applying \rref{s-forall-l} and the inductive hypothesis of $\#\forall(e_1)$.
+\noindent In this case, $\#\forall({[[ [t / x] B]]})$ is one
+less than $\#\forall([[forall x : A. B]])$,
+so it can be solved by applying \rref{s-forall-l} and the
+inductive hypothesis of $\#\forall(e_1)$.
 Additionally, $\#\forall(e_3)$ is used to make the measure ``symmetric''
 to deal with the contravariance case of \rref{s-pi}.
 
@@ -380,8 +378,7 @@ the same.
     then $[[G |- e1 <: e3 : A]]$.
 \end{corollary}
 
-\emph{Transitivity} is a special case of
-\emph{Generalized Transitivity} where $A = B$.
+\emph{Transitivity} is a special case of \emph{generalized transitivity} where $A = B$.
 
 \subsection{Type Safety}
 \label{sec:type-safety}
@@ -476,15 +473,6 @@ for brevity.
     $e_1 \longrightarrow e_1'$, $e_2 \longrightarrow e_2'$ and $\Gamma \vdash e_1' \le e_2' : A$.
 \end{theorem}
 
-% \begin{figure}
-%     \centering
-%     \begin{tikzcd}[row sep=large, column sep=large]
-%         e : A \arrow[r] \arrow[dashed]{d}[swap]{\text{Erasure}} & e' : A \\
-%         E \arrow[shorten=1mm]{r}[swap, pos=1]{E} & E' \arrow[dashed]{u}[swap]{\text{Annotation}}
-%     \end{tikzcd}
-%     \caption{Diagram for Erased Preservation without Subtyping}
-%     \label{fig:preservation}
-% \end{figure}
 \begin{figure}
     \centering
     \begin{tikzcd}[row sep=large, column sep=large]
@@ -549,7 +537,7 @@ Since subtype preservation needs to solve the cast elimination case, here we hav
 circular dependency of properties.
 This problem was also observed by \cite{full}. They solved this situation
 by a delicate approach with the help of an essential lemma
-\emph{Reduction Exists in the Middle} (If $[[G |- e1 <: e2 : A]]$, $[[G |- e2 <: e3 : A]]$
+\emph{reduction exists in the middle} (If $[[G |- e1 <: e2 : A]]$, $[[G |- e2 <: e3 : A]]$
 and $e_1 \longrightarrow e_1'$, $e_3 \longrightarrow e_3'$, there exists $e_2'$
 such that $e_2 \longrightarrow e_2'$). Unfortunately this lemma does not hold
 in our system since universal types, which are not reducible, can appear in the
@@ -683,9 +671,7 @@ are shown in Figure \ref{fig:polymorphic-subtyping}.
     \label{fig:lift}
 \end{figure}
 Figure \ref{fig:lift} shows the transformation from
-% Odersky and L\"aufer's
-DK's
-types to \name's types.
+DK's types to \name's types.
 Then we prove the subsumption in terms of type well-formedness and subtyping
 by following the interpretation of unified subtyping.
 
@@ -711,8 +697,3 @@ $\Gamma \vdash_{\text{DK}} \forall x.\, A \le B$ for the $\forallL$ case,
 and conclude $\Gamma \vdash_{\text{DK}} A$ from $\Gamma \vdash_{\text{DK}} A \le \forall x.\, B$ for the $\forallR$ case.
 Then Theorem~\ref{thm:type-wellformedness} can be used to solve the additional
 premises in \name.
-
-% The proof is straightforward by making use of the \emph{well-formedness} lemma
-% in Odersky and L\"aufer system, mentioned in Section \ref{sec:adaptation}, to conclude that
-% $A$ itself is a well-formed type in $\Gamma \vdash A \le \forall x.\, B$, and
-% $\forall x. A$ is well-formed in $\Gamma \vdash \forall x. \, A \le B$.
