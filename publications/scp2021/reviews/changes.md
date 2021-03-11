@@ -141,11 +141,12 @@ ANSWER
 The "map" function in page 5 (assuming that the arguments are flipped)
 is of a similar form. So the answer is yes: functions taking Vector-like
 types with implicit length work. The restriction that we are talking about
-is regarding *kinds*. Now that the type of the "map" function is at the type level
-(not the kind level). What we are saying in that paragraph is that implicit polymorphic
-*kinds* are forbidden. So, if the "..." in `Λn:Nat. λx:Vec n. ...` is a term
-(like in the map function) then that's fine, but if it is a type, then that's not allowed
-(since its kind cannot be polymorphic).
+is regarding *kinds*. Now that the type of the "map" function is at the type
+level (not the kind level). What we are saying in that paragraph is that
+implicit polymorphic *kinds* are forbidden. So, if the "..." in
+`Λn:Nat. λx:Vec n. ...` is a term (like in the map function) then that's fine,
+but if it is a type, then that's not allowed (since its kind cannot be
+polymorphic).
 
 We rephrased the paragraph of "Kind Restriction for Universal Types" in Section 3.
 Added two little examples to illustrate the point and hopefully clarified what
@@ -437,7 +438,8 @@ DONE
 
 DONE
 
-We added a sentence explaining that we have to pass the "typeclass" instance explicitly.
+We added a sentence explaining that we have to pass the
+"typeclass" instance explicitly.
 
 > p7L51 When you say "first attempt", it would be nice to give a clue as
 > to what goes wrong... we find out later that the answer is
@@ -446,7 +448,8 @@ We added a sentence explaining that we have to pass the "typeclass" instance exp
 
 DONE
 
-"A first attempt at direct generalization would be" -> "The idea of a direct generalization is"
+"A first attempt at direct generalization would be" ->
+"The idea of a direct generalization is"
 
 We added a paragraph mention the direct generalization is not suitable for
 formalization for the reasons discussed in later sections.
@@ -719,7 +722,8 @@ DONE
 It was a typo and sorry for that.
 "castdn" -> "castup"
 
-> page 27 line 40: is it the first time that you mention principal type, perhaps should be defined
+> page 27 line 40: is it the first time that you mention principal type,
+> perhaps should be defined
 
 DONE
 
@@ -762,8 +766,10 @@ to avoid confusion.
 
 DONE
 
-"... using the same syntax" -> rewrite to "i.e. the types are expressed ... using the same syntax as terms"
-"in the subtyping rule (rule \forall L)" -> "in their subtyping rules (rule \forall L)"
+"... using the same syntax" -> rewrite to
+"i.e. the types are expressed ... using the same syntax as terms"
+"in the subtyping rule (rule \forall L)" ->
+"in their subtyping rules (rule \forall L)"
 
 > callcc example: again, please use a different font for code
 
