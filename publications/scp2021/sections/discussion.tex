@@ -137,8 +137,8 @@ for higher-ranked polymorphic type inference for System F-like languages
 ~\citep{dunfield2013complete,zhao19mechanical},
 we identify one of the interesting challenges to develop an algorithmic system for \name.
 
-In dependent type systems, function types ($\Pi$ types) are dependent:
-the type of applications potentially depends on the values of their arguments.
+In dependent type systems, the type of applications potentially depends on the
+values of their arguments.
 Therefore the unification problem we meet is potentially inside binders and
 depends on the value of the arguments. For an example in \name, consider:
 
@@ -208,13 +208,13 @@ However, since \name supports fixpoints, all monotypes in our system
 are easily inhabited with diverging programs as inhabitants (recall that, due
 to the issue discussed in Section~\ref{sec:reverse-subst}, our fixpoints only support monotypes).
 For instance, we do not need the variable $a$ in the context in the example above,
-we can just find the instantiation $\mu x : A. x$ to satisfy \rref{s-forall-l} for any monotype $A$.
+we can just find the instantiation $[[mu x : A. x]]$ to satisfy \rref{s-forall-l} for any monotype $A$.
 Moreover, it is \emph{likely} that any polytype is inhabited with the help
-of monotype fixpoints. For example, type $\forall A : [[*]],\, A \rightarrow B$ with $B$
+of monotype fixpoints. For example, type $\forall A : [[*]].\, A \rightarrow B$ with $B$
 being an abstract type, has an inhabitant $\Lambda A : [[*]].\,[[lambda x : A. mu y : B. y]]$.
 
 Nevertheless, since polymorphic types in our system also serve as ``implicit function types'',
-it seems to be a weird choice to infer diverging programs as their implicit arguments.
+it seems weird to infer diverging programs as their implicit arguments.
 Inferring infinite loops is not a big deal for the time being,
 because we guarantee the runtime irrelevance
 of all the implicit arguments. But this design will not be reasonable if we are

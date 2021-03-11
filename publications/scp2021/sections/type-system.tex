@@ -225,12 +225,14 @@ $[[G |- A : *]]$.
 
 \begin{figure}
     \centering
+\setlength{\abovedisplayskip}{8pt}
     \begin{drulepar}[wf]{$[[|- G]]$}{Well-formed Context}
       \mprset{sep=1.2em}
       \drule{nil}
       \drule[width=30em]{cons}
     \end{drulepar}
-\setlength{\belowdisplayskip}{2.5pt} \setlength{\belowdisplayshortskip}{1.2pt}
+\setlength{\belowdisplayskip}{2.5pt}
+\setlength{\belowdisplayshortskip}{1.3pt}
 
     \begin{drulepar}[s]{$[[G |- e1 <: e2 : A]]$}{Unified Subtyping}
       \mprset{sep=1.3em}

@@ -221,7 +221,7 @@ type is more general than the rank-1 type. Thus the following program type-check
 % & \mathrm{callcc} = \mathrm{callcc}' &&
 % \end{flalign*}
 \begin{lstlisting}
-  callcc' : $\forall$a:$\star$.(($\forall$b:$\star$. a $\to$ b) $\to$ a) $\to$ a
+  callcc' : $\forall$a:$\star$. (($\forall$b:$\star$. a $\to$ b) $\to$ a) $\to$ a
   callcc  : $\forall$a:$\star$.$\forall$b:$\star$. ((a $\to$ b) $\to$ a) $\to$ a
   callcc = callcc'
 \end{lstlisting}
