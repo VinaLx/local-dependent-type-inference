@@ -263,7 +263,7 @@ and $\forallR$:
         but just monotypes. In other words, the relation is \emph{predicative}~\citep{Martin-Lof-1972}.
         This restriction ensures that the relation is \emph{decidable}.
 
-  \item In rule $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x. B$)
+  \item In rule $\forallR$ a type ($A$) is considered more general than a polytype ($\forall x.\, B$)
         when it is still more general than the head of the polytype, with the type
         parameter instantiated by an abstract variable $x$.
 \end{itemize}
@@ -367,8 +367,6 @@ Similar to \rref{GEN,INST} shown above, both rules in HM work only
 for polymorphic types at top-level positions. In Hindley-Milner
 the universal quantifier can only quantify over types, whereas in the ICC
 it can quantify over terms of an arbitrary type (including types themselves).
-% which also features similar rules in typing.
-% But Hindley-Milner is designed for dealing only with rank-1 polymorphism.
 In generalizations of higher-ranked polymorphic
 type-inference~\citep{dunfield2013complete,le2003ml,leijen2008hmf,vytiniotis2008fph,jones2007practical},
 it has been shown that rules like $\forallL$ and $\forallR$ generalize rules like

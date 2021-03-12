@@ -170,7 +170,7 @@ Dependent Object Types (DOT)~\citep{dot:dot,dot:path,dot:sound} is another
 family of systems that discusses subtyping in a dependently typed setting.
 Unlike the traditional dependent type systems that are based on lambda calculus, DOT
 embraces the idea of ``everything is an object'' and features the \emph{path-dependent types}.
-A path-dependent type is a restricted form of dependent types.
+The path-dependent type is a restricted form of dependent types.
 Path-dependent types support return types of functions to mention their parameters, but only
 member accessing operations are allowed for the ``depended value'',
 and instead of all terms, only variable names can occur in the accessing path.
@@ -203,7 +203,7 @@ expresses the implication relation between contract satisfaction conditions. Unf
 this brings the difficulty of potential mutual dependency between typing and subtyping.
 To overcome this issue, $\lambda_H$ builds another layer of denotational semantics on top of
 subtyping rules to avoid that subtyping depends on typing. However, this introduces
-complications in terms of metatheory.
+other complications in their metatheory.
 System $\mathrm{F}_\mathrm{H}$~\citep{fh} and $\mathrm{F}_\mathrm{H}^\sigma$
 ~\citep{fhsigma} provide another
 interesting idea to deal with this mutual dependency. They get rid of the

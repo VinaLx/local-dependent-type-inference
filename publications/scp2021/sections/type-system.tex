@@ -290,14 +290,13 @@ $[[G |- A : *]]$.
       \qquad \Gamma \vdash A \triangleq [[G |- A <: A : *]]
       \qquad \Gamma \vdash A \le B \triangleq [[G |- A <: B : *]]
     \end{gather*}
-    \caption{(Sub)Typing Rules of \name.}
+    \caption{Unified Subtyping Rules of \name.}
     \label{fig:typing}
 \end{figure}
-% \bruno{Add syntactic sugar also for subtyping and well-formedness.}
 
-\paragraph{Subtyping Rules for Universal Quantification}
-The subtyping rules for universal quantification (\rref{s-forall-l,s-forall-r}) follow
-the spirit of the Odersky and L\"aufer's polymorphic subtyping~\citep{odersky1996putting,dunfield2013complete},
+\paragraph{Subtyping Rules for Universal Quantifications}
+The subtyping rules for universal quantifications (\rref{s-forall-l,s-forall-r})
+follow the spirit of the Odersky and L\"aufer's polymorphic subtyping~\citep{odersky1996putting,dunfield2013complete},
 where the subtyping relation is interpreted as a ``more-general-than'' relation.
 A polymorphic type $[[forall x : A. B]]$
 is more general than another type $C$ when its well-typed
@@ -321,7 +320,7 @@ required to be mono-expressions, which has cascading effects on typing rules of
 other expressions. The arguments for applications are required to be
 mono-expressions, and the whole fixpoint expression is required to be a
 mono-expression. We shall
-discuss the reason behind these restrictions in Section \ref{sec:metatheory}.
+discuss the rationale to impose these restrictions in Section \ref{sec:metatheory}.
 
 \paragraph{Kind Restriction for Universal Types}
 \label{sec:kind-restriction}

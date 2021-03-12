@@ -49,14 +49,14 @@ would be:
 \emph{If $[[G |- [B / x] A : *]]$ and $[[G |- B : C]]$, then $[[G , x : C |- A : *]]$},
 which unfortunately does not hold.
 In a dependent type system, the values of expressions also matter during type checking
-besides the types of expressions, a counter-example of the property is:
+besides their types, a counter-example of the property is:
 \begin{align*}
 & F : [[int]] \rightarrow [[*]],\, a : F~42  \vdash (\lambda y : F~\rulehl{42}.\, [[int]]) ~ a : [[*]] \\
 & F : [[int]] \rightarrow [[*]],\, a : F~42  ,\, \rulehl{x : [[int]]} \vdash (\lambda y : F~\rulehl{x}.\, [[int]]) ~ a : [[*]]
 \end{align*}
 We cannot ``reverse substitute'' the $42$ in the type annotation to a variable
 of the same type: the application expression depends specifically on the value
-$42$ in order for the type of argument $a$ to match the parameter type.
+$42$ in order for the type of argument $a$ to match the type of the parameter.
 So we add a premise $[[G , x : A |- B : *]]$ in \rref{s-forall-l} to directly
 ensure the well-formedness of types in the conclusion.
 
@@ -78,11 +78,11 @@ crucial role when considering the subtyping statement
 $\Gamma \vdash \forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$,
 which arises when type-checking the application $[[(bind x : A. lambda y : int. y)]]~42$.
 In this case, we cannot apply \rref{s-forall-l} unless we find a
-well-typed instance for the polymorphic parameter. So the variable in the context
+well-typed instance for the polymorphic parameter. So the variable $a$ in the context
 is needed even though it does not occur anywhere in the final judgment.
 Note that, since our system has a fixpoint operator, theoretically we could construct
 a diverging program $[[mu x : A. x]]$ to instantiate the implicit parameter, but
-this possibility leads to several other issues which we are going to discuss in
+this possibility leads to several other issues which we will discuss in
 Section~\ref{sec:habitability}. Furthermore, such an approach would not work for calculi
 without fixpoints.
 
@@ -110,8 +110,8 @@ in this section.
 
 Usually, a subtyping relation is reflexive when any well-formed type is a subtype
 of itself. With unified subtyping, the well-formedness of types is expressed by
-subtyping relation as well, so the reflexivity looks more like the generalization
-of \emph{well-formedness} mentioned in the previous section. Reflexivity
+subtyping relation as well, so the reflexivity looks more like the generalized
+\emph{well-formedness} mentioned in the previous section. Reflexivity
 breaks down into two parts, \emph{left reflexivity} and \emph{right reflexivity}.
 
 \begin{lemma}[Left Reflexivity]
@@ -138,8 +138,8 @@ and \rref{s-forall-r} respectively are directly solved by \rref{s-forall}.
 $[[G1 ,, G3 |- e1 <: e2 : A]]$. The redundant premises discussed in Section
 \ref{sec:type-system} help to simplify the proof, by creating the induction
 hypotheses about the type annotation of various expressions. Otherwise, we are
-not able to prove $[[|- G1 ,, G2 ,, G3 , x : A]]$ given only
-$[[|- G1 ,, G3 , x : A]]$ and no help from induction hypotheses.
+not able to prove $[[|- G1 ,, G2 ,, G3 , x : A]]$ with only
+$[[|- G1 ,, G3 , x : A]]$ given and no help from induction hypotheses.
 
 \begin{theorem}[Context Narrowing]
 \label{thm:narrowing}
@@ -166,7 +166,7 @@ derive $[[G1 , x : A ,, G2 |- x : B]]$ through \rref{s-sub}.
 \end{theorem}
 
 \noindent Notably \emph{substitution} has a mono-expression restriction on the
-expression being substituted with. This is due to the mono-expression restriction on
+substituted expression. This is due to the mono-expression restriction on
 the instantiation of polymorphic parameters in \rref{s-forall-l}.
 
 Take the following derivation as an example:
@@ -252,8 +252,9 @@ property:
 \noindent where the types of the premises are potentially different.
 To prove this property we employ sizes for the inductive argument. Moreover we rely on
 a subtle property of uniqueness of kinds.
-\paragraph{Uniqueness of Kinds} Assuming that the derivation of the second
-premise of generalized transitivity ends with \rref{s-forall-r}, then we face the following problem:
+\paragraph{Uniqueness of Kinds} Assuming that the second premise of
+generalized transitivity is derived by \rref{s-forall-r},
+then we face the following problem:
 \begin{mathpar}
     \inferrule*[]
       {[[G |- e1 <: e2 : A]] \\ [[G, x : B |- e2 <: C : *]]}
@@ -274,7 +275,7 @@ Then we can have the following theorem:
 
 \noindent The proof is achieved by generalizing the shape of $k$ to be
 $\Pi x : A.\, \dots \Pi x : B.\, \dots k$ for obtaining useful inductive hypotheses
-when the derivation of $[[G |- e : k]]$ ends with \rref{s-app}. Then the proof
+when $[[G |- e : k]]$ is derived by \rref{s-app}. Then the proof
 proceeds with induction on the derivation of the generalized $[[G |- e : k]]$ and
 assembling various lemmas of kinding to solve different cases.
 
@@ -303,14 +304,10 @@ $$
     standard recursive cases.
     \item $\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation
     trees of the first and the second premise respectively. The sum of sizes
-    of derivation tree solve the case involving \rref{s-sub} where the sizes of
-    expressions does not decrease.
+    of derivation tree solves the case involving \rref{s-sub} where the sizes of
+    expressions do not decrease.
 \end{itemize}
 
-% $\#\forall$ counts the number of $\forall$ quantifiers in the expression,
-% $\mathbf{size}$ measures the size of the syntax tree of the expressions,
-% $\mathcal{D}_1$ and $\mathcal{D}_2$ denote the sizes of the derivation trees of
-% the first and the second premises respectively.
 The proof is mainly inspired by DK's transitivity proof of their declarative subtyping
 system of induction on the pair of
 $\langle \#\forall([[e2]]) ,~ \mathcal{D}_1 + \mathcal{D}_2 \rangle$~\citep{dunfield2013lemmas},
@@ -327,7 +324,7 @@ and the second is derived by \rref{s-forall-l}. Essentially we have to show the 
 
 Here the only decreasing measure we can rely on is that
 $\#\forall([[ [t / x] B ]])$ is one less than $\#\forall([[forall x : A. B]])$
-(since $\tau$ is a monotype which does not contain $\forall$ quantifiers).
+(since $\tau$ is a monotype which does not contain any $\forall$ quantifier).
 To solve this case, we first perform a substitution on the premise
 $[[G , x : A |- e1 <: B : *]]$ with the help of the fact that
 $x$ does not occur in $e_1$, obtaining $[[G |- e1 <: [t / x] B : *]]$, then
@@ -350,7 +347,7 @@ $\mathcal{D}_1 + \mathcal{D}_2$, and resort to the sizes of expressions
 
 We have to make adjustments to solve the cases which preserve the
 size of derivation tree, but not the sizes of the expressions, which is
-when the first premise ends with \rref{s-forall-l}:
+when the first premise is derived by \rref{s-forall-l}:
 
 \begin{mathpar}
     \inferrule*[]
@@ -362,8 +359,8 @@ when the first premise ends with \rref{s-forall-l}:
 less than $\#\forall([[forall x : A. B]])$,
 so it can be solved by applying \rref{s-forall-l} and the
 inductive hypothesis of $\#\forall(e_1)$.
-Additionally, $\#\forall(e_3)$ is used to make the measure ``symmetric''
-to deal with the contravariance case of \rref{s-pi}.
+Additionally, $\#\forall(e_3)$ is added to make the measure ``symmetric''
+to handle the contravariance case of \rref{s-pi}.
 
 Then, most of the cases that do not involve $\forall$ can be
 solved by applying the inductive hypothesis corresponding to
@@ -386,13 +383,13 @@ the same.
 Since the reduction rules of \name do not have access to typing information, they
 cannot perform valid instantiation checks of the implicit arguments during applications.
 Thus, the runtime semantics is non-deterministic and potentially non-type-preserving.
-We tackle this issue by employing designs that make the choice of implicit instantiation
-irrelevant at runtime with the restrictions in \rref{s-bind}.
+We tackle this issue by employing designs that make the choices of implicit instantiations
+irrelevant at runtime with the occurence restrictions in \rref{s-bind}.
 We define an erasure function (shown in Figure \ref{fig:extraction})
 that eliminates the type annotations
-in some of the expressions ($\lambda$, $\Lambda$, $\mu$ and $\castup$),
+in some expressions ($\lambda$, $\Lambda$, $\mu$ and $\castup$),
 and keep implicit parameters from occurring in the erased expressions.
-This way the choices of implicit instantiation only affect type annotations,
+This way the choices of implicit instantiations only affect type annotations,
 which are not relevant for runtime computation.
 
 We show that \name is type-safe in the sense that,
@@ -418,9 +415,9 @@ the original expressions and the erased expressions.
     and $\exists \, E_2'. \, \extract{e_2} \Longrightarrow E_2'$ or $\extract{e_2}$ is an erased value.
 \end{theorem}
 
-\noindent We prove a generalized version of \emph{progress} that talks about both sides
+\noindent We prove a generalized version of \emph{progress} that involves both sides
 of the expressions with unified subtyping. Note that they are not necessarily
-simultaneously reducible or not reducible due to the presence of \rref{s-forall-l, s-forall-r}.
+simultaneously reducible or irreducible due to the presence of \rref{s-forall-l, s-forall-r}.
 The left-hand-side may be reducible with the right-hand-side being a value or vice versa.
 
 Both theorems are proved by induction on the derivation of $[[nil |- e1 <: e2 : A]]$.
@@ -545,11 +542,11 @@ middle of two reducible types, so we cannot adopt their proof on this case.
 
 We tackle this problem from another direction, with the observation that the
 demand for subtype preservation property shifts from the term-level to the type-level.
-With the calculus-of-constructions-like kind hierarchy, our system only has
+With the Calculus-of-Constructions-like kind hierarchy, our system only has
 limited layers in types (type $[[int]]$ has kind $[[*]]$, kind $[[*]]$ has kind $[[box]]$).
 In fact, we only need to go up one layer in the type hierarchy to be able to
 obtain subtype preservation directly,
-since there is no subtyping involved at the kind level,
+since there is no subtyping at the kind level,
 hence no problem for the cast elimination there.
 Even better, we show that by going up one level in the type hierarchy
 (only discussing the types of terms), the options
@@ -587,16 +584,16 @@ we have the following lemma.
     then $B$ does not have kind $[[box]]$.
 \end{lemma}
 
-Note that the result of this lemma may, at first sight, be surprising
-because it means that we cannot construct
-a reducible expression like: $([[lambda x : int. *]])~42$ which has kind $[[box]]$.
+At first sight, the result of this lemma may be surprising because it means
+that we cannot construct a reducible expression like:
+$([[lambda x : int. *]])~42$ which has kind $[[box]]$.
 In reality, the lambda expression must be of type $[[int]] \rightarrow [[box]]$
 for the application to be well-typed. However, as we employ the conventional
 typing rule for lambda abstractions of Calculus of Constructions~\citep{coc},
 the function types of the lambda abstractions themselves
 must be well-kinded (see \rref{s-abs}). Since $[[box]]$ itself does not have a kind,
 $[[int]] \rightarrow [[box]]$ is not well-kinded, therefore the whole application
-is not well-typed. For a similar reason, the position of occurence of $[[*]]$
+is not well-typed. For this reason, the position where kind $[[*]]$ can occur
 in a well-typed expression is very restricted, hence the lemma is provable.
 
 With the previous lemmas, the subtype preservation lemma for type computation is easily shown.

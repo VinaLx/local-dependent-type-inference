@@ -18,7 +18,7 @@ These responds are marked with "ANSWER".
 Generally speaking we followed-up on the vast majority of the comments.
 
 The following sections are our point-by-point response to the comments
-what were raised by the reviewers. Besides these points, we also made changes
+that were raised by the reviewers. Besides these points, we also made changes
 in various places to improve the overall presentation of our article, but
 we did not document these changes in this file.
 
@@ -843,7 +843,9 @@ other languages, like Scala or PureScript.
 > theory alone has some interest, though; so this is not a fatal flaw,
 > but it is something that decreases my enthusiasm considerably.
 
-ANSWER: We certainly agree that the algorithmic aspects are a big challenge.
+ANSWER
+
+We certainly agree that the algorithmic aspects are a big challenge.
 However we are indeed a bit more hopeful than the reviewer. One reason
 is that, with our proposal, we can avoid one of the biggest challenges
 of type-inference work done previously for dependently typed languages:

@@ -183,8 +183,8 @@ quite tricky.
 
 \paragraph{Type Inhabitation}
 As we mentioned earlier, one of the issues is centered around not being able to find a
-well-typed instantiation for an arbitrary type in general. Nevertheless, in the presence of
-seemingly unused variables it may be possible to find well-typed instantiations,
+well-typed instantiation for an arbitrary type in general. Some instantiations
+can only be found in the presence of seemingly unused variables,
 which is a key reason for strenghtning not holding in general. For example:
 
 \begin{equation*}
@@ -194,15 +194,14 @@ which is a key reason for strenghtning not holding in general. For example:
 Here, to conclude that $[[bind x : A. lambda y : int. y]]$ has type $[[int]] \rightarrow [[int]]$,
 we want to derive $\forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$ by
 using \rref{s-forall-l}. That would require a well-typed instantiation
-for the abstract type $A$, and that is where the variable $a$ in the context
+for the abstract type $A$, which is where the variable $a$ in the context
 comes to rescue, although not being used anywhere in the original conclusion.
 Thus, unlike other calculi where it is possible to drop unused variables in the context
-and still have a valid typing statement, in \name this is not always possible. In the example
+and still have a valid typing statement, in \name, it is not always possible. In the example
 above dropping $\rulehl{a : A}$ from the context sabotages the subtyping relation
 $\forall x : A.\, [[int]] \rightarrow [[int]] \le [[int]] \rightarrow [[int]]$
 we rely on to conclude the typing relation.
 (unless we can find another inhabitant for type $A$ somehow).
-In other words, the conventional strenghtning property does not hold.
 
 However, since \name supports fixpoints, all monotypes in our system
 are easily inhabited with diverging programs as inhabitants (recall that, due
@@ -214,14 +213,14 @@ of monotype fixpoints. For example, type $\forall A : [[*]].\, A \rightarrow B$ 
 being an abstract type, has an inhabitant $\Lambda A : [[*]].\,[[lambda x : A. mu y : B. y]]$.
 
 Nevertheless, since polymorphic types in our system also serve as ``implicit function types'',
-it seems weird to infer diverging programs as their implicit arguments.
+it would be weird to infer diverging programs as their implicit arguments.
 Inferring infinite loops is not a big deal for the time being,
-because we guarantee the runtime irrelevance
-of all the implicit arguments. But this design will not be reasonable if we are
+because we guarantee the runtime irrelevance of all the implicit arguments.
+But this design will not be reasonable if we are
 going to relax the restriction of runtime irrelevance of implicit parameters in the future.
 Furthermore, it is also reasonable to consider similar language designs without fixpoints
 (for instance, if our goals are to develop theorem provers or strongly normalizing languages).
-In such scenarios, the approach of finding inhabitants by creating non-terminating terms
+In this case, the approach of finding inhabitants by creating non-terminating terms
 would not be possible. Thus such an approach would not be very generalizable.
 
 \paragraph{Occurences of variables that matter}
