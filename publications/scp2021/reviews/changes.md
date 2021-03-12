@@ -2,23 +2,25 @@
 
 ## Overview
 
-We carefully followed all the comments and suggestions of all reviewers, and made
-corresponded changes in our revision.
+Firslty, we would like to thank the reviewers for their many detailed comments and suggestions.
+They were really helpful to produce the much improved version that we submit now.
 
-For the points which we agree with the reviewers and have made changes to
+We carefully followed all the comments and suggestions of all reviewers, and made
+corresponding changes in our revision.
+
+For the points which had some concrete suggestions/requests and we have made changes to
 improve our article, they are marked with "DONE"
 followed by an optional comment about how or where we made the changes.
-
-For those suggestions to which we decided to not make any changes, we
-explained our original intent and why we decided against changing the original text.
-For comments that include questions or doubts, but does not suggest changes in
+For comments that include questions or doubts, but do not suggest changes in
 the article, we also tried to respond to them, and hopefully it would make sense.
-These responds are marked with "ANSEWR".
+These responds are marked with "ANSWER".
 
-The following sections are our point-by-point response to the what were raised by the
-reviewers. Besides these points, we also made changes here and there
-to improve the overall presentation of our article, but we did not document
-these changes in this file.
+Generally speaking we followed-up on the vast majority of the comments.
+
+The following sections are our point-by-point response to the comments
+what were raised by the reviewers. Besides these points, we also made changes
+in various places to improve the overall presentation of our article, but
+we did not document these changes in this file.
 
 ## Review 1
 
