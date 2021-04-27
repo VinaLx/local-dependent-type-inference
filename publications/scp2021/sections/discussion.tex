@@ -185,7 +185,7 @@ quite tricky.
 As we mentioned earlier, one of the issues is centered around not being able to find a
 well-typed instantiation for an arbitrary type in general. Some instantiations
 can only be found in the presence of seemingly unused variables,
-which is a key reason for strenghtning not holding in general. For example:
+which is a key reason for strengthening not holding in general. For example:
 
 \begin{equation*}
     A : [[*]], \rulehl{a : A} \vdash [[(bind x : A. lambda y : int. y)]]~42 : [[int]]
@@ -223,7 +223,7 @@ Furthermore, it is also reasonable to consider similar language designs without 
 In this case, the approach of finding inhabitants by creating non-terminating terms
 would not be possible. Thus such an approach would not be very generalizable.
 
-\paragraph{Occurences of variables that matter}
+\paragraph{Occurrences of variables that matter}
 Another issue for the strengthening is that even if we have the issue of
 inhabitability covered, it is tricky to guarantee that a variable unused in the
 final subtyping conclusion, does not matter for the whole derivation.
