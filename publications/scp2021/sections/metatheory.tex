@@ -384,7 +384,7 @@ Since the reduction rules of \name do not have access to typing information, the
 cannot perform valid instantiation checks of the implicit arguments during applications.
 Thus, the runtime semantics is non-deterministic and potentially non-type-preserving.
 We tackle this issue by employing designs that make the choices of implicit instantiations
-irrelevant at runtime with the occurence restrictions in \rref{s-bind}.
+irrelevant at runtime with the occurrence restrictions in \rref{s-bind}.
 We define an erasure function (shown in Figure \ref{fig:extraction})
 that eliminates the type annotations
 in some expressions ($\lambda$, $\Lambda$, $\mu$ and $\castup$),
